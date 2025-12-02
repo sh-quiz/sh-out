@@ -10,6 +10,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-sharks-navy: #27273A;
+  --color-sharks-blue: #6BA7F4;
+  --color-sharks-red: #D74838;
+  --color-sharks-rose: #F9DDDF;
+  --color-sharks-white: #FFFFFF;
 }
 
 @media (prefers-color-scheme: dark) {
