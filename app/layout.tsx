@@ -5,6 +5,8 @@ import SmoothScroll from "@/components/ui/SmoothScroll";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "@/components/ui/CustomCursor";
 
+import AppLayout from "@/components/AppLayout";
+
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -33,7 +35,9 @@ export default function RootLayout({
         <SmoothScroll>
           <GrainOverlay />
           <CustomCursor />
-          {children}
+          <AppLayout>
+            {children}
+          </AppLayout>
         </SmoothScroll>
       </body>
     </html>

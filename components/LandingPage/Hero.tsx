@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import SharkBackground from "./SharkBackground";
 import { ArrowRight } from "lucide-react";
 
@@ -35,13 +36,13 @@ export default function Hero() {
                     transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
                     className="mt-16"
                 >
-                    <button className="group relative px-12 py-6 bg-[#FF2D55] text-white text-xl font-bold tracking-wider uppercase overflow-hidden transition-all hover:scale-105 active:scale-95">
+                    <Link href="/login" className="group relative px-12 py-6 bg-[#FF2D55] text-white text-xl font-bold tracking-wider uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 inline-block">
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
                         <span className="relative flex items-center gap-4">
                             Start Quiz
                             <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                         </span>
-                    </button>
+                    </Link>
                 </motion.div>
             </div>
 
