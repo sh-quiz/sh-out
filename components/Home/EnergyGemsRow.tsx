@@ -1,39 +1,57 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Zap, Gem, Plus } from 'lucide-react';
+import { Zap, Gem } from 'lucide-react';
 
 export default function EnergyGemsRow() {
     return (
-        <div className="w-full overflow-x-auto no-scrollbar pl-6 pr-6 py-4">
-            <div className="flex items-center gap-4 min-w-max">
+        <div className="px-6 mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Energy Card */}
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1, duration: 0.6 }}
-                    className="flex flex-col justify-between w-[200px] h-[120px] p-5 rounded-[24px] bg-[#0D1117] border border-[#161B22] relative group"
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    className="p-6 bg-[#171717] rounded-md border border-white/5 flex flex-col justify-between min-h-[140px]"
                 >
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#34D399]/10 flex items-center justify-center">
-                                <Zap className="w-4 h-4 text-[#34D399]" fill="#34D399" />
-                            </div>
-                            <span className="text-white font-medium">Energy</span>
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-[15px] font-medium text-white">Energy</span>
+                        <div className="flex items-center gap-1.5 text-[#FFB340] text-xs font-medium">
+                            <Zap className="w-3.5 h-3.5" fill="#FFB340" />
+                            Refill
                         </div>
-                        <button className="w-6 h-6 rounded-full bg-[#161B22] flex items-center justify-center hover:bg-[#34D399]/20 transition-colors">
-                            <Plus className="w-3 h-3 text-[#34D399]" />
-                        </button>
                     </div>
 
-                    <div className="flex gap-[2px] mt-auto">
-                        {[...Array(25)].map((_, i) => (
-                            <div
-                                key={i}
-                                className={`h-6 flex-1 rounded-full ${i < 25 ? 'bg-[#34D399]' : 'bg-[#161B22]'}`}
-                                style={{ opacity: i < 25 ? 0.8 : 1 }}
-                            />
-                        ))}
+                    <div className="space-y-1.5">
+                        <div className="flex gap-1.5">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={`r1-${i}`} className="h-2 flex-1 rounded-full bg-[#34D399]" />
+                            ))}
+                        </div>
+                        <div className="flex gap-1.5">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={`r2-${i}`} className="h-2 flex-1 rounded-full bg-[#34D399]" />
+                            ))}
+                        </div>
+                        <div className="flex gap-1.5">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={`r3-${i}`} className="h-2 flex-1 rounded-full bg-[#34D399]" />
+                            ))}
+                        </div>
+                        <div className="flex gap-1.5">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={`r4-${i}`} className="h-2 flex-1 rounded-md bg-[#34D399]" />
+                            ))}
+                        </div>
+                        <div className="flex gap-1.5">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={`r5-${i}`} className="h-2 flex-1 rounded-md bg-[#34D399]" />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-4 text-xs text-[#878D96] font-medium">
+                        25/25 · Ready for a new quiz
                     </div>
                 </motion.div>
 
@@ -41,24 +59,20 @@ export default function EnergyGemsRow() {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.6 }}
-                    className="flex flex-col justify-between w-[200px] h-[120px] p-5 rounded-[24px] bg-[#0D1117] border border-[#161B22] relative group"
+                    transition={{ delay: 0.4, duration: 0.6 }}
+                    className="p-6 bg-[#171717] rounded-md border border-white/5 flex flex-col justify-between min-h-[140px]"
                 >
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                                <Gem className="w-4 h-4 text-[#007AFF]" />
-                            </div>
-                            <span className="text-white font-medium">Gems</span>
-                        </div>
-                        <button className="w-6 h-6 rounded-full bg-[#161B22] flex items-center justify-center hover:bg-[#007AFF]/20 transition-colors">
-                            <Plus className="w-3 h-3 text-[#007AFF]" />
-                        </button>
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[15px] font-medium text-white">Gems</span>
+                        <Gem className="w-4 h-4 text-[#FFB340]" fill="#FFB340" />
                     </div>
 
-                    <div className="mt-auto">
-                        <span className="text-2xl font-semibold text-white">0</span>
-                        <span className="text-xs text-[#878D96] ml-2">Available</span>
+                    <div>
+                        <span className="text-[32px] font-bold text-white leading-none tracking-tight">0</span>
+                    </div>
+
+                    <div className="mt-auto text-xs text-[#878D96] font-medium">
+                        Exchange for rewards in the shop
                     </div>
                 </motion.div>
             </div>
