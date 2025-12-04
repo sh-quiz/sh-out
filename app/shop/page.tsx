@@ -6,7 +6,7 @@ import { EnergyPackCard } from "@/components/Shop/EnergyPackCard";
 
 export default function ShopPage() {
     return (
-        <div className="min-h-screen bg-[#000000] text-white selection:bg-amber-500/30">
+        <div className="flex flex-col min-h-screen bg-[#000000] text-white selection:bg-amber-500/30 relative">
             {/* Floating Particles Background */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 {[...Array(20)].map((_, i) => (
@@ -31,7 +31,8 @@ export default function ShopPage() {
             </div>
 
             {/* Top Bar */}
-            <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-white/5 bg-black/50 px-6 py-4 backdrop-blur-xl">
+            <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-white/5 bg-black/50 px-6 py-4 backdrop-blur-xl w-full">
+
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-4 py-1.5">
                         <span className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">💎</span>
@@ -44,13 +45,13 @@ export default function ShopPage() {
                 </div>
             </nav>
 
-            <main className="relative z-10 pt-32 pb-32 px-6 max-w-7xl mx-auto">
+            <main className="flex-1 relative z-10 pt-6 pb-8 px-6 max-w-7xl mx-auto w-full">
                 {/* Hero Section */}
-                <div className="mb-16 text-center">
+                <div className="mb-10 text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-2 text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 drop-shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                        className="mb-2 text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 drop-shadow-[0_0_30px_rgba(245,158,11,0.3)]"
                     >
                         Vault of Power
                     </motion.h1>
@@ -65,7 +66,7 @@ export default function ShopPage() {
                 </div>
 
                 {/* Treasure Packs Grid */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 mb-20">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-12">
                     <ShopCard
                         title="Starter Vault"
                         price="₦2,000"
@@ -111,7 +112,7 @@ export default function ShopPage() {
                     >
                         Energy-Only Packs
                     </motion.h2>
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <EnergyPackCard
                             energy={10}
                             price="₦500"
@@ -133,19 +134,6 @@ export default function ShopPage() {
                         />
                     </div>
                 </div>
-            </main>
-
-            {/* Bottom Bar */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#0A0A0A] px-6 py-4">
-                <div className="mx-auto flex max-w-7xl items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm font-bold">
-                        <span className="rounded bg-amber-500/20 px-2 py-1 text-amber-500">12,450 Gems</span>
-                        <span className="text-gray-600">+</span>
-                        <span className="rounded bg-emerald-500/20 px-2 py-1 text-emerald-500">87/100 Energy</span>
-                    </div>
-
-                    <button className="text-sm font-medium text-gray-500 hover:text-white transition-colors">
-                        Restore Purchases
                     </button>
 
                     <div className="text-xs font-medium text-gray-600">
