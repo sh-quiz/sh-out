@@ -134,13 +134,10 @@ export default function ShopPage() {
                         />
                     </div>
                 </div>
-                    </button>
-
-                    <div className="text-xs font-medium text-gray-600">
-                        Powered by <span className="font-bold text-gray-400">Paystack</span>
-                    </div>
+                <div className="mt-12 text-center text-xs font-medium text-gray-600">
+                    Powered by <span className="font-bold text-gray-400">Paystack</span>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

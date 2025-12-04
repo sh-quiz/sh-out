@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Lenis from "lenis";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 import GrainOverlay from "@/components/ui/GrainOverlay";
-import MajorCategoryCard from "./components/MajorCategoryCard";
-import SubjectCard from "./components/SubjectCard";
 import CustomCursor from "./components/CustomCursor";
 
 export default function CategoriesPage() {
@@ -34,85 +32,157 @@ export default function CategoriesPage() {
     }, []);
 
     return (
-        <main className="min-h-screen bg-[#000000] text-[#F0F2F5] selection:bg-[#007AFF] selection:text-white overflow-x-hidden">
+        <main className="min-h-screen bg-[#000000] text-[#F0F2F5] selection:bg-[#007AFF] selection:text-white overflow-x-hidden font-sans">
             <GrainOverlay />
             <CustomCursor />
 
-            {/* FIXED HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-6 md:px-12 mix-blend-difference">
-                <Link href="/" className="p-2 hover:opacity-70 transition-opacity">
-                    <ArrowLeft className="w-6 h-6 text-[#F0F2F5]" />
-                </Link>
-
-                <h1 className="text-xl md:text-2xl font-medium tracking-tight" style={{ fontFamily: 'PP Mori, sans-serif' }}>
-                    Choose Your Subject
+            {/* HEADER */}
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-6 md:px-12">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+                    Choose Your Battlefield, Benedict.
                 </h1>
 
-                <div className="p-2">
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                    >
-                        <Sparkles className="w-5 h-5 text-[#007AFF]" />
-                    </motion.div>
+                <div className="flex items-center gap-2">
+                    <div className="text-[#FF4433] animate-pulse">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                            <path d="M12 2C10 2 8 4 8 6C8 8 10 10 12 10C14 10 16 8 16 6C16 4 14 2 12 2ZM12 22C7 22 3 17 3 12C3 7 7 3 12 3C17 3 21 7 21 12C21 17 17 22 12 22Z" opacity="0.2" />
+                            <path d="M12 22C14.5 22 17 20 18 18C18 16 16 14 14 14C12 14 10 16 10 18C10 20 12.5 22 12 22Z" />
+                            <path d="M12 14C11 14 10 13 10 12C10 11 11 10 12 10C13 10 14 11 14 12C14 13 13 14 12 14Z" />
+                            <path d="M12 2C12 2 8 7 8 12C8 16 10 19 12 19C14 19 16 16 16 12C16 7 12 2 12 2Z" />
+                        </svg>
+                    </div>
+                    <span className="text-xl font-bold text-white">12</span>
                 </div>
             </header>
 
-            <div className="container mx-auto px-4 md:px-8 pt-32 pb-32">
+            <div className="flex flex-col h-screen">
+                {/* ONLINE MATCH SECTION */}
+                <section className="relative flex-1 group overflow-hidden border-b border-white/10">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src="/assets/online_match_bg.png"
+                            alt="Online Match Background"
+                            className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                        <div className="absolute inset-0 bg-red-900/10 mix-blend-overlay" />
+                    </div>
 
-                {/* MAJOR CATEGORIES */}
-                <div className="flex flex-col gap-[120px] md:gap-[200px] mb-[200px]">
-                    <MajorCategoryCard
-                        title="Past Questions"
-                        subtitle="Master real exam questions from previous years"
-                        gradient="linear-gradient(180deg, #000000 0%, #0A0E14 100%)"
-                        lightRayPosition="top-left"
-                    />
+                    {/* Content */}
+                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12">
+                        <div className="flex items-end justify-between w-full max-w-7xl mx-auto">
+                            <div>
+                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-2 uppercase drop-shadow-[0_0_15px_rgba(255,0,0,0.5)]">
+                                    Online <span className="text-white">Match</span>
+                                </h2>
+                                <p className="text-gray-300 text-lg md:text-xl font-medium tracking-wide drop-shadow-md">
+                                    12,847 warriors online • 7 battles active
+                                </p>
+                            </div>
 
-                    <MajorCategoryCard
-                        title="Trial Questions"
-                        subtitle="Practice with unlimited mock exams & timed tests"
-                        gradient="linear-gradient(180deg, #000000 0%, #0A0E14 100%)"
-                        lightRayPosition="bottom-right"
-                    />
-                </div>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-8 py-4 bg-[#FF3B30] hover:bg-[#ff554d] text-white font-bold tracking-wider uppercase rounded-lg shadow-[0_0_30px_rgba(255,59,48,0.4)] transition-all duration-300"
+                            >
+                                Enter Battle
+                            </motion.button>
+                        </div>
+                    </div>
 
-                {/* SUBCATEGORIES GRID */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-                    <SubjectCard
-                        subject="Mathematics"
-                        count="2,847 questions"
-                        iconType="math"
-                        index={0}
-                        isActive={true} // Demo active state
-                        progress={75}
-                    />
-                    <SubjectCard
-                        subject="Science"
-                        count="1,932 questions"
-                        iconType="science"
-                        index={1}
-                    />
-                    <SubjectCard
-                        subject="Social Studies"
-                        count="1,420 questions"
-                        iconType="social"
-                        index={2}
-                    />
-                    <SubjectCard
-                        subject="General Science"
-                        count="980 questions"
-                        iconType="general"
-                        index={3}
-                    />
-                    <SubjectCard
-                        subject="English"
-                        count="3,105 questions"
-                        iconType="english"
-                        index={4}
-                    />
-                </div>
+                    {/* Laser Beams */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-0 left-1/4 w-0.5 h-full bg-red-500/40 blur-sm transform -skew-x-12" />
+                        <div className="absolute top-0 right-1/4 w-0.5 h-full bg-red-500/40 blur-sm transform skew-x-12" />
+                    </div>
+                </section>
 
+                {/* ARCADE MODE SECTION */}
+                <section className="relative flex-1 group overflow-hidden">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src="/assets/arcade_mode_bg.png"
+                            alt="Arcade Mode Background"
+                            className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20" />
+                        <div className="absolute inset-0 bg-yellow-900/10 mix-blend-overlay" />
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative z-10 h-full flex flex-col justify-end pb-12 px-6 md:px-12">
+                        <div className="w-full max-w-7xl mx-auto">
+
+                            <div className="flex items-end justify-between mb-12">
+                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase drop-shadow-[0_0_15px_rgba(255,165,0,0.5)]">
+                                    Arcade Mode
+                                </h2>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="px-10 py-4 bg-[#FFB340] hover:bg-[#ffc163] text-black font-black tracking-wider uppercase rounded-lg shadow-[0_0_30px_rgba(255,179,64,0.4)] transition-all duration-300"
+                                >
+                                    Deploy
+                                </motion.button>
+                            </div>
+
+                            {/* Bottom Bar */}
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                                {/* Mode Icons */}
+                                <div className="flex gap-8">
+                                    {['Blitz', 'Survival', 'Team Deathmatch', 'King of the Hill'].map((mode, i) => (
+                                        <div key={mode} className="flex flex-col items-center gap-2 group/icon cursor-pointer">
+                                            <div className="w-8 h-8 text-gray-500 group-hover/icon:text-white transition-colors">
+                                                {/* Placeholder Icons */}
+                                                {i === 0 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>}
+                                                {i === 1 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L22 12L12 22L2 12L12 2Z" /></svg>}
+                                                {i === 2 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11C16 12.6569 14.6569 14 13 14C11.3431 14 10 12.6569 10 11C10 9.34315 11.3431 8 13 8C14.6569 8 16 9.34315 16 11ZM8 11C8 12.6569 6.65685 14 5 14C3.34315 14 2 12.6569 2 11C2 9.34315 3.34315 8 5 8C6.65685 8 8 9.34315 8 11ZM22 11C22 12.6569 20.6569 14 19 14C17.3431 14 16 12.6569 16 11C16 9.34315 17.3431 8 19 8C20.6569 8 22 9.34315 22 11Z" /></svg>}
+                                                {i === 3 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 20H22V22H2V20ZM4 18V10L12 4L20 10V18H4ZM6 16H18V11.5L12 7L6 11.5V16Z" /></svg>}
+                                            </div>
+                                            <span className="text-[10px] uppercase font-bold tracking-widest text-gray-600 group-hover/icon:text-gray-300 transition-colors">{mode}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Stats Bar */}
+                                <div className="flex items-center bg-black/40 backdrop-blur-md rounded-xl border border-white/10 px-6 py-3 gap-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500">
+                                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Energy</div>
+                                            <div className="text-white font-bold">100/100</div>
+                                        </div>
+                                    </div>
+                                    <div className="w-px h-8 bg-white/10" />
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2L2 12H7V22H17V12H22L12 2Z" /></svg>
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Gems</div>
+                                            <div className="text-white font-bold">2,480</div>
+                                        </div>
+                                    </div>
+                                    <div className="w-px h-8 bg-white/10" />
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-500">
+                                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" /></svg>
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Rank</div>
+                                            <div className="text-white font-bold">Diamond III</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     );

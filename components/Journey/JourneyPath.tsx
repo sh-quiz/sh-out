@@ -106,7 +106,7 @@ export default function JourneyPath() {
         <div ref={containerRef} className="relative w-full min-h-screen pb-40">
             {/* Background Grid/Stars Effect */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#111_0%,_#000_100%)]" />
+                {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#111_0%,_#000_100%)]" /> */}
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                 {/* Tiny stars */}
                 {Array.from({ length: 50 }).map((_, i) => (
