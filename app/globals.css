@@ -12,9 +12,28 @@
   --color-accent-yellow: #FFB340;
   --color-success-mint: #34D399;
 
+  --color-sapphire-glow: #007AFF;
+  --color-amber-glow: #FFB340;
+  --color-mint-glow: #34D399;
+
   --font-sans: "Inter", "Helvetica Neue", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-display: "Inter", "Helvetica Neue", sans-serif;
+
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 :root {
@@ -52,4 +71,13 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-shark-red);
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
