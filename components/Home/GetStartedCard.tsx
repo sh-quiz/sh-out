@@ -34,7 +34,7 @@ export default function GetStartedCard() {
 
                 <h2 className="text-3xl font-light text-white mb-4">Get started</h2>
                 <p className="text-[#878D96] max-w-xs mx-auto mb-8 leading-relaxed">
-                    Welcome to StudyFit. Tap the button below to create your first course.
+                    Welcome to E-Quiz. Tap the button below to create your first course.
                 </p>
 
                 <motion.button

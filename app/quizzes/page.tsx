@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import JourneyPath from '@/components/Journey/JourneyPath';
 import { ReactLenis } from 'lenis/react';
 import { Play, Map } from 'lucide-react';
-
+import ParticleBackground from '@/components/ui/ParticleBackground';
 export default function QuizzesPage() {
 
     // Scroll to current level on load
@@ -27,6 +27,7 @@ export default function QuizzesPage() {
     return (
         <ReactLenis root>
             <div className="bg-black min-h-screen text-white overflow-hidden">
+                <ParticleBackground />
 
                 <JourneyPath />
 
