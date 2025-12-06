@@ -10,9 +10,8 @@ interface ShopCardProps {
     energy?: number;
     streakProtector?: number;
     isVIP?: boolean;
-    badge?: "Most Popular" | "Limited Time" | "One-time offer";
-    buttonColor?: "blue" | "orange";
     delay?: number;
+    buttonColor?: "blue" | "yellow";
 }
 
 export const ShopCard = ({
@@ -22,9 +21,8 @@ export const ShopCard = ({
     energy,
     streakProtector,
     isVIP,
-    badge,
-    buttonColor = "blue",
     delay = 0,
+    buttonColor = "blue",
 }: ShopCardProps) => {
     return (
         <motion.div
@@ -34,19 +32,6 @@ export const ShopCard = ({
             className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)]"
         >
             {/* Badge */}
-            {badge && (
-                <div
-                    className={cn(
-                        "absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider",
-                        badge === "Most Popular" && "bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]",
-                        badge === "Limited Time" && "bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)] animate-pulse",
-                        badge === "One-time offer" && "bg-white/10 text-white backdrop-blur-md border border-white/20"
-                    )}
-                >
-                    {badge}
-                </div>
-            )}
-
             <div>
                 <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
                 <div className="text-3xl font-black text-white mb-4 tracking-tight">{price}</div>

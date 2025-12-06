@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Flame } from 'lucide-react';
 
 interface LevelNodeProps {
@@ -14,11 +15,32 @@ export default function LevelNode({ level, status, position }: LevelNodeProps) {
     const isCompleted = status === 'completed';
     const isLocked = status === 'locked';
 
+    const [showTooltip, setShowTooltip] = useState(false);
+
     return (
         <div
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center cursor-pointer group"
             style={{ left: `${position.x}%`, top: `${position.y}px` }}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            onClick={() => setShowTooltip(!showTooltip)}
         >
+            {/* Tooltip */}
+            <AnimatePresence>
+                {showTooltip && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 5, scale: 0.9 }}
+                        className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] uppercase font-bold px-3 py-1.5 rounded-full shadow-xl z-50 pointer-events-none"
+                    >
+                        2025 semi final Persco vrs Presec
+                        {/* Little triangle arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white/20" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Current Level Halo & Effects */}
             {isCurrent && (
                 <>

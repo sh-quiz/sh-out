@@ -32,134 +32,142 @@ export default function CategoriesPage() {
     }, []);
 
     return (
-        <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] selection:bg-[#007AFF] selection:text-white overflow-hidden font-sans">
+        <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] selection:bg-[#FF3B30] selection:text-white overflow-hidden font-sans">
             <GrainOverlay />
             <CustomCursor />
             {/* HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-72 pr-6 py-6 md:pr-12">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
-                    Choose Your Battlefield, Benedict.
-                </h1>
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-72 pr-8 py-6 pointer-events-none">
 
-                <div className="flex items-center gap-2">
-                    <div className="text-[#FF4433] animate-pulse">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-                            <path d="M12 2C10 2 8 4 8 6C8 8 10 10 12 10C14 10 16 8 16 6C16 4 14 2 12 2ZM12 22C7 22 3 17 3 12C3 7 7 3 12 3C17 3 21 7 21 12C21 17 17 22 12 22Z" opacity="0.2" />
-                            <path d="M12 22C14.5 22 17 20 18 18C18 16 16 14 14 14C12 14 10 16 10 18C10 20 12.5 22 12 22Z" />
-                            <path d="M12 14C11 14 10 13 10 12C10 11 11 10 12 10C13 10 14 11 14 12C14 13 13 14 12 14Z" />
-                            <path d="M12 2C12 2 8 7 8 12C8 16 10 19 12 19C14 19 16 16 16 12C16 7 12 2 12 2Z" />
-                        </svg>
-                    </div>
-                    <span className="text-xl font-bold text-white">12</span>
+
+                <div className="pointer-events-auto flex items-center gap-4 bg-black/40 backdrop-blur-xl border border-white/5 rounded-full px-4 py-2">
                 </div>
             </header>
 
             <div className="flex flex-col h-screen w-full">
                 {/* ONLINE MATCH SECTION */}
-                <section className="relative flex-1 group overflow-hidden border-b border-white/10">
+                <section className="relative flex-1 group overflow-hidden border-b border-white/5">
                     {/* Background Image */}
-                    <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 z-0 scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out">
                         <img
                             src="/assets/online_match_bg.png"
                             alt="Online Match Background"
-                            className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                            className="w-full h-full object-cover opacity-50"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-black/80" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
-                        <div className="absolute inset-0 bg-red-900/10 mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-[#FF3B30]/5 mix-blend-overlay" />
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12">
-                        <div className="flex items-end justify-between w-full max-w-7xl mx-auto">
-                            <div>
-                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-2 uppercase drop-shadow-[0_0_15px_rgba(255,0,0,0.5)]">
-                                    Online <span className="text-white">Match</span>
+                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 pl-72">
+                        <div className="flex items-end justify-between w-full max-w-[90rem] mx-auto">
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded text-[#FF3B30] text-xs font-bold tracking-[0.2em] uppercase">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
+                                    Live Combat
+                                </div>
+                                <h2 className="text-7xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                    Online <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">Match</span>
                                 </h2>
-                                <p className="text-gray-300 text-lg md:text-xl font-medium tracking-wide drop-shadow-md">
-                                    12,847 warriors online • 7 battles active
+                                <p className="text-gray-400 text-sm md:text-base font-mono tracking-widest uppercase opacity-80 pt-4">
+                                    // 12,847 Warriors Online <span className="text-[#FF3B30] mx-2">•</span> 7 Battles Active
                                 </p>
                             </div>
 
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="px-8 py-4 bg-[#FF3B30] hover:bg-[#ff554d] text-white font-bold tracking-wider uppercase rounded-lg shadow-[0_0_30px_rgba(255,59,48,0.4)] transition-all duration-300"
-                            >
-                                Enter Battle
-                            </motion.button>
+                            <div className="relative group/btn">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-[#FF3B30] to-[#FF9500] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="relative flex items-center justify-center -skew-x-12 px-12 py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)]"
+                                >
+                                    <div className="skew-x-12 flex items-center gap-3">
+                                        <span className="text-lg font-black tracking-widest uppercase">Enter Battle</span>
+                                        <ArrowLeft className="w-5 h-5 rotate-180" />
+                                    </div>
+                                </motion.button>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Laser Beams */}
+                    {/* Laser Beams / Tech Detials */}
                     <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute top-0 left-1/4 w-0.5 h-full bg-red-500/40 blur-sm transform -skew-x-12" />
-                        <div className="absolute top-0 right-1/4 w-0.5 h-full bg-red-500/40 blur-sm transform skew-x-12" />
+                        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#FF3B30]/50 to-transparent opacity-50" />
                     </div>
                 </section>
 
                 {/* ARCADE MODE SECTION */}
                 <section className="relative flex-1 group overflow-hidden">
-                    <div className="absolute inset-0 z-0">
-                        <img
-                            src="/assets/arcade_mode_bg.png"
-                            alt="Online Match Background"
-                            className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                        />
+                    {/* Background Image */}
+                    <div
+                        className="absolute inset-0 z-0 bg-cover bg-center scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out"
+                        style={{ backgroundImage: 'url(/assets/arcade_mode_bg.png)' }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-black/80" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
-                        <div className="absolute inset-0 bg-red-900/10 mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-[#FFB340]/5 mix-blend-overlay" />
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-end pb-12 px-6 md:px-12">
-                        <div className="w-full max-w-7xl mx-auto">
-
+                    <div className="relative z-10 h-full flex flex-col justify-end pb-16 px-6 md:px-12 pl-72">
+                        <div className="w-full max-w-[90rem] mx-auto">
                             <div className="flex items-end justify-between mb-12">
-                                <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase drop-shadow-[0_0_15px_rgba(255,165,0,0.5)]">
-                                    Arcade Mode
-                                </h2>
+                                <div className="space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FFB340]/10 border border-[#FFB300]/20 rounded text-[#FFB340] text-xs font-bold tracking-[0.2em] uppercase">
+                                        <Sparkles className="w-3 h-3" />
+                                        Single Player
+                                    </div>
+                                    <h2 className="text-7xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                        Arcade <br />
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB340] via-[#FFE5A0] to-[#FFB340]/50">Mode</span>
+                                    </h2>
+                                </div>
 
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="px-10 py-4 bg-[#FFB340] hover:bg-[#ffc163] text-black font-black tracking-wider uppercase rounded-lg shadow-[0_0_30px_rgba(255,179,64,0.4)] transition-all duration-300"
-                                >
-                                    Deploy
-                                </motion.button>
+                                <div className="relative group/btn">
+                                    <div className="absolute -inset-1 bg-gradient-to-r from-[#FFB340] to-[#FFE5A0] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="relative flex items-center justify-center -skew-x-12 px-12 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)]"
+                                    >
+                                        <div className="skew-x-12 flex items-center gap-3">
+                                            <span className="text-lg font-black tracking-widest uppercase">Deploy Unit</span>
+                                            <ArrowLeft className="w-5 h-5 rotate-180" />
+                                        </div>
+                                    </motion.button>
+                                </div>
                             </div>
 
-                            {/* Bottom Bar */}
-                            <div className="flex flex-col md:flex-row items-center justify-end gap-8">
-                                {/* Stats Bar */}
+                            {/* HUD Stats Bar */}
+                            <div className="flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-8 mt-8">
+                                <div className="flex items-center gap-8 text-[#878D96] text-sm font-mono tracking-wider uppercase">
+                                    <span>System Ready</span>
+                                    <span>v2.4.0</span>
+                                </div>
 
-                                {/* Stats Bar */}
-                                <div className="flex items-center bg-black/40 backdrop-blur-md rounded-xl border border-white/10 px-6 py-3 gap-8">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500">
-                                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>
-                                        </div>
+                                <div className="flex items-center bg-black/40 backdrop-blur-md rounded-lg border border-white/5 p-2 gap-2">
+                                    <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
+                                        <div className="w-2 h-2 rounded-sm bg-yellow-500 shadow-[0_0_8px_#EAB308]" />
                                         <div>
-                                            <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Energy</div>
-                                            <div className="text-white font-bold">100/100</div>
+                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Energy</div>
+                                            <div className="text-white font-mono font-bold leading-none">100<span className="text-gray-500">/100</span></div>
                                         </div>
                                     </div>
-                                    <div className="w-px h-8 bg-white/10" />
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
-                                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2L2 12H7V22H17V12H22L12 2Z" /></svg>
-                                        </div>
+
+                                    <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
+                                        <div className="w-2 h-2 rounded-sm bg-blue-500 shadow-[0_0_8px_#3B82F6]" />
                                         <div>
-                                            <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Gems</div>
-                                            <div className="text-white font-bold">2,480</div>
+                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Gems</div>
+                                            <div className="text-white font-mono font-bold leading-none">2,480</div>
                                         </div>
                                     </div>
-                                    <div className="w-px h-8 bg-white/10" />
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-500">
-                                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" /></svg>
-                                        </div>
+
+                                    <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
+                                        <div className="w-2 h-2 rounded-sm bg-purple-500 shadow-[0_0_8px_#A855F7]" />
                                         <div>
-                                            <div className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Rank</div>
-                                            <div className="text-white font-bold">Diamond III</div>
+                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Rank</div>
+                                            <div className="text-white font-mono font-bold leading-none">Diamond III</div>
                                         </div>
                                     </div>
                                 </div>
