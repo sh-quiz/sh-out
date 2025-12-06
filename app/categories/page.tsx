@@ -32,12 +32,11 @@ export default function CategoriesPage() {
     }, []);
 
     return (
-        <main className="min-h-screen bg-[#000000] text-[#F0F2F5] selection:bg-[#007AFF] selection:text-white overflow-x-hidden font-sans">
+        <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] selection:bg-[#007AFF] selection:text-white overflow-hidden font-sans">
             <GrainOverlay />
             <CustomCursor />
-
             {/* HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-6 md:px-12">
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-72 pr-6 py-6 md:pr-12">
                 <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
                     Choose Your Battlefield, Benedict.
                 </h1>
@@ -55,7 +54,7 @@ export default function CategoriesPage() {
                 </div>
             </header>
 
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col h-screen w-full">
                 {/* ONLINE MATCH SECTION */}
                 <section className="relative flex-1 group overflow-hidden border-b border-white/10">
                     {/* Background Image */}
@@ -100,15 +99,14 @@ export default function CategoriesPage() {
 
                 {/* ARCADE MODE SECTION */}
                 <section className="relative flex-1 group overflow-hidden">
-                    {/* Background Image */}
                     <div className="absolute inset-0 z-0">
                         <img
                             src="/assets/arcade_mode_bg.png"
-                            alt="Arcade Mode Background"
-                            className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                            alt="Online Match Background"
+                            className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20" />
-                        <div className="absolute inset-0 bg-yellow-900/10 mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                        <div className="absolute inset-0 bg-red-900/10 mix-blend-overlay" />
                     </div>
 
                     {/* Content */}
@@ -130,22 +128,8 @@ export default function CategoriesPage() {
                             </div>
 
                             {/* Bottom Bar */}
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                                {/* Mode Icons */}
-                                <div className="flex gap-8">
-                                    {['Blitz', 'Survival', 'Team Deathmatch', 'King of the Hill'].map((mode, i) => (
-                                        <div key={mode} className="flex flex-col items-center gap-2 group/icon cursor-pointer">
-                                            <div className="w-8 h-8 text-gray-500 group-hover/icon:text-white transition-colors">
-                                                {/* Placeholder Icons */}
-                                                {i === 0 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>}
-                                                {i === 1 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L22 12L12 22L2 12L12 2Z" /></svg>}
-                                                {i === 2 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11C16 12.6569 14.6569 14 13 14C11.3431 14 10 12.6569 10 11C10 9.34315 11.3431 8 13 8C14.6569 8 16 9.34315 16 11ZM8 11C8 12.6569 6.65685 14 5 14C3.34315 14 2 12.6569 2 11C2 9.34315 3.34315 8 5 8C6.65685 8 8 9.34315 8 11ZM22 11C22 12.6569 20.6569 14 19 14C17.3431 14 16 12.6569 16 11C16 9.34315 17.3431 8 19 8C20.6569 8 22 9.34315 22 11Z" /></svg>}
-                                                {i === 3 && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 20H22V22H2V20ZM4 18V10L12 4L20 10V18H4ZM6 16H18V11.5L12 7L6 11.5V16Z" /></svg>}
-                                            </div>
-                                            <span className="text-[10px] uppercase font-bold tracking-widest text-gray-600 group-hover/icon:text-gray-300 transition-colors">{mode}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="flex flex-col md:flex-row items-center justify-end gap-8">
+                                {/* Stats Bar */}
 
                                 {/* Stats Bar */}
                                 <div className="flex items-center bg-black/40 backdrop-blur-md rounded-xl border border-white/10 px-6 py-3 gap-8">

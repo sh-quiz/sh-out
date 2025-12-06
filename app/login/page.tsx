@@ -73,7 +73,7 @@ export default function LoginPage() {
             <Diamond className="w-10 h-10 text-[#007AFF] fill-[#007AFF]/20" />
           </motion.div>
 
-          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">E-Quiz</h1>
+          <h1 className="text-5xl font-extrabold text-white mb-2 tracking-tighter">E-Quiz</h1>
           <p className="text-[#878D96] text-sm font-light tracking-wide">Master Anything.</p>
         </motion.div>
 
