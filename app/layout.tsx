@@ -6,6 +6,7 @@ import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "@/components/ui/CustomCursor";
 
 import AppLayout from "@/components/AppLayout";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -32,13 +33,15 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased bg-[#0B0E12] text-[#E8E9EA]`}
       >
-        <SmoothScroll>
-          <GrainOverlay />
-          <CustomCursor />
-          <AppLayout>
-            {children}
-          </AppLayout>
-        </SmoothScroll>
+        <Providers>
+          <SmoothScroll>
+            <GrainOverlay />
+            <CustomCursor />
+            <AppLayout>
+              {children}
+            </AppLayout>
+          </SmoothScroll>
+        </Providers>
       </body>
     </html>
   );
