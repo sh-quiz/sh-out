@@ -18,6 +18,8 @@ import {
 import ProfileHero from "./components/ProfileHero";
 import StatNumber from "./components/StatNumber";
 import GlassCard from "./components/GlassCard";
+import { useRouter } from "next/navigation";
+import { authService } from "@/lib/auth";
 
 // Mock Data
 const USER_DATA = {
@@ -46,8 +48,13 @@ const SETTINGS_LINKS = [
     { label: "Appearance", value: "Dark", icon: Moon },
     { label: "Privacy & Data", icon: Shield },
 ];
-
 export default function AccountPage() {
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await authService.logout();
+        router.push('/');
+    };
     return (
         <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] pb-32 overflow-x-hidden selection:bg-[#007AFF]/30">
 
@@ -101,7 +108,7 @@ export default function AccountPage() {
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 rounded-full bg-[#007AFF]/10">
-                                    <Crown className="w-6 h-6 text-[#007AFF]" />
+                                    className=""<Crown className="w-6 h-6 text-[#007AFF]" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-medium">Premium Plan</h3>
@@ -184,9 +191,9 @@ export default function AccountPage() {
                                 </div>
                             </motion.button>
                         ))}
-
                         {/* Sign Out */}
                         <motion.button
+                            onClick={handleLogout}
                             className="w-full h-16 flex items-center justify-between border-b border-white/5 group hover:bg-white/[0.02] transition-colors px-4 -mx-4 rounded-md mt-8"
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}

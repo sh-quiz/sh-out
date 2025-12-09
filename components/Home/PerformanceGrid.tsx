@@ -1,12 +1,46 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { api } from '../../api/client';
+
+interface UserStatsResponse {
+    xp: number;
+    globalRank: number;
+    totalStudyTimeSeconds: number | string;
+    quizzesSolved: number;
+}
 
 export default function PerformanceGrid() {
+    const { data: statsData, isLoading } = useQuery({
+        queryKey: ['userStats'],
+        queryFn: async () => {
+            const { data } = await api.get<UserStatsResponse>('/users/me/stats');
+            return data;
+        },
+    });
+
+    // Format study time (seconds -> hours)
+    const formatStudyTime = (seconds: number | string) => {
+        const totalSeconds = typeof seconds === 'string' ? parseInt(seconds, 10) : seconds;
+        const hours = Math.floor(totalSeconds / 3600);
+        return `${hours}h`;
+    };
+
     const stats = [
-        { label: 'Quizzes Solved', value: '1,204' },
-        { label: 'Global Rank', value: '981', color: '#007AFF' },
-        { label: 'Total Study Time', value: '210h' },
+        {
+            label: 'Quizzes Solved',
+            value: isLoading || !statsData ? '...' : statsData.quizzesSolved.toLocaleString(),
+        },
+        {
+            label: 'Global Rank',
+            value: isLoading || !statsData ? '...' : `#${statsData.globalRank.toLocaleString()}`,
+            color: '#007AFF'
+        },
+        {
+            label: 'Total Study Time',
+            value: isLoading || !statsData ? '...' : formatStudyTime(statsData.totalStudyTimeSeconds),
+        },
     ];
 
     return (

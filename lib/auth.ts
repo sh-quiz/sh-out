@@ -42,6 +42,9 @@ export const authService = {
             await api.post('/auth/logout', { userId });
         }
         this.clearTokens();
+        console.log('Logged out successfully');
+
+
     },
 
     saveTokens(data: AuthResponse) {

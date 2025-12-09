@@ -20,14 +20,28 @@ export interface UserStats {
     updatedAt: string;
 }
 
+export interface HeatmapItem {
+    date: string;
+    count: number;
+    details: {
+        studySeconds: number;
+        quizzesSolved: number;
+    };
+}
+
 export const statsService = {
     async getEnergy(userId: number): Promise<UserEnergy> {
         const response = await api.get(`/users/${userId}/energy`);
         return response.data;
     },
 
-    async getStats(userId: number): Promise<UserStats> {
-        const response = await api.get(`/users/${userId}/stats`);
+    async getStats(): Promise<UserStats> {
+        const response = await api.get('/users/me/stats');
+        return response.data;
+    },
+
+    async getHeatmap(year?: number): Promise<HeatmapItem[]> {
+        const response = await api.get('/users/me/heatmap', { params: { year } });
         return response.data;
     },
 };

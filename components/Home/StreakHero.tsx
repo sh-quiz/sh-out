@@ -1,9 +1,25 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Flame } from 'lucide-react';
+import { statsService } from '../../lib/stats';
 
 export default function StreakHero() {
+    const [streak, setStreak] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchStreak = async () => {
+            try {
+                const stats = await statsService.getStats();
+                setStreak(stats.dayStreak);
+            } catch (error) {
+                console.error('Failed to fetch user stats', error);
+            }
+        };
+        fetchStreak();
+    }, []);
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -17,7 +33,7 @@ export default function StreakHero() {
             {/* Streak Number */}
             <div className="relative z-10 flex flex-col items-center">
                 <h1 className="text-[140px] leading-none font-light text-white tracking-tighter select-none">
-                    47
+                    {streak !== null ? streak : '-'}
                 </h1>
 
                 {/* Subtext */}

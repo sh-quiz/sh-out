@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Flame } from 'lucide-react';
 
 interface LevelNodeProps {
+    title: string;
     level: number;
-    status: 'completed' | 'current' | 'locked';
+    status: 'completed' | 'current' | 'locked' | 'unlocked';
     position: { x: number; y: number };
 }
 
-export default function LevelNode({ level, status, position }: LevelNodeProps) {
+export default function LevelNode({ title, level, status, position }: LevelNodeProps) {
     const isCurrent = status === 'current';
     const isCompleted = status === 'completed';
     const isLocked = status === 'locked';
@@ -34,7 +35,7 @@ export default function LevelNode({ level, status, position }: LevelNodeProps) {
                         exit={{ opacity: 0, y: 5, scale: 0.9 }}
                         className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] uppercase font-bold px-3 py-1.5 rounded-full shadow-xl z-50 pointer-events-none"
                     >
-                        2025 semi final Persco vrs Presec
+                        {title}
                         {/* Little triangle arrow */}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white/20" />
                     </motion.div>
@@ -65,14 +66,14 @@ export default function LevelNode({ level, status, position }: LevelNodeProps) {
                     relative flex items-center justify-center rounded-full shadow-lg transition-all duration-300
                     ${isCurrent ? 'w-20 h-20 bg-blue-600 text-white z-30' : ''}
                     ${isCompleted ? 'w-10 h-10 bg-blue-900/80 border border-blue-500/50 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]' : ''}
-                    ${isLocked ? 'w-8 h-8 bg-zinc-900 border border-zinc-800 text-zinc-600' : ''}
+                    ${isLocked ? 'w-10 h-10 bg-zinc-800 border border-zinc-700 text-zinc-400 shadow-lg' : ''}
                 `}
                 whileHover={{ scale: isCurrent ? 1.1 : 1.2 }}
                 animate={isCurrent ? { scale: [1, 1.06, 1] } : {}}
                 transition={isCurrent ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : {}}
             >
                 {isLocked ? (
-                    <Lock className="w-3 h-3" />
+                    <Lock className="w-4 h-4" />
                 ) : (
                     <span className={`font-bold ${isCurrent ? 'text-3xl font-display' : 'text-sm'}`}>
                         {level}
@@ -96,8 +97,7 @@ export default function LevelNode({ level, status, position }: LevelNodeProps) {
                 </motion.div>
             )}
 
-            {/* Level Number Label for non-current nodes (optional, if needed for clarity) */}
-            {/* {isLocked && <div className="absolute -bottom-5 text-[10px] text-zinc-600 font-mono">{level}</div>} */}
+         
         </div>
     );
 }

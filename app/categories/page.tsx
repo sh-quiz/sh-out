@@ -63,7 +63,6 @@ export default function CategoriesPage() {
                         <div className="flex items-end justify-between w-full max-w-[90rem] mx-auto">
                             <div className="space-y-4">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded text-[#FF3B30] text-xs font-bold tracking-[0.2em] uppercase">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
                                     Live Combat
                                 </div>
                                 <h2 className="text-7xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">

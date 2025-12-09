@@ -6,89 +6,101 @@ import LevelNode from './LevelNode';
 import TopicCard from './TopicCard';
 import { Calculator, Atom, Zap, Brain, Dna, Globe } from 'lucide-react';
 
-// Mock Data Generation
-const generateLevels = () => {
-    const levels = [];
-    const totalLevels = 50;
-    const currentLevel = 13;
+    export interface Quiz {
+    id: number;
+    title: string;
+    description: string;
+    // ... add other fields if needed for future
+}
 
-    for (let i = 1; i <= totalLevels; i++) {
-        // Zigzag pattern logic
-        // x position oscillates between 20% and 80%
-        const x = 50 + 30 * Math.sin(i * 0.5);
-        const y = (totalLevels - i) * 150 + 200; // Start from bottom up visually, but DOM renders top down. 
-        // Actually, for a scrolling journey, usually level 1 is at the bottom or top?
-        // Reference image shows 13 as current, 12 below it, 11 below that. So 1 is at the bottom.
-        // We want to scroll UP to progress? Or scroll DOWN to progress?
-        // "Start Level 13" suggests we are at 13.
-        // Let's assume standard vertical scroll: Top = Future, Bottom = Past.
-        // So Level 50 is at y=0, Level 1 is at y=MAX.
+interface JourneyPathProps {
+    quizzes: Quiz[];
+}
 
-        let status: 'completed' | 'current' | 'locked' = 'locked';
-        if (i < currentLevel) status = 'completed';
-        if (i === currentLevel) status = 'current';
-
-        levels.push({
-            id: i,
-            level: i,
-            status,
-            position: { x, y: 0 }, // y will be calculated relative to container
-        });
-    }
-    // Reverse to render from top (Level 50) to bottom (Level 1)
-    return levels.reverse().map((l, index) => ({
-        ...l,
-        position: { ...l.position, y: index * 180 + 100 } // Spacing
-    }));
-};
-
-const levels = generateLevels();
-
-// Mock Topics
-const topics = [
-    {
-        levelId: 13,
-        title: "Limits & Continuity",
-        subtitle: "Master the foundational concepts of calculus.",
-        icon: <Zap className="w-4 h-4" />,
-        accentColor: "bg-blue-500",
-        align: "right" as const
-    },
-    {
-        levelId: 9,
-        title: "Atomic Structure",
-        subtitle: "Explore the building blocks of the universe.",
-        icon: <Atom className="w-4 h-4" />,
-        accentColor: "bg-amber-500",
-        align: "left" as const
-    },
-    {
-        levelId: 5,
-        title: "Kinematics",
-        subtitle: "Motion in one dimension.",
-        icon: <Globe className="w-4 h-4" />,
-        accentColor: "bg-emerald-500",
-        align: "right" as const
-    }
-];
-
-export default function JourneyPath() {
+export default function JourneyPath({ quizzes }: JourneyPathProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end end"]
     });
 
+    const levels = useMemo(() => {
+        // Reverse to render from top (Future/High Levels) to bottom (Start/Low Levels)
+        // Or simply map them. Let's assume the list passed is in order 1..N
+        // If we want the latest at the top, we might need to reverse logic or just position them.
+        // Let's stick to the previous visual logic: reversed array, bottom up.
+        
+        // Actually, typically levels 1, 2, 3 start from bottom.
+        // So let's map the quizzes to positions.
+        const totalLevels = quizzes.length;
+        
+        // Create nodes
+        const nodes = quizzes.map((quiz, index) => {
+             // 1-based level index for display
+             const levelNum = index + 1;
+             
+             // Zigzag logic
+             const x = 50 + 30 * Math.sin(levelNum * 0.5);
+             
+             // Y position: Start from bottom.
+             // If we have N levels, level 1 is at index 0.
+             // We want level 1 to be at the bottom.
+             // Let's say spacing is 180px.
+             // y = (totalLevels - 1 - index) * 180 + 100
+             const y = (totalLevels - 1 - index) * 180 + 100;
+
+             // Determine status
+             // For now, let's unlock all or make simplistic logic:
+             // first one is current, others locked?
+             // The user didn't specify locking logic in the prompt "title on each lock",
+             // but "lock per quiz" implies they might be locked.
+             // Let's assume all are unlocked for demo or just "current" for the last one?
+             // Let's mark the first one as current, others as locked for now, or just all unlocked.
+             // Better: "current" = the next one to play.
+             // Since we don't have user progress passing in yet, let's default to:
+             // Index 0 (Level 1) is current, others locked? 
+             // Or just make them all 'unlocked' so we can see titles.
+             // Let's make them 'locked' but show title on tooltip as requested.
+             // Actually, the user request says "title of on each lock".
+             // Let's set status to 'locked' by default, maybe the first one 'current'.
+             
+             const status = index === 0 ? 'current' : 'locked';
+
+             return {
+                 id: quiz.id,
+                 title: quiz.title,
+                 level: levelNum,
+                 status: status as 'completed' | 'current' | 'locked',
+                 position: { x, y }
+             };
+        });
+        
+        return nodes;
+    }, [quizzes]);
+
+
     // Generate SVG Path
     const pathData = useMemo(() => {
         if (levels.length === 0) return "";
 
-        // Simple curve connecting points
-        let d = `M ${levels[0].position.x}% ${levels[0].position.y}`;
+        // Sort by y to draw path from top to bottom?
+        // SVG coordinates: y=0 is top.
+        // Our levels have y calculated. Level N is at y=100 (top), Level 1 is at y=Max (bottom).
+        // We should draw from top (Level N) down to Level 1? Or Level 1 up?
+        // The previous code drew from levels[0] to end.
+        // If levels are sorted by ID 1..N:
+        // Level 1: y = (N-1)*180 + 100 (Bottom)
+        // Level N: y = 0*180 + 100 (Top)
+        // Drawing from 1 to N means drawing from Bottom to Top.
+        // Let's sort levels by Y ascending (Top to Bottom) for the path.
+        
+        const sortedLevels = [...levels].sort((a, b) => a.position.y - b.position.y);
 
-        for (let i = 0; i < levels.length - 1; i++) {
-            const current = levels[i];
-            const next = levels[i + 1];
+        let d = `M ${sortedLevels[0].position.x}% ${sortedLevels[0].position.y}`;
+
+        for (let i = 0; i < sortedLevels.length - 1; i++) {
+            const current = sortedLevels[i];
+            const next = sortedLevels[i + 1];
 
             // Control points for smooth curve
             const cp1x = current.position.x;
@@ -100,7 +112,7 @@ export default function JourneyPath() {
         }
 
         return d;
-    }, []);
+    }, [levels]);
 
     return (
         <div ref={containerRef} className="relative w-full min-h-screen pb-40">
@@ -109,7 +121,9 @@ export default function JourneyPath() {
                 {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#111_0%,_#000_100%)]" /> */}
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                 {/* Tiny stars */}
-                {Array.from({ length: 50 }).map((_, i) => (
+                {/* Simplified stars for performance/cleanliness in this edit */}
+                <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full opacity-20" />
+                 {Array.from({ length: 20 }).map((_, i) => (
                     <div
                         key={i}
                         className="absolute bg-white rounded-full opacity-20 animate-pulse"
@@ -156,18 +170,11 @@ export default function JourneyPath() {
                 {levels.map((level) => (
                     <div key={level.id}>
                         <LevelNode
+                            title={level.title}
                             level={level.level}
                             status={level.status}
                             position={level.position}
                         />
-
-                        {/* Check for Topic Card */}
-                        {topics.find(t => t.levelId === level.level) && (
-                            <TopicCard
-                                {...topics.find(t => t.levelId === level.level)!}
-                                position={level.position}
-                            />
-                        )}
                     </div>
                 ))}
             </div>

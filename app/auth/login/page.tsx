@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { authService } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { User, Building2, Lock, Diamond } from 'lucide-react';
+import { User, Lock, Diamond, Mail } from 'lucide-react';
 import Lenis from 'lenis';
 
 // Components
@@ -15,7 +15,28 @@ import ParticleBackground from '@/components/ui/ParticleBackground';
 export default function LoginPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await authService.login(formData);
+      router.push('/dashboard'); // Or wherever you want to redirect
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -78,28 +99,49 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Form Section */}
-        <form className="w-full space-y-2 mb-8" onSubmit={(e) => e.preventDefault()}>
+        <form className="w-full space-y-2 mb-8" onSubmit={handleLogin}>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 mb-4 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg text-center"
+            >
+              {error}
+            </motion.div>
+          )}
+
           <AuthInput
-            label="Full Name"
-            type="text"
-            icon={User}
-            placeholder="Enter your full name"
+            label="Email Address"
+            type="email"
+            icon={Mail}
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             delay={0.1}
-          />
-          <AuthInput
-            label="School / Institution"
-            type="text"
-            icon={Building2}
-            placeholder="Enter your school or institution"
-            delay={0.2}
           />
           <AuthInput
             label="Password"
             type="password"
             icon={Lock}
             placeholder="Enter your password"
-            delay={0.3}
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            delay={0.2}
           />
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-14 mt-4 bg-[#007AFF] hover:bg-[#0062CC] text-white font-medium rounded-full transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              'Sign In'
+            )}
+          </motion.button>
         </form>
 
         {/* Google Button */}
@@ -115,8 +157,11 @@ export default function LoginPage() {
           className="text-[#878D96] text-sm"
         >
           Already have an account?{' '}
-          <button className="text-[#007AFF] font-medium hover:underline transition-all">
-            Sign in
+          <button
+            onClick={() => router.push('/auth/signup')}
+            className="text-[#007AFF] font-medium hover:underline transition-all"
+          >
+            Sign up
           </button>
         </motion.p>
 
