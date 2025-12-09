@@ -1,14 +1,41 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { authService } from '@/lib/auth';
 import Sidebar from '@/components/Sidebar/Sidebar';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const isPublicPage = pathname === '/' || pathname === '/login';
+    const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isPublicPage = pathname === '/' || pathname?.startsWith('/auth');
+
+    useEffect(() => {
+        if (!mounted) return;
+
+        const isAuthenticated = authService.isAuthenticated();
+
+        if (!isAuthenticated && !isPublicPage) {
+            router.push('/auth/login');
+        }
+    }, [pathname, isPublicPage, router, mounted]);
 
     if (isPublicPage) {
         return <>{children}</>;
+    }
+
+    if (!mounted) {
+        return null; // Prevent flash of protected content
+    }
+
+    if (!authService.isAuthenticated()) {
+        return null; // Don't render protected layout if not authenticated
     }
 
     return (
