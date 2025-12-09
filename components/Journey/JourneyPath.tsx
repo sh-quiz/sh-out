@@ -6,11 +6,11 @@ import LevelNode from './LevelNode';
 import TopicCard from './TopicCard';
 import { Calculator, Atom, Zap, Brain, Dna, Globe } from 'lucide-react';
 
-    export interface Quiz {
+export interface Quiz {
     id: number;
     title: string;
     description: string;
-    // ... add other fields if needed for future
+    isCompleted?: boolean;
 }
 
 interface JourneyPathProps {
@@ -25,56 +25,43 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
     });
 
     const levels = useMemo(() => {
-        // Reverse to render from top (Future/High Levels) to bottom (Start/Low Levels)
-        // Or simply map them. Let's assume the list passed is in order 1..N
-        // If we want the latest at the top, we might need to reverse logic or just position them.
-        // Let's stick to the previous visual logic: reversed array, bottom up.
-        
-        // Actually, typically levels 1, 2, 3 start from bottom.
-        // So let's map the quizzes to positions.
         const totalLevels = quizzes.length;
-        
+
+        // Find the index of the first non-completed quiz (Current Level)
+        let currentFound = false;
+
         // Create nodes
         const nodes = quizzes.map((quiz, index) => {
-             // 1-based level index for display
-             const levelNum = index + 1;
-             
-             // Zigzag logic
-             const x = 50 + 30 * Math.sin(levelNum * 0.5);
-             
-             // Y position: Start from bottom.
-             // If we have N levels, level 1 is at index 0.
-             // We want level 1 to be at the bottom.
-             // Let's say spacing is 180px.
-             // y = (totalLevels - 1 - index) * 180 + 100
-             const y = (totalLevels - 1 - index) * 180 + 100;
+            // 1-based level index for display
+            const levelNum = index + 1;
 
-             // Determine status
-             // For now, let's unlock all or make simplistic logic:
-             // first one is current, others locked?
-             // The user didn't specify locking logic in the prompt "title on each lock",
-             // but "lock per quiz" implies they might be locked.
-             // Let's assume all are unlocked for demo or just "current" for the last one?
-             // Let's mark the first one as current, others as locked for now, or just all unlocked.
-             // Better: "current" = the next one to play.
-             // Since we don't have user progress passing in yet, let's default to:
-             // Index 0 (Level 1) is current, others locked? 
-             // Or just make them all 'unlocked' so we can see titles.
-             // Let's make them 'locked' but show title on tooltip as requested.
-             // Actually, the user request says "title of on each lock".
-             // Let's set status to 'locked' by default, maybe the first one 'current'.
-             
-             const status = index === 0 ? 'current' : 'locked';
+            // Zigzag logic
+            const x = 50 + 30 * Math.sin(levelNum * 0.5);
 
-             return {
-                 id: quiz.id,
-                 title: quiz.title,
-                 level: levelNum,
-                 status: status as 'completed' | 'current' | 'locked',
-                 position: { x, y }
-             };
+            // Y position: Start from bottom.
+            const y = (totalLevels - 1 - index) * 180 + 100;
+
+            // Determine status
+            let status: 'completed' | 'current' | 'locked' = 'locked';
+
+            if (quiz.isCompleted) {
+                status = 'completed';
+            } else if (!currentFound) {
+                status = 'current';
+                currentFound = true;
+            } else {
+                status = 'locked';
+            }
+
+            return {
+                id: quiz.id,
+                title: quiz.title,
+                level: levelNum,
+                status,
+                position: { x, y }
+            };
         });
-        
+
         return nodes;
     }, [quizzes]);
 
@@ -93,7 +80,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
         // Level N: y = 0*180 + 100 (Top)
         // Drawing from 1 to N means drawing from Bottom to Top.
         // Let's sort levels by Y ascending (Top to Bottom) for the path.
-        
+
         const sortedLevels = [...levels].sort((a, b) => a.position.y - b.position.y);
 
         let d = `M ${sortedLevels[0].position.x}% ${sortedLevels[0].position.y}`;
@@ -123,7 +110,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
                 {/* Tiny stars */}
                 {/* Simplified stars for performance/cleanliness in this edit */}
                 <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full opacity-20" />
-                 {Array.from({ length: 20 }).map((_, i) => (
+                {Array.from({ length: 20 }).map((_, i) => (
                     <div
                         key={i}
                         className="absolute bg-white rounded-full opacity-20 animate-pulse"

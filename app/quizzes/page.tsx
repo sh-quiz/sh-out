@@ -6,6 +6,7 @@ import { ReactLenis } from 'lenis/react';
 import { Play } from 'lucide-react';
 import ParticleBackground from '@/components/ui/ParticleBackground';
 import { useRouter } from 'next/navigation';
+import { api } from '@/api/client';
 
 export default function QuizzesPage() {
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -15,10 +16,7 @@ export default function QuizzesPage() {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                // Using generic fetch for now
-                const res = await fetch('http://localhost:4000/v1/quizzes');
-                if (!res.ok) throw new Error('Failed to fetch');
-                const data = await res.json();
+                const { data } = await api.get('/v1/quizzes');
                 setQuizzes(data);
             } catch (error) {
                 console.error('Error fetching quizzes:', error);
@@ -41,43 +39,31 @@ export default function QuizzesPage() {
         }
     }, [loading, quizzes]);
 
-    const currentLevel = 1; // Default to 1 for now, or derive from logic
-    const currentQuiz = quizzes.length > 0 ? quizzes[0] : null;
+    // Determine current level based on progress
+    const currentQuizIndex = quizzes.findIndex(q => !q.isCompleted);
+    // If all completed, maybe just show the last one? or a "All Done" state. Use last one for now.
+    const activeIndex = currentQuizIndex === -1 ? quizzes.length - 1 : currentQuizIndex;
+
+    const currentQuiz = quizzes[activeIndex];
+    const currentLevel = activeIndex + 1;
 
     const handleStartQuiz = async () => {
         if (!currentQuiz) return;
 
-        setLoading(true); // Re-use loading or add a new state, re-using for now usually fine but better to have separate. 
-        // Actually rendering relies on loading=false. If I set loading=true, the entire list disappears.
-        // Let's NOT set the main loading state. Maybe just a local boolean if we wanted disable button.
-        
+        setLoading(true);
+
         try {
-            const res = await fetch(`http://localhost:4000/v1/quizzes/${currentQuiz.id}/start`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // 'Authorization': `Bearer ${token}` // If we had one
-                }
-            });
+            const { data } = await api.post(`/v1/quizzes/${currentQuiz.id}/start`);
 
-            if (!res.ok) {
-                const errorData = await res.json();
-                console.error('Failed to start quiz:', errorData);
-                alert(`Failed to start quiz: ${errorData.message || 'Unknown error'}`);
-                return;
-            }
-
-            const data = await res.json();
-            // Expected: { attemptId: number, attemptToken: string, ... }
             if (data.attemptId && data.attemptToken) {
                 router.push(`/quizzes/${currentQuiz.id}?attemptId=${data.attemptId}&token=${data.attemptToken}`);
             } else {
                 console.error('Invalid response format:', data);
                 alert('Received invalid response from server.');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error starting quiz:', error);
-            alert('An error occurred while starting the quiz.');
+            alert(`Failed to start quiz: ${error.response?.data?.message || 'Unknown error'}`);
         } finally {
             setLoading(false);
         }
