@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { quizService, QuizDetail, SubmitAnswerData } from '@/lib/quiz';
 import { useRouter } from 'next/navigation';
-import { Volume2, VolumeX, Flame, ChevronRight } from 'lucide-react';
+import { Volume2, VolumeX, Flame, ChevronRight, Mic, MicOff } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
+import { useSTT } from '@/hooks/useSTT';
 
 interface Props {
     quizId: number;
@@ -21,6 +22,53 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const { speak, cancel } = useTTS();
+
+    // Voice Command Handler
+    const handleVoiceCommand = useCallback((text: string) => {
+        console.log("[QuizPlayer] Voice command received:", text);
+        if (!quiz) return;
+        const currentQuestion = quiz.questions[currentQuestionIndex];
+
+        // Map "A", "B", "C", "D" to choice indices (0, 1, 2, 3)
+        // Logic: Match if command starts with "a ", "b " or is exactly "a", "b", etc.
+        // Regex matches:
+        // 1. Starts with "a", "b", etc followed by space, dot or end of line (e.g. "a", "a.", "a answer")
+        // 2. Starts with "option a", "answer a", etc.
+        const command = text.toLowerCase().trim();
+        let selectedIndex = -1;
+
+        const regexA = /^(a|option a|answer a|choice a)(\.| |$)/i;
+        const regexB = /^(b|option b|answer b|choice b)(\.| |$)/i;
+        const regexC = /^(c|option c|answer c|choice c)(\.| |$)/i;
+        const regexD = /^(d|option d|answer d|choice d)(\.| |$)/i;
+
+        if (regexA.test(command)) selectedIndex = 0;
+        else if (regexB.test(command)) selectedIndex = 1;
+        else if (regexC.test(command)) selectedIndex = 2;
+        else if (regexD.test(command)) selectedIndex = 3;
+
+        console.log("[QuizPlayer] Parsed command:", command, "| Selected Index:", selectedIndex);
+
+        if (selectedIndex !== -1 && currentQuestion.choices && currentQuestion.choices[selectedIndex]) {
+            console.log("[QuizPlayer] Selecting answer:", currentQuestion.choices[selectedIndex]);
+            handleAnswer(currentQuestion.id, currentQuestion.choices[selectedIndex].id);
+        } else if (command === 'submit' || command === 'next' || command === 'confirm' || command === 'go') {
+            console.log("[QuizPlayer] Submit command received");
+            submitCurrentAnswer();
+        } else if (command === 'skip') {
+             console.log("[QuizPlayer] Skip command received");
+             handleSkip();
+        } else {
+            console.log("[QuizPlayer] Match not found or choice invalid");
+        }
+    }, [quiz, currentQuestionIndex, answers]); // Added answers dependency as submitCurrentAnswer might need it (via closure) // Add dependencies if needed, handleVoiceCommand logic relies on current scope variables which might be stale if not careful. 
+    // Wait, handleAnswer is defined inside component, so it's fine. UseEffect might be better to avoid stale closures if not using refs, but useSTT takes a callback.
+    // Let's refine handleVoiceCommand to depend on currentQuestionIndex properly or use a ref.
+    // Actually, creating the callback *inside* the render loop and passing it to useSTT (which depends on changes) is tricky if useSTT doesn't update its listener.
+    // My useSTT implementation re-creates the listener if onResult changes. That works.
+
+    const { startListening, stopListening, isListening, isSupported: isSTTSupported } = useSTT(handleVoiceCommand);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -112,7 +160,8 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
         setAnswers((prev) => ({ ...prev, [questionId]: value }));
     };
 
-    const submitCurrentAnswer = async () => {
+
+    const submitCurrentAnswer = async (answerOverride?: any) => {
         if (!quiz) return;
         const question = quiz.questions[currentQuestionIndex];
 
@@ -125,7 +174,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
             return;
         }
 
-        const answer = answers[question.id];
+        const answer = answerOverride !== undefined ? answerOverride : answers[question.id];
         if (!answer) {
             alert('Please select an answer');
             return;
@@ -235,21 +284,36 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
             <div className="flex-1 flex flex-col items-center justify-start pt-2 px-4 pb-20 max-w-4xl mx-auto w-full">
                 {/* Question Card */}
                 <div className="bg-[#0A0F16] border border-gray-900 rounded-3xl p-6 w-full mb-4 relative min-h-[200px] flex items-center justify-center text-center shadow-2xl">
-                    <button
-                        onClick={() => {
-                            const newMutedState = !isMuted;
-                            setIsMuted(newMutedState);
-                            if (newMutedState) {
-                                cancel();
-                            } else {
-                                // Short delay to allow state update before speaking
-                                setTimeout(() => readCurrentQuestion(), 100);
-                            }
-                        }}
-                        className="absolute top-4 right-4 p-2 bg-blue-900 rounded-full hover:bg-blue-950 transition-colors"
-                    >
-                        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                    </button>
+
+                    {/* Controls container */}
+                    <div className="absolute top-4 right-4 flex gap-2">
+                        {isSTTSupported && (
+                            <button
+                                onClick={() => isListening ? stopListening() : startListening()}
+                                className={`p-2 rounded-full transition-colors ${isListening
+                                    ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white'
+                                    : 'bg-blue-900 hover:bg-blue-950 text-white'}`}
+                                title={isListening ? "Stop Listening" : "Enable Voice Control"}
+                            >
+                                {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+                            </button>
+                        )}
+                        <button
+                            onClick={() => {
+                                const newMutedState = !isMuted;
+                                setIsMuted(newMutedState);
+                                if (newMutedState) {
+                                    cancel();
+                                } else {
+                                    // Short delay to allow state update before speaking
+                                    setTimeout(() => readCurrentQuestion(), 100);
+                                }
+                            }}
+                            className="p-2 bg-blue-900 rounded-full hover:bg-blue-950 transition-colors"
+                        >
+                            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                        </button>
+                    </div>
 
                     <h2 className="text-3xl md:text-5xl font-thin leading-tight text-gray-200 max-w-3xl">
                         {currentQuestion.text}
