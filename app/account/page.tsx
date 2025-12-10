@@ -7,40 +7,20 @@ import {
     Clock,
     ChevronRight,
     LogOut,
-    Trash2,
     Bell,
     Moon,
     Shield,
-    Trophy,
-    Timer,
-    BookOpen
+    BookOpen,
+    Timer
 } from "lucide-react";
 import ProfileHero from "./components/ProfileHero";
 import StatNumber from "./components/StatNumber";
 import GlassCard from "./components/GlassCard";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
-
-// Mock Data
-const USER_DATA = {
-    name: "Alex Chen",
-    username: "alx_chen",
-    school: "MIT '26",
-    avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop", // Placeholder
-    isPremium: true,
-    streak: 47,
-    stats: {
-        solved: 12847,
-        rank: 127,
-        top500: true
-    },
-    records: [
-        { label: "Longest streak", value: "83 days", icon: Zap },
-        { label: "Best subject", value: "Mathematics (98.3%)", icon: BookOpen },
-        { label: "Fastest solve", value: "4.2s", icon: Timer, accent: true },
-        { label: "Total study time", value: "127h 34m", icon: Clock }
-    ]
-};
+import { useUserProfile } from "@/hooks/useUser";
+import { useEffect, useState } from "react";
+import { statsService, UserStats } from "@/lib/stats";
 
 const SETTINGS_LINKS = [
     { label: "Edit Profile", icon: null },
@@ -48,25 +28,69 @@ const SETTINGS_LINKS = [
     { label: "Appearance", value: "Dark", icon: Moon },
     { label: "Privacy & Data", icon: Shield },
 ];
+
 export default function AccountPage() {
     const router = useRouter();
+    const { data: userProfile, isLoading: isProfileLoading } = useUserProfile();
+    const [stats, setStats] = useState<UserStats | null>(null);
+
+    useEffect(() => {
+        // Fetch stats separately for now (could be a hook too)
+        statsService.getStats().then(setStats).catch(console.error);
+    }, []);
 
     const handleLogout = async () => {
         await authService.logout();
         router.push('/');
     };
+
+    if (isProfileLoading || !stats) {
+        return (
+            <div className="min-h-screen bg-[#000000] flex items-center justify-center text-white">
+                Loading...
+            </div>
+        );
+    }
+
+    const formatTime = (seconds: number) => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        return `${h}h ${m}m`;
+    };
+
+    // Derived Data
+    const displayData = {
+        name: userProfile?.name || "User",
+        username: userProfile?.email || "user", // Display email instead of username
+        school: userProfile?.school || "No School",
+        avatarUrl: userProfile?.profilePicture || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop",
+        isPremium: true, // Hardcoded for now
+        streak: stats.dayStreak,
+        stats: {
+            solved: stats.top3Finishes, // Assuming 'quizzesSolved' is not in UserStats interface yet, using placeholder or derived
+            rank: stats.xp, // Global rank logic is in backend service but not strictly in UserStats interface here? Check stats.ts
+            top500: true
+        },
+        records: [
+            { label: "Current Streak", value: `${stats.dayStreak} days`, icon: Zap },
+            { label: "XP", value: `${stats.xp}`, icon: BookOpen }, // Replaced Best Subject
+            { label: "Gems", value: `${stats.gems}`, icon: Crown, accent: true }, // Replaced Fastest Solve
+            // { label: "Total study time", value: "127h 34m", icon: Clock } // Missing in UserStats interface provided earlier?
+        ]
+    };
+
     return (
         <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] pb-32 overflow-x-hidden selection:bg-[#007AFF]/30">
 
             {/* 1. HERO PROFILE CARD */}
             <section className="pt-24 pb-12 px-6">
                 <ProfileHero
-                    name={USER_DATA.name}
-                    username={USER_DATA.username}
-                    school={USER_DATA.school}
-                    avatarUrl={USER_DATA.avatarUrl}
-                    isPremium={USER_DATA.isPremium}
-                    streak={USER_DATA.streak}
+                    name={displayData.name}
+                    username={displayData.username}
+                    school={displayData.school}
+                    avatarUrl={displayData.avatarUrl}
+                    isPremium={displayData.isPremium}
+                    streak={displayData.streak}
                 />
             </section>
 
@@ -75,15 +99,15 @@ export default function AccountPage() {
                 <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 text-center md:text-left">
                     <div className="flex justify-center md:justify-start">
                         <StatNumber
-                            label="Total Solved"
-                            value={USER_DATA.stats.solved.toLocaleString()}
+                            label="Total XP"
+                            value={stats.xp.toLocaleString()}
                             delay={0.2}
                         />
                     </div>
                     <div className="flex justify-center md:justify-start">
                         <StatNumber
                             label="Current Streak"
-                            value={USER_DATA.streak}
+                            value={stats.dayStreak}
                             subValue="days"
                             accentColor="amber"
                             delay={0.4}
@@ -92,9 +116,9 @@ export default function AccountPage() {
                     </div>
                     <div className="flex justify-center md:justify-start">
                         <StatNumber
-                            label="Global Rank"
-                            value={`#${USER_DATA.stats.rank}`}
-                            accentColor={USER_DATA.stats.top500 ? "sapphire" : "white"}
+                            label="Gems"
+                            value={`${stats.gems}`}
+                            accentColor="sapphire"
                             delay={0.6}
                         />
                     </div>
@@ -108,7 +132,7 @@ export default function AccountPage() {
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 rounded-full bg-[#007AFF]/10">
-                                    className=""<Crown className="w-6 h-6 text-[#007AFF]" />
+                                    <Crown className="w-6 h-6 text-[#007AFF]" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-medium">Premium Plan</h3>
@@ -146,7 +170,7 @@ export default function AccountPage() {
                     </motion.h2>
 
                     <div className="space-y-6">
-                        {USER_DATA.records.map((record, index) => (
+                        {displayData.records.map((record, index) => (
                             <motion.div
                                 key={record.label}
                                 className="flex items-center justify-between group"

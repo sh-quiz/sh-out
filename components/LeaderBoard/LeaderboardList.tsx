@@ -32,19 +32,29 @@ const LeaderboardRow = ({ rank, user, index }: { rank: number, user: any, index:
     );
 };
 
-export default function LeaderboardList() {
-    // Generate dummy data for rows 4-50
-    const rows = Array.from({ length: 47 }, (_, i) => ({
-        rank: i + 4,
-        name: `User ${i + 4}`,
-        school: 'University',
-        score: (2700 - i * 50).toLocaleString(),
-    }));
+
+export default function LeaderboardList({ users }: { users: any[] }) {
+    if (!users || users.length === 0) {
+        return (
+            <div className="text-center py-12 text-[#878D96]">
+                No other players on the leaderboard yet.
+            </div>
+        );
+    }
 
     return (
         <div className="pb-24">
-            {rows.map((user, i) => (
-                <LeaderboardRow key={i} rank={user.rank} user={user} index={i} />
+            {users.map((entry, i) => (
+                <LeaderboardRow
+                    key={entry.user.id}
+                    rank={entry.rank}
+                    user={{
+                        name: `${entry.user.firstName} ${entry.user.lastName}`,
+                        school: entry.user.school || 'Unknown School',
+                        score: entry.score.toLocaleString(),
+                    }}
+                    index={i}
+                />
             ))}
         </div>
     );

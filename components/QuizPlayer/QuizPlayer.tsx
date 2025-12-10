@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { quizService, QuizDetail, SubmitAnswerData } from '@/lib/quiz';
 import { useRouter } from 'next/navigation';
 import { Volume2, VolumeX, Flame, ChevronRight } from 'lucide-react';
+import { useTTS } from '@/hooks/useTTS';
 
 interface Props {
     quizId: number;
@@ -19,6 +20,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const { speak, cancel } = useTTS();
     const router = useRouter();
 
     useEffect(() => {
@@ -67,6 +69,42 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
         } finally {
             setLoading(false);
         }
+    };
+
+
+    // Effect to read question when index changes or quiz loads
+    useEffect(() => {
+        if (quiz && !loading && !isMuted) {
+            readCurrentQuestion();
+        } else {
+            cancel();
+        }
+    }, [currentQuestionIndex, quiz, loading, isMuted]);
+
+    // Cleanup speech on unmount
+    useEffect(() => {
+        return () => {
+            cancel();
+        };
+    }, []);
+
+    const readCurrentQuestion = () => {
+        if (!quiz) return;
+        const question = quiz.questions[currentQuestionIndex];
+
+        // Clean text content for cleaner reading
+        let textToRead = question.text;
+
+        // Append options for better context
+        if (question.type === 'single_choice' || question.type === 'true_false') {
+            textToRead += ". Options are: ";
+            question.choices?.forEach((choice: any, index: number) => {
+                // pause slightly between options using punctuation
+                textToRead += `Option ${String.fromCharCode(65 + index)}. ${choice.text}. `;
+            });
+        }
+
+        speak(textToRead);
     };
 
     const handleAnswer = (questionId: number, value: any) => {
@@ -198,7 +236,16 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
                 {/* Question Card */}
                 <div className="bg-[#0A0F16] border border-gray-900 rounded-3xl p-6 w-full mb-4 relative min-h-[200px] flex items-center justify-center text-center shadow-2xl">
                     <button
-                        onClick={() => setIsMuted(!isMuted)}
+                        onClick={() => {
+                            const newMutedState = !isMuted;
+                            setIsMuted(newMutedState);
+                            if (newMutedState) {
+                                cancel();
+                            } else {
+                                // Short delay to allow state update before speaking
+                                setTimeout(() => readCurrentQuestion(), 100);
+                            }
+                        }}
                         className="absolute top-4 right-4 p-2 bg-blue-900 rounded-full hover:bg-blue-950 transition-colors"
                     >
                         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}

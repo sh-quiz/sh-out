@@ -89,18 +89,35 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
     );
 };
 
-export default function Podium() {
-    const topUsers = [
-        { name: 'Sarah K.', school: 'Harvard', score: '2,840' }, // #2
-        { name: 'Benedict', school: 'Oxford', score: '3,150' },  // #1
-        { name: 'James L.', school: 'MIT', score: '2,720' },     // #3
+
+    export default function Podium({ users }: { users: any[] }) {
+    // Ensure we always have 3 spots, even if empty
+    const podiumUsers = [
+        users.find(u => u.rank === 2) || null,
+        users.find(u => u.rank === 1) || null,
+        users.find(u => u.rank === 3) || null,
     ];
 
     return (
         <div className="flex items-end justify-center gap-4 px-6 mb-12 min-h-[300px]">
-            <PodiumCard rank={2} user={topUsers[0]} delay={0.2} />
-            <PodiumCard rank={1} user={topUsers[1]} delay={0} />
-            <PodiumCard rank={3} user={topUsers[2]} delay={0.4} />
+            {podiumUsers[0] && <PodiumCard rank={2} user={{
+                name: `${podiumUsers[0].user.firstName} ${podiumUsers[0].user.lastName.charAt(0)}.`,
+                school: podiumUsers[0].user.school || 'Unknown School',
+                score: podiumUsers[0].score.toLocaleString()
+            }} delay={0.2} />}
+            
+            {podiumUsers[1] && <PodiumCard rank={1} user={{
+                name: `${podiumUsers[1].user.firstName} ${podiumUsers[1].user.lastName.charAt(0)}.`,
+                school: podiumUsers[1].user.school || 'Unknown School',
+                score: podiumUsers[1].score.toLocaleString()
+            }} delay={0} />}
+            
+            {podiumUsers[2] && <PodiumCard rank={3} user={{
+                name: `${podiumUsers[2].user.firstName} ${podiumUsers[2].user.lastName.charAt(0)}.`,
+                school: podiumUsers[2].user.school || 'Unknown School',
+                score: podiumUsers[2].score.toLocaleString()
+            }} delay={0.4} />}
         </div>
     );
 }
+
