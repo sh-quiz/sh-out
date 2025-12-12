@@ -21,6 +21,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(60);
     const { speak, cancel } = useTTS();
 
     // Voice Command Handler
@@ -51,15 +52,22 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
 
         if (selectedIndex !== -1 && currentQuestion.choices && currentQuestion.choices[selectedIndex]) {
             console.log("[QuizPlayer] Selecting answer:", currentQuestion.choices[selectedIndex]);
-            handleAnswer(currentQuestion.id, currentQuestion.choices[selectedIndex].id);
+            const selectedChoiceId = currentQuestion.choices[selectedIndex].id;
+            handleAnswer(currentQuestion.id, selectedChoiceId);
+
+            // Auto-submit after a short delay to allow visual feedback
+            setTimeout(() => {
+                submitCurrentAnswer(selectedChoiceId);
+            }, 800);
         } else if (command === 'submit' || command === 'next' || command === 'confirm' || command === 'go') {
             console.log("[QuizPlayer] Submit command received");
             submitCurrentAnswer();
         } else if (command === 'skip') {
-             console.log("[QuizPlayer] Skip command received");
-             handleSkip();
+            console.log("[QuizPlayer] Skip command received");
+            handleSkip();
         } else {
             console.log("[QuizPlayer] Match not found or choice invalid");
+            speak("Please choose a, b, c, or d from the options");
         }
     }, [quiz, currentQuestionIndex, answers]); // Added answers dependency as submitCurrentAnswer might need it (via closure) // Add dependencies if needed, handleVoiceCommand logic relies on current scope variables which might be stale if not careful. 
     // Wait, handleAnswer is defined inside component, so it's fine. UseEffect might be better to avoid stale closures if not using refs, but useSTT takes a callback.
@@ -129,6 +137,35 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
         }
     }, [currentQuestionIndex, quiz, loading, isMuted]);
 
+    // Timer logic
+    useEffect(() => {
+        setTimeLeft(60);
+    }, [currentQuestionIndex]);
+
+    useEffect(() => {
+        if (!quiz) return;
+        const currentQ = quiz.questions[currentQuestionIndex];
+        const isQSubmitted = submittedQuestions.has(currentQ.id);
+
+        if (isQSubmitted) return;
+
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [quiz, submittedQuestions, currentQuestionIndex]);
+
+    useEffect(() => {
+        if (!quiz) return;
+        const currentQ = quiz.questions[currentQuestionIndex];
+        const isQSubmitted = submittedQuestions.has(currentQ.id);
+
+        if (timeLeft === 0 && !isQSubmitted) {
+            handleSkip();
+        }
+    }, [timeLeft, quiz, submittedQuestions, currentQuestionIndex]);
+
     // Cleanup speech on unmount
     useEffect(() => {
         return () => {
@@ -162,7 +199,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
 
 
     const submitCurrentAnswer = async (answerOverride?: any) => {
-        if (!quiz) return;
+        if (!quiz || submitting) return;
         const question = quiz.questions[currentQuestionIndex];
 
         if (submittedQuestions.has(question.id)) {
@@ -181,7 +218,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
         }
 
         const choiceId = typeof answer === 'object' ? answer.choiceId : answer;
-        if (!choiceId) {
+        if (choiceId === undefined || choiceId === null) {
             alert('Invalid answer. Please try again.');
             return;
         }
@@ -252,7 +289,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
                     </div>
                 </div>
 
-                {/* Timer Circle Placeholder */}
+                {/* Timer Circle */}
                 <div className="ml-6 relative w-12 h-12 flex items-center justify-center">
                     <svg className="w-full h-full transform -rotate-90">
                         <circle
@@ -272,11 +309,11 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
                             strokeWidth="4"
                             fill="transparent"
                             strokeDasharray={125.6}
-                            strokeDashoffset={125.6 * 0.25} // 75% remaining example
-                            className="text-blue-900"
+                            strokeDashoffset={125.6 * (1 - timeLeft / 60)}
+                            className="text-blue-900 transition-all duration-1000 ease-linear"
                         />
                     </svg>
-                    <span className="absolute text-sm font-bold">25</span>
+                    <span className="absolute text-sm font-bold">{timeLeft}</span>
                 </div>
             </div>
 
@@ -386,7 +423,7 @@ export default function QuizPlayer({ quizId, attemptId, attemptToken }: Props) {
                             Skip
                         </button>
                         <button
-                            onClick={submitCurrentAnswer}
+                            onClick={() => submitCurrentAnswer()}
                             disabled={submitting}
                             className="px-8 py-2.5 bg-blue-900 hover:bg-blue-950 text-white font-bold rounded-3xl transition-all shadow-lg shadow-blue-900/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >

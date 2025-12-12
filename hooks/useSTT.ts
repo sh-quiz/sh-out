@@ -74,6 +74,12 @@ export const useSTT = (
         }
     }, []);
 
+    const onResultRef = useRef(onResult);
+
+    useEffect(() => {
+        onResultRef.current = onResult;
+    }, [onResult]);
+
     const startListening = useCallback(() => {
         console.log("[STT] Start listening requested. Supported:", isSupported);
         if (!isSupported) {
@@ -99,13 +105,13 @@ export const useSTT = (
             recognition.onresult = (event: SpeechRecognitionEvent) => {
                 const transcript = event.results[event.results.length - 1][0].transcript;
                 const cleanResult = transcript.trim().toLowerCase();
-                
+
                 if (!cleanResult) return; // Ignore empty results
 
                 console.log("[STT] Result received:", cleanResult, "(raw:", transcript, ")");
                 setResult(cleanResult);
-                if (onResult) {
-                    onResult(cleanResult);
+                if (onResultRef.current) {
+                    onResultRef.current(cleanResult);
                 }
             };
 
@@ -130,7 +136,7 @@ export const useSTT = (
             console.error("[STT] Exception starting recognition:", err);
             setError("Failed to start speech recognition.");
         }
-    }, [isSupported, onResult]);
+    }, [isSupported]);
 
     // Cleanup
     useEffect(() => {
