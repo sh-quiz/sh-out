@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { api } from '../../api/client';
+import ContributionGraph from './ContributionGraph';
 
 interface UserStatsResponse {
     xp: number;
@@ -45,7 +46,7 @@ export default function PerformanceGrid() {
 
     return (
         <div className="px-6 mb-8">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4 mb-4">
                 {stats.map((stat, index) => (
                     <motion.div
                         key={stat.label}
@@ -66,6 +67,8 @@ export default function PerformanceGrid() {
                     </motion.div>
                 ))}
             </div>
+
+            <ContributionGraph />
         </div>
     );
 }
