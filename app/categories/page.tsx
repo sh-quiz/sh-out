@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Lenis from "lenis";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -9,10 +9,27 @@ import { motion } from "framer-motion";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "./components/CustomCursor";
 import { useEnergy, useDiamonds } from "@/hooks/useEconomy";
+import { useGamemode } from "@/hooks/useGamemode";
+import QuizPlayer from "@/components/QuizPlayer/QuizPlayer";
 
 export default function CategoriesPage() {
     const { data: energyData } = useEnergy();
     const { data: diamondsData } = useDiamonds();
+    const { createGame, joinGame, gameState, isConnected, submitScore } = useGamemode();
+    const [joinInput, setJoinInput] = useState("");
+    
+    // Persist player ID so refreshing doesn't lose identity in demo
+    const myPlayerId = useMemo(() => {
+        if (typeof window !== 'undefined') {
+             let id = localStorage.getItem('playerId');
+             if (!id) {
+                 id = Math.random().toString(36).substring(7);
+                 localStorage.setItem('playerId', id);
+             }
+             return id;
+        }
+        return "player_" + Math.random().toString(36).substring(7);
+    }, []);
 
     useEffect(() => {
         const lenis = new Lenis({
@@ -34,6 +51,24 @@ export default function CategoriesPage() {
             lenis.destroy();
         };
     }, []);
+    
+    // Auto-join if we created game and haven't joined yet? 
+    // Simplified: User must click Join for now to keep it robust in demo.
+
+    if (gameState.status === 'playing') {
+        return (
+            <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] font-sans">
+                 <QuizPlayer 
+                    quizId={1} 
+                    attemptId={123} 
+                    attemptToken="demo" 
+                    isMultiplayer={true}
+                    opponentScore={gameState.opponentScore}
+                    onScoreUpdate={(score) => gameState.gameId && submitScore(gameState.gameId, myPlayerId, score)}
+                 />
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] selection:bg-[#FF3B30] selection:text-white overflow-hidden font-sans">
@@ -129,16 +164,50 @@ export default function CategoriesPage() {
 
                                 <div className="relative group/btn">
                                     <div className="absolute -inset-1 bg-gradient-to-r from-[#FFB340] to-[#FFE5A0] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className="relative flex items-center justify-center -skew-x-12 px-12 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)]"
-                                    >
-                                        <div className="skew-x-12 flex items-center gap-3">
-                                            <span className="text-lg font-black tracking-widest uppercase">Deploy Unit</span>
-                                            <ArrowLeft className="w-5 h-5 rotate-180" />
+                                    <div className="relative flex flex-col items-center justify-center -skew-x-12 px-8 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)] gap-4">
+                                        <div className="skew-x-12 flex flex-col items-center gap-2 w-full">
+                                            {gameState.gameId ? (
+                                                <div className="flex flex-col items-center gap-2">
+                                                     <span className="text-lg font-black tracking-widest uppercase">Game ID Created</span>
+                                                     <div className="text-2xl font-mono font-bold bg-black/20 px-4 py-2 rounded border border-black/10 select-all">
+                                                        {gameState.gameId}
+                                                     </div>
+                                                     <p className="text-xs font-mono uppercase opacity-70">Share with player 2</p>
+                                                     <button 
+                                                        onClick={() => joinGame(gameState.gameId!, myPlayerId)}
+                                                        className="text-xs bg-black/20 px-2 py-1 rounded hover:bg-black/30"
+                                                     >
+                                                        Join Lobby
+                                                     </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <button onClick={createGame} className="w-full bg-black/10 hover:bg-black/20 p-2 rounded uppercase font-bold tracking-wider transition-colors">
+                                                        Create Game ID
+                                                    </button>
+                                                    
+                                                    <div className="w-full h-px bg-black/10 my-1" />
+                                                    
+                                                    <div className="flex gap-2 w-full">
+                                                        <input 
+                                                            type="text" 
+                                                            value={joinInput}
+                                                            onChange={(e) => setJoinInput(e.target.value)}
+                                                            placeholder="ENTER ID"
+                                                            className="w-full bg-black/10 border-none outline-none px-2 py-1 font-mono text-sm placeholder:text-black/30"
+                                                        />
+                                                        <button 
+                                                            onClick={() => joinGame(joinInput, myPlayerId)}
+                                                            disabled={!joinInput}
+                                                            className="bg-black text-[#FFB340] px-3 py-1 font-bold uppercase text-xs disabled:opacity-50"
+                                                        >
+                                                            Join
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
-                                    </motion.button>
+                                    </div>
                                 </div>
                             </div>
 
