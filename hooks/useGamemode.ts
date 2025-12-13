@@ -8,6 +8,7 @@ interface GameState {
     status: 'idle' | 'waiting' | 'playing';
     players: string[];
     opponentScore?: number;
+    quizId?: number;
 }
 
 export const useGamemode = () => {
@@ -56,7 +57,11 @@ export const useGamemode = () => {
 
         newSocket.on('gameStarted', (data: any) => {
             console.log('Game started:', data);
-            setGameState((prev) => ({ ...prev, status: 'playing' }));
+            setGameState((prev) => ({
+                ...prev,
+                status: 'playing',
+                quizId: data.quizId
+            }));
         });
 
         newSocket.on('opponentScoreUpdate', (data: any) => {

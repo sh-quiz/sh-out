@@ -80,23 +80,27 @@ export default function QuizPlayer({
 
     const loadQuizAndAttempt = async () => {
         try {
-            // For multiplayer demo, if attemptId is not valid (e.g. 0), we might mock loading
-            // But let's assume valid IDs for now or mock if fails
-            let quizData, attemptData;
+            if (isMultiplayer) {
+                // In multiplayer, we don't fetch a previous attempt result from persistence
+                // We just load the quiz definition
+                const quizData = await quizService.getById(quizId);
+                setQuiz(quizData);
+                setAnswers({});
+                setSubmittedQuestions(new Set());
+                setMyScore(0);
 
-            try {
-                [quizData, attemptData] = await Promise.all([
-                    quizService.getById(quizId),
-                    quizService.getResult(attemptId)
-                ]);
-            } catch (e) {
-                console.warn("Retrying with mock data or handling failure...");
-                if (quizId === 1) { // Fallback for demo
-                    // Assuming we have some way to get quiz data, otherwise fail
-                    throw e;
+                // Reset to first question
+                if (quizData.questions && quizData.questions.length > 0) {
+                    setCurrentQuestionIndex(0);
                 }
-                throw e;
+                setLoading(false);
+                return;
             }
+
+            const [quizData, attemptData] = await Promise.all([
+                quizService.getById(quizId),
+                quizService.getResult(attemptId)
+            ]);
 
             setQuiz(quizData);
 
@@ -107,9 +111,7 @@ export default function QuizPlayer({
 
             attemptData.answers.forEach((ans: any) => {
                 submitted.add(ans.questionId);
-                // Calculate initial score based on correct answers if available in attemptData
-                // Ideally backend calculates score, but for UI we might need to track it locally or fetch it
-                if (ans.isCorrect) score += 10; // Dummy score logic
+                if (ans.isCorrect) score += 10;
 
                 const question = quizData.questions.find((q: any) => q.id === ans.questionId);
                 if (question?.type === 'fill_in') {
@@ -135,7 +137,7 @@ export default function QuizPlayer({
 
         } catch (err) {
             console.error(err);
-            // alert('Failed to load quiz data'); 
+            // In demo mode or if error, we might just fail silently or show error
         } finally {
             setLoading(false);
         }
@@ -236,13 +238,17 @@ export default function QuizPlayer({
 
         setSubmitting(true);
         try {
-            const submitData: SubmitAnswerData = {
-                questionId: question.id,
-                selectedChoiceId: choiceId,
-                idempotencyKey: Math.random().toString(36).substring(7) + Date.now().toString(),
-            };
+            // Skip persistence in multiplayer for now to avoid invalid attempt errors
+            if (!isMultiplayer) {
+                const submitData: SubmitAnswerData = {
+                    questionId: question.id,
+                    selectedChoiceId: choiceId,
+                    idempotencyKey: Math.random().toString(36).substring(7) + Date.now().toString(),
+                };
 
-            await quizService.submitAnswer(attemptId, attemptToken, submitData);
+                await quizService.submitAnswer(attemptId, attemptToken, submitData);
+            }
+
             setSubmittedQuestions(prev => new Set(prev).add(question.id));
 
             // Hacky score increment for demo
@@ -278,11 +284,25 @@ export default function QuizPlayer({
     const finishQuiz = async () => {
         setSubmitting(true);
         try {
-            await quizService.finishAttempt(attemptId, attemptToken);
+            if (!isMultiplayer) {
+                await quizService.finishAttempt(attemptId, attemptToken);
+            }
+            // In multiplayer we might just want to show a "Game Over" screen or summary inside the modal?
+            // For now, redirecting to result of dummy attempt will fail.
+            // Let's redirect to categories for now or stay on screen.
+            if (isMultiplayer) {
+                alert("Game Finished! Final Score: " + myScore);
+                router.push('/categories');
+                return;
+            }
             router.push(`/attempts/${attemptId}/result`);
         } catch (err: any) {
             console.error("Finish failed", err);
-            router.push(`/attempts/${attemptId}/result`); // Redirect anyway
+            if (isMultiplayer) {
+                router.push('/categories');
+            } else {
+                router.push(`/attempts/${attemptId}/result`);
+            }
         } finally {
             setSubmitting(false);
         }

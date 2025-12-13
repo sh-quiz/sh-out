@@ -17,16 +17,16 @@ export default function CategoriesPage() {
     const { data: diamondsData } = useDiamonds();
     const { createGame, joinGame, gameState, isConnected, submitScore } = useGamemode();
     const [joinInput, setJoinInput] = useState("");
-    
+
     // Persist player ID so refreshing doesn't lose identity in demo
     const myPlayerId = useMemo(() => {
         if (typeof window !== 'undefined') {
-             let id = localStorage.getItem('playerId');
-             if (!id) {
-                 id = Math.random().toString(36).substring(7);
-                 localStorage.setItem('playerId', id);
-             }
-             return id;
+            let id = localStorage.getItem('playerId');
+            if (!id) {
+                id = Math.random().toString(36).substring(7);
+                localStorage.setItem('playerId', id);
+            }
+            return id;
         }
         return "player_" + Math.random().toString(36).substring(7);
     }, []);
@@ -51,21 +51,22 @@ export default function CategoriesPage() {
             lenis.destroy();
         };
     }, []);
-    
+
     // Auto-join if we created game and haven't joined yet? 
     // Simplified: User must click Join for now to keep it robust in demo.
 
     if (gameState.status === 'playing') {
+        console.log("Playing with quizId:", gameState.quizId);
         return (
             <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] font-sans">
-                 <QuizPlayer 
-                    quizId={1} 
-                    attemptId={123} 
-                    attemptToken="demo" 
+                <QuizPlayer
+                    quizId={gameState.quizId || 1}
+                    attemptId={123}
+                    attemptToken="demo"
                     isMultiplayer={true}
                     opponentScore={gameState.opponentScore}
                     onScoreUpdate={(score) => gameState.gameId && submitScore(gameState.gameId, myPlayerId, score)}
-                 />
+                />
             </main>
         );
     }
@@ -168,35 +169,35 @@ export default function CategoriesPage() {
                                         <div className="skew-x-12 flex flex-col items-center gap-2 w-full">
                                             {gameState.gameId ? (
                                                 <div className="flex flex-col items-center gap-2">
-                                                     <span className="text-lg font-black tracking-widest uppercase">Game ID Created</span>
-                                                     <div className="text-2xl font-mono font-bold bg-black/20 px-4 py-2 rounded border border-black/10 select-all">
+                                                    <span className="text-lg font-black tracking-widest uppercase">Game ID Created</span>
+                                                    <div className="text-2xl font-mono font-bold bg-black/20 px-4 py-2 rounded border border-black/10 select-all">
                                                         {gameState.gameId}
-                                                     </div>
-                                                     <p className="text-xs font-mono uppercase opacity-70">Share with player 2</p>
-                                                     <button 
+                                                    </div>
+                                                    <p className="text-xs font-mono uppercase opacity-70">Share with player 2</p>
+                                                    <button
                                                         onClick={() => joinGame(gameState.gameId!, myPlayerId)}
                                                         className="text-xs bg-black/20 px-2 py-1 rounded hover:bg-black/30"
-                                                     >
+                                                    >
                                                         Join Lobby
-                                                     </button>
+                                                    </button>
                                                 </div>
                                             ) : (
                                                 <>
                                                     <button onClick={createGame} className="w-full bg-black/10 hover:bg-black/20 p-2 rounded uppercase font-bold tracking-wider transition-colors">
                                                         Create Game ID
                                                     </button>
-                                                    
+
                                                     <div className="w-full h-px bg-black/10 my-1" />
-                                                    
+
                                                     <div className="flex gap-2 w-full">
-                                                        <input 
-                                                            type="text" 
+                                                        <input
+                                                            type="text"
                                                             value={joinInput}
                                                             onChange={(e) => setJoinInput(e.target.value)}
                                                             placeholder="ENTER ID"
                                                             className="w-full bg-black/10 border-none outline-none px-2 py-1 font-mono text-sm placeholder:text-black/30"
                                                         />
-                                                        <button 
+                                                        <button
                                                             onClick={() => joinGame(joinInput, myPlayerId)}
                                                             disabled={!joinInput}
                                                             className="bg-black text-[#FFB340] px-3 py-1 font-bold uppercase text-xs disabled:opacity-50"
@@ -234,7 +235,7 @@ export default function CategoriesPage() {
                                             <div className="text-white font-mono font-bold leading-none">{diamondsData?.diamonds ?? 0}</div>
                                         </div>
                                     </div>
-                
+
                                 </div>
                             </div>
                         </div>
