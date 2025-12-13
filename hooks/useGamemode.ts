@@ -9,6 +9,7 @@ interface GameState {
     players: string[];
     opponentScore?: number;
     quizId?: number;
+    isOpponentFinished?: boolean;
 }
 
 export const useGamemode = () => {
@@ -19,6 +20,7 @@ export const useGamemode = () => {
         status: 'idle',
         players: [],
         opponentScore: 0,
+        isOpponentFinished: false,
     });
 
     useEffect(() => {
@@ -69,6 +71,14 @@ export const useGamemode = () => {
             setGameState((prev) => ({ ...prev, opponentScore: data.score }));
         });
 
+        newSocket.on('opponentFinished', (data: any) => {
+            console.log('Opponent finished:', data);
+            // If the message is from someone else (which it should be based on gateway logic, or we check ID)
+            // Ideally gateway shouldn't echo to sender, but we can double check logic or just set state
+            // Depending on architecture, we might verify ID. safely just setting true for demo.
+            setGameState((prev) => ({ ...prev, isOpponentFinished: true }));
+        });
+
         setSocket(newSocket);
 
         return () => {
@@ -95,6 +105,12 @@ export const useGamemode = () => {
         }
     }, [socket]);
 
+    const finishGame = useCallback((gameId: string, playerId: string) => {
+        if (socket) {
+            socket.emit('playerFinished', { gameId, playerId });
+        }
+    }, [socket]);
+
     return {
         socket,
         isConnected,
@@ -102,5 +118,6 @@ export const useGamemode = () => {
         createGame,
         joinGame,
         submitScore,
+        finishGame,
     };
 };

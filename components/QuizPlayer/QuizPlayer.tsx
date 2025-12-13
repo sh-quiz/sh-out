@@ -33,6 +33,8 @@ export default function QuizPlayer({
     const [isMuted, setIsMuted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
     const [myScore, setMyScore] = useState(0); // Track local score for multiplayer
+    const [correctCount, setCorrectCount] = useState(0);
+    const [showResults, setShowResults] = useState(false);
     const { speak, cancel } = useTTS();
 
     // Voice Command Handler
@@ -108,10 +110,14 @@ export default function QuizPlayer({
             const initialAnswers: Record<number, any> = {};
             const submitted = new Set<number>();
             let score = 0;
+            let correct = 0;
 
             attemptData.answers.forEach((ans: any) => {
                 submitted.add(ans.questionId);
-                if (ans.isCorrect) score += 10;
+                if (ans.isCorrect) {
+                    score += ans.pointsAwarded || 10;
+                    correct++;
+                }
 
                 const question = quizData.questions.find((q: any) => q.id === ans.questionId);
                 if (question?.type === 'fill_in') {
@@ -127,6 +133,7 @@ export default function QuizPlayer({
             setAnswers(initialAnswers);
             setSubmittedQuestions(submitted);
             setMyScore(score);
+            setCorrectCount(correct);
 
             const firstUnansweredIndex = quizData.questions.findIndex((q: any) => !submitted.has(q.id));
             if (firstUnansweredIndex !== -1) {
@@ -246,18 +253,31 @@ export default function QuizPlayer({
                     idempotencyKey: Math.random().toString(36).substring(7) + Date.now().toString(),
                 };
 
-                await quizService.submitAnswer(attemptId, attemptToken, submitData);
+                const res = await quizService.submitAnswer(attemptId, attemptToken, submitData);
+
+                if (res.isCorrect) {
+                    setCorrectCount(prev => prev + 1);
+                }
+
+                setMyScore(res.currentScore);
+                if (onScoreUpdate) {
+                    onScoreUpdate(res.currentScore);
+                }
+            } else {
+                setSubmittedQuestions(prev => new Set(prev).add(question.id));
+
+                // Hacky score increment for demo
+                const newScore = myScore + 100; // Assume correct for visual pop
+                setMyScore(newScore);
+                // Assuming always correct in demo multiplayer for now for consistency with score
+                setCorrectCount(prev => prev + 1);
+
+                if (onScoreUpdate) {
+                    onScoreUpdate(newScore);
+                }
             }
 
             setSubmittedQuestions(prev => new Set(prev).add(question.id));
-
-            // Hacky score increment for demo
-            // In real app, backend returns result correctness
-            const newScore = myScore + 100; // Assume correct for visual pop
-            setMyScore(newScore);
-            if (onScoreUpdate) {
-                onScoreUpdate(newScore);
-            }
 
             if (currentQuestionIndex < quiz.questions.length - 1) {
                 setCurrentQuestionIndex((prev) => prev + 1);
@@ -291,15 +311,14 @@ export default function QuizPlayer({
             // For now, redirecting to result of dummy attempt will fail.
             // Let's redirect to categories for now or stay on screen.
             if (isMultiplayer) {
-                alert("Game Finished! Final Score: " + myScore);
-                router.push('/categories');
+                setShowResults(true);
                 return;
             }
             router.push(`/attempts/${attemptId}/result`);
         } catch (err: any) {
             console.error("Finish failed", err);
             if (isMultiplayer) {
-                router.push('/categories');
+                setShowResults(true);
             } else {
                 router.push(`/attempts/${attemptId}/result`);
             }
@@ -474,7 +493,7 @@ export default function QuizPlayer({
                 <div className="max-w-5xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-2 text-white font-bold text-lg">
                         <Flame className="text-orange-500 fill-orange-500" />
-                        <span>{myScore}</span>
+                        <span>{myScore} <span className="text-gray-500 text-sm ml-2">({correctCount} / {quiz.questions.length})</span></span>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -499,6 +518,121 @@ export default function QuizPlayer({
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            {/* Match Results Overlay */}
+            {
+                showResults && (
+                    <div className="fixed inset-0 z-[100] bg-[#020508]/95 backdrop-blur-xl flex items-center justify-center p-4">
+                        <div className="bg-[#0A0F16] border border-white/5 rounded-[3rem] p-8 max-w-sm w-full text-center relative overflow-hidden shadow-2xl shadow-black/50">
+
+                            {/* Header */}
+                            <div className="relative z-10 mb-8">
+                                <h2 className="text-xl font-bold text-white tracking-wider mb-1">
+                                    MATCH COMPLETE
+                                </h2>
+                                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">
+                                    BATTLE REPORT
+                                </div>
+                            </div>
+
+                            {/* Result Status */}
+                            <div className="relative z-10 flex flex-col items-center mb-8">
+                                <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-3">
+                                    {/* Icon based on result */}
+                                    {myScore === opponentScore ? (
+                                        <Users className="text-yellow-500 w-6 h-6" /> // Using Scale/Balance icon would be better if available, falling back to Users or standard
+                                    ) : myScore > opponentScore ? (
+                                        <Flame className="text-yellow-500 w-6 h-6" /> // Trophy equivalent
+                                    ) : (
+                                        <VolumeX className="text-gray-500 w-6 h-6" /> // Skull equivalent
+                                    )}
+                                </div>
+
+                                {myScore === opponentScore ? (
+                                    <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg">
+                                        DRAW
+                                    </div>
+                                ) : myScore > opponentScore ? (
+                                    <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-green-300 to-green-600 drop-shadow-lg">
+                                        VICTORY
+                                    </div>
+                                ) : (
+                                    <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-red-300 to-red-600 drop-shadow-lg">
+                                        DEFEAT
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Players Grid */}
+                            <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
+                                {/* YOU */}
+                                <div className="bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner">
+                                    <div className="relative mb-3">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-b from-blue-200 to-blue-100 p-0.5 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                                            <div className="w-full h-full rounded-full bg-gray-300 overflow-hidden">
+                                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=You`} alt="You" />
+                                            </div>
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-[#131922]">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">YOU</span>
+                                    <span className="text-3xl font-black text-white mb-2">{myScore}</span>
+                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                        <span className="text-[10px] text-gray-400 font-medium">{correctCount}/{quiz.questions.length} Correct</span>
+                                    </div>
+                                </div>
+
+                                {/* OPPONENT */}
+                                <div className="bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner">
+                                    <div className="relative mb-3">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-b from-pink-200 to-pink-100 p-0.5 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                                            <div className="w-full h-full rounded-full bg-gray-300 overflow-hidden">
+                                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=Opponent`} alt="Opponent" />
+                                            </div>
+                                        </div>
+                                        {/* Status icon for opponent - can be dynamic, hardcoded to X for visual match to design */}
+                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center border-2 border-[#131922]">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">OPPONENT</span>
+                                    <span className="text-3xl font-black text-white mb-2">{opponentScore}</span>
+                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                                        {/* Randomized or calculated stat for opponent */}
+                                        <span className="text-[10px] text-gray-400 font-medium">{Math.floor((opponentScore / 100) * quiz.questions.length) || 0}/{quiz.questions.length} Correct</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="relative z-10 w-full space-y-4">
+                                <button
+                                    onClick={() => router.push('/categories')}
+                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/40 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                                >
+                                    Return directly to Lobby
+                                    <ChevronRight size={14} />
+                                </button>
+
+                                <button
+                                    onClick={() => alert("Rematch requested!")} // Placeholder functionality
+                                    className="flex items-center justify-center gap-2 text-gray-500 text-xs font-medium hover:text-white transition-colors"
+                                >
+                                    <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" /></svg>
+                                    </div>
+                                    Request Rematch
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }
