@@ -8,8 +8,12 @@ import { motion } from "framer-motion";
 
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "./components/CustomCursor";
+import { useEnergy, useDiamonds } from "@/hooks/useEconomy";
 
 export default function CategoriesPage() {
+    const { data: energyData } = useEnergy();
+    const { data: diamondsData } = useDiamonds();
+
     useEffect(() => {
         const lenis = new Lenis({
             duration: 1.2,
@@ -150,25 +154,18 @@ export default function CategoriesPage() {
                                         <div className="w-2 h-2 rounded-sm bg-yellow-500 shadow-[0_0_8px_#EAB308]" />
                                         <div>
                                             <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Energy</div>
-                                            <div className="text-white font-mono font-bold leading-none">100<span className="text-gray-500">/100</span></div>
+                                            <div className="text-white font-mono font-bold leading-none">{energyData?.energy ?? 0}<span className="text-gray-500">/{energyData?.maxEnergy ?? 30}</span></div>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
                                         <div className="w-2 h-2 rounded-sm bg-blue-500 shadow-[0_0_8px_#3B82F6]" />
                                         <div>
-                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Gems</div>
-                                            <div className="text-white font-mono font-bold leading-none">2,480</div>
+                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Diamonds</div>
+                                            <div className="text-white font-mono font-bold leading-none">{diamondsData?.diamonds ?? 0}</div>
                                         </div>
                                     </div>
-
-                                    <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
-                                        <div className="w-2 h-2 rounded-sm bg-purple-500 shadow-[0_0_8px_#A855F7]" />
-                                        <div>
-                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Rank</div>
-                                            <div className="text-white font-mono font-bold leading-none">Diamond III</div>
-                                        </div>
-                                    </div>
+                
                                 </div>
                             </div>
                         </div>

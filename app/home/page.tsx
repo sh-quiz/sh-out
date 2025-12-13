@@ -14,21 +14,17 @@ export default function HomePage() {
                 <StreakHero />
             </section>
 
-            {/* 2. Performance Grid (Stats Row) */}
-            <section>
-                <PerformanceGrid />
-            </section>
 
             {/* 3. Energy & Gems Row */}
             <section>
                 <EnergyGemsRow />
             </section>
 
-            {/* 4. Activity Section (Contribution Graph) */}
+                        {/* 2. Performance Grid (Stats Row) */}
             <section>
-                <ActivitySection />
+                <PerformanceGrid />
             </section>
-            
+
             {/* 5. Calendar Teaser */}
             <section>
                 <CalendarTeaser />
