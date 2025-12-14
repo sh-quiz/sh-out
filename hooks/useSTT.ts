@@ -58,19 +58,31 @@ export const useSTT = (
     const [isSupported, setIsSupported] = useState(false);
     const [result, setResult] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const recognitionRef = useRef<SpeechRecognition | null>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const chunksRef = useRef<BlobPart[]>([]);
+
+    // Audio Context & Analysis for Silence Detection
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+    const silenceStartRef = useRef<number | null>(null);
+    const requestRef = useRef<number>();
+
+
+    // Configuration
+    const SILENCE_THRESHOLD = 0.02; // Volume threshold (0-1)
+    const SILENCE_DURATION = 2500; // Time in ms to wait before stop (increased for better speech capture)
+
+    // API Key moved to server-side route /api/stt for security and CORS fix
+
 
     useEffect(() => {
-        if (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)) {
+        console.log("[STT] Hook mounted");
+        if (typeof window !== "undefined" && navigator.mediaDevices) {
+            console.log("[STT] MediaDevices API is supported");
             setIsSupported(true);
-        }
-    }, []);
-
-    const stopListening = useCallback(() => {
-        console.log("[STT] Stopping listening...");
-        if (recognitionRef.current) {
-            recognitionRef.current.stop();
-            setIsListening(false);
+        } else {
+            console.error("[STT] MediaDevices API is NOT supported");
         }
     }, []);
 
@@ -80,69 +92,247 @@ export const useSTT = (
         onResultRef.current = onResult;
     }, [onResult]);
 
-    const startListening = useCallback(() => {
+    const stopListening = useCallback(() => {
+        console.log("[STT] Stopping listening...");
+
+        // Stop silence detection loop
+        if (requestRef.current) {
+            cancelAnimationFrame(requestRef.current);
+            requestRef.current = undefined;
+        }
+
+        // Stop recording
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+            mediaRecorderRef.current.stop();
+            setIsListening(false);
+        }
+
+        // Cleanup Audio Context
+        if (sourceRef.current) {
+            sourceRef.current.disconnect();
+            sourceRef.current = null;
+        }
+        if (audioContextRef.current) {
+            // Suspense or close? Close is cleaner for one-off sessions.
+            audioContextRef.current.close().catch(console.error);
+            audioContextRef.current = null;
+        }
+    }, []);
+
+    // Stable ref for stopListening to use inside loop
+    const stopListeningRef = useRef(stopListening);
+    useEffect(() => {
+        stopListeningRef.current = stopListening;
+    }, [stopListening]);
+
+
+    const processAudio = async (blob: Blob) => {
+        try {
+            console.log(`[STT] Processing audio blob. Size: ${blob.size}, Type: ${blob.type}`);
+
+            if (blob.size < 1000) {
+                console.warn("[STT] Audio too short, skipping.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = async () => {
+                const base64Audio = (reader.result as string).split(",")[1];
+
+                try {
+                    console.log("[STT] Sending audio to /api/stt...");
+
+                    const response = await fetch("/api/stt", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            config: {
+                                encoding: "WEBM_OPUS",
+                                sampleRateHertz: 48000,
+                                languageCode: "en-US",
+                            },
+                            audioContent: base64Audio,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error("[STT] API Error:", JSON.stringify(errorData, null, 2));
+                        // If it's a specific encoding error, we might fallback, but for now just error.
+                        throw new Error(errorData.error?.message || "STT API failed");
+                    }
+
+                    const data = await response.json();
+                    console.log("[STT] API Response:", data);
+
+                    if (data.results && data.results.length > 0) {
+                        const transcript = data.results
+                            .map((r: any) => r.alternatives[0].transcript)
+                            .join(" ");
+                        const cleanResult = transcript.trim().toLowerCase();
+                        console.log("[STT] Final Transcript:", cleanResult);
+                        setResult(cleanResult);
+                        if (onResultRef.current) {
+                            onResultRef.current(cleanResult);
+                        }
+                    } else {
+                        console.log("[STT] No results found in audio");
+                        // Optional: Notify user "Didn't catch that"
+                    }
+                } catch (apiErr: any) {
+                    console.error("[STT] Call failed:", apiErr);
+                    setError(apiErr.message);
+                }
+            };
+        } catch (err: any) {
+            console.error("[STT] Error processing audio:", err);
+            setError(err.message);
+        }
+    };
+
+    const detectSilence = () => {
+        console.log("[STT] detectSilence called, analyser exists:", !!analyserRef.current, "isListening:", isListening);
+        if (!analyserRef.current || !isListening) return;
+
+        const bufferLength = analyserRef.current.fftSize;
+        const dataArray = new Uint8Array(bufferLength);
+        analyserRef.current.getByteTimeDomainData(dataArray);
+
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+            // data is 128-centered. |x - 128| / 128 = normalized amplitude
+            const amplitude = (dataArray[i] - 128) / 128;
+            sum += amplitude * amplitude;
+        }
+        const rms = Math.sqrt(sum / bufferLength); // Root Mean Square (volume)
+
+        // Real-time volume monitoring (enabled for debugging)
+        console.log("[STT] Volume:", rms.toFixed(4));
+
+        if (rms < SILENCE_THRESHOLD) {
+            if (!silenceStartRef.current) {
+                silenceStartRef.current = Date.now();
+            } else if (Date.now() - silenceStartRef.current > SILENCE_DURATION) {
+                console.log("[STT] Silence detected, stopping...");
+                stopListeningRef.current(); // Stop!
+                silenceStartRef.current = null; // Reset
+                return; // Stop loop
+            }
+        } else {
+            // Noise detected, reset silence timer
+            silenceStartRef.current = null;
+        }
+
+        requestRef.current = requestAnimationFrame(detectSilence);
+    };
+
+
+    const startListening = useCallback(async () => {
         console.log("[STT] Start listening requested. Supported:", isSupported);
         if (!isSupported) {
-            setError("Speech recognition is not supported in this browser.");
+            setError("Audio recording is not supported in this browser.");
             return;
         }
 
         try {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognitionRef.current = recognition;
+            console.log("[STT] Requesting microphone permission...");
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log("[STT] Microphone permission granted, stream acquired");
 
-            recognition.continuous = true; // Keep listening until stopped
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+            // 1. Setup Recorder
+            let options = { mimeType: "audio/webm;codecs=opus" };
+            if (!MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+                console.warn("webm/opus not supported, trying default webm");
+                if (MediaRecorder.isTypeSupported("audio/webm")) {
+                    options = { mimeType: "audio/webm" };
+                } else {
+                    console.warn("audio/webm not supported, letting browser choose default");
+                    options = undefined as any;
+                }
+            }
 
-            recognition.onstart = () => {
-                console.log("[STT] Recognition started");
-                setIsListening(true);
-                setError(null);
-            };
+            const mediaRecorder = new MediaRecorder(stream, options);
+            mediaRecorderRef.current = mediaRecorder;
+            chunksRef.current = [];
 
-            recognition.onresult = (event: SpeechRecognitionEvent) => {
-                const transcript = event.results[event.results.length - 1][0].transcript;
-                const cleanResult = transcript.trim().toLowerCase();
-
-                if (!cleanResult) return; // Ignore empty results
-
-                console.log("[STT] Result received:", cleanResult, "(raw:", transcript, ")");
-                setResult(cleanResult);
-                if (onResultRef.current) {
-                    onResultRef.current(cleanResult);
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    chunksRef.current.push(event.data);
                 }
             };
 
-            recognition.onerror = (event: SpeechRecognitionError) => {
-                console.error("[STT] Error:", event.error);
-                setError(event.error);
-                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                    setIsListening(false);
-                }
+            mediaRecorder.onstop = () => {
+                console.log("[STT] Recorder stopped, processing chunks...");
+
+                // Determine blob type from recorder if possible
+                const blobType = mediaRecorder.mimeType || "audio/webm";
+                const blob = new Blob(chunksRef.current, { type: blobType });
+
+                processAudio(blob);
+
+                // Stop all tracks to release microphone
+                stream.getTracks().forEach(track => track.stop());
             };
 
-            recognition.onend = () => {
-                console.log("[STT] Recognition ended");
-                // If we didn't manually stop, and it's supposed to be listening, restart it (for continuous effect)
-                // But generally, let's just mark it as stopped to avoid infinite loops if permission denied
-                setIsListening(false);
-            };
+            mediaRecorder.start();
+            setIsListening(true);
+            setError(null);
+            console.log(`[STT] Recorder started with mimeType: ${mediaRecorder.mimeType}`);
 
-            console.log("[STT] Calling recognition.start()");
-            recognition.start();
-        } catch (err) {
-            console.error("[STT] Exception starting recognition:", err);
-            setError("Failed to start speech recognition.");
+
+            // 2. Setup Audio Analysis (Silence Detection)
+            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioContextClass) {
+                console.log("[STT] Setting up AudioContext for silence detection...");
+                const audioContext = new AudioContext();
+                audioContextRef.current = audioContext;
+                console.log("[STT] AudioContext created:", audioContext.state);
+                
+                const source = audioContext.createMediaStreamSource(stream);
+                sourceRef.current = source;
+                console.log("[STT] MediaStreamSource created");
+                
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256; // Small enough for realtime
+                analyserRef.current = analyser;
+                source.connect(analyser);
+                console.log("[STT] Analyser connected, fftSize:", analyser.fftSize);
+
+                silenceStartRef.current = null; // Reset silence timer
+                requestRef.current = requestAnimationFrame(detectSilence);
+                console.log("[STT] Animation frame scheduled for silence detection");
+            } else {
+                console.warn("[STT] AudioContext not supported. Silence detection disabled.");
+            }
+
+        } catch (err: any) {
+            console.error("[STT] Exception starting recorder:", err);
+            console.error("[STT] Error name:", err.name);
+            console.error("[STT] Error message:", err.message);
+            if (err.name === "NotAllowedError") {
+                setError("Microphone permission denied. Please allow microphone access.");
+            } else if (err.name === "NotFoundError") {
+                setError("No microphone found. Please connect a microphone.");
+            } else {
+                setError(`Failed to start audio recording: ${err.message}`);
+            }
         }
     }, [isSupported]);
 
     // Cleanup
     useEffect(() => {
         return () => {
-            if (recognitionRef.current) {
-                recognitionRef.current.stop();
+            if (requestRef.current) {
+                cancelAnimationFrame(requestRef.current);
+            }
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+                mediaRecorderRef.current.stop();
+            }
+            if (audioContextRef.current) {
+                audioContextRef.current.close();
             }
         };
     }, []);

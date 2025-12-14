@@ -36,6 +36,7 @@ export default function QuizPlayer({
     const [correctCount, setCorrectCount] = useState(0);
     const [showResults, setShowResults] = useState(false);
     const { speak, cancel } = useTTS();
+    const [hasInteracted, setHasInteracted] = useState(false);
 
     // Voice Command Handler
     const handleVoiceCommand = useCallback((text: string) => {
@@ -153,12 +154,12 @@ export default function QuizPlayer({
 
     // Effect to read question when index changes or quiz loads
     useEffect(() => {
-        if (quiz && !loading && !isMuted) {
+        if (quiz && !loading && !isMuted && hasInteracted) {
             readCurrentQuestion();
         } else {
             cancel();
         }
-    }, [currentQuestionIndex, quiz, loading, isMuted]);
+    }, [currentQuestionIndex, quiz, loading, isMuted, hasInteracted]);
 
     // Timer logic
     useEffect(() => {
@@ -633,6 +634,24 @@ export default function QuizPlayer({
                     </div>
                 )
             }
+
+            {/* Interaction Overlay to enable Autoplay */}
+            {!hasInteracted && !loading && quiz && !showResults && (
+                <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-[#0A0F16] border border-blue-500/30 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl shadow-blue-900/40 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-blue-500/5 group-hover:bg-blue-500/10 transition-colors"></div>
+                        <h2 className="text-2xl font-bold text-white mb-2 relative z-10">Start Quiz</h2>
+                        <p className="text-gray-400 mb-8 relative z-10">Click below to enable audio and start the challenge.</p>
+                        <button
+                            onClick={() => setHasInteracted(true)}
+                            className="relative z-10 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-900/30 flex items-center justify-center gap-2"
+                        >
+                            <span className="uppercase tracking-widest">Start Now</span>
+                            <ChevronRight size={18} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </div >
     );
 }

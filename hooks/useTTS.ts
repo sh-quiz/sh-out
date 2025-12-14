@@ -16,79 +16,110 @@ export const useTTS = (): UseTTSReturn => {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [isSupported, setIsSupported] = useState(false);
-    const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Hardcoded API Key as requested
+    const API_KEY = "AIzaSyDpc09szDuRW7khLC1brTZQNvuE-ZGQMg8";
 
     useEffect(() => {
-        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        if (typeof window !== "undefined" && typeof window.Audio !== "undefined") {
             setIsSupported(true);
         }
     }, []);
 
     const cancel = useCallback(() => {
-        if (!isSupported) return;
-        window.speechSynthesis.cancel();
-        setIsSpeaking(false);
-        setIsPaused(false);
-    }, [isSupported]);
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            setIsSpeaking(false);
+            setIsPaused(false);
+        }
+    }, []);
 
-    const speak = useCallback((text: string) => {
+    const speak = useCallback(async (text: string) => {
         if (!isSupported) return;
 
         // Cancel any ongoing speech
         cancel();
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utteranceRef.current = utterance;
-
-        utterance.onstart = () => {
+        try {
             setIsSpeaking(true);
-            setIsPaused(false);
-        };
+            const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    input: { text },
+                    voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+                    audioConfig: { audioEncoding: "MP3" },
+                }),
+            });
 
-        utterance.onend = () => {
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Google TTS API error:", JSON.stringify(errorData, null, 2));
+                throw new Error(errorData.error?.message || "Failed to synthesize text");
+            }
+
+            const data = await response.json();
+            const audioContent = data.audioContent;
+
+            if (audioContent) {
+                const audio = new Audio(`data:audio/mp3;base64,${audioContent}`);
+                audioRef.current = audio;
+
+                audio.onended = () => {
+                    setIsSpeaking(false);
+                    setIsPaused(false);
+                };
+
+                try {
+                    await audio.play();
+                } catch (playError: any) {
+                    if (playError.name === 'NotAllowedError') {
+                        console.warn("[TTS] Autoplay blocked. Waiting for user interaction.");
+                        setIsSpeaking(false);
+                    } else {
+                        console.error("Audio playback error:", playError);
+                        setIsSpeaking(false);
+                    }
+                }
+            } else {
+                console.error("No audio content received from Google TTS");
+                setIsSpeaking(false);
+            }
+        } catch (error) {
+            console.error("Error calling Google TTS:", error);
             setIsSpeaking(false);
-            setIsPaused(false);
-        };
-
-        utterance.onerror = (event) => {
-            console.error("Speech synthesis error", event);
-            setIsSpeaking(false);
-            setIsPaused(false);
-        };
-
-        // Optional: Select a specific voice if needed
-        // const voices = window.speechSynthesis.getVoices();
-        // utterance.voice = voices.find(v => v.lang === 'en-US') || null;
-
-        window.speechSynthesis.speak(utterance);
-    }, [isSupported, cancel]);
+        }
+    }, [isSupported, cancel, API_KEY]);
 
     const pause = useCallback(() => {
-        if (!isSupported) return;
-        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-            window.speechSynthesis.pause();
+        if (audioRef.current && !audioRef.current.paused) {
+            audioRef.current.pause();
             setIsPaused(true);
             setIsSpeaking(false); // Visually paused
         }
-    }, [isSupported]);
+    }, []);
 
     const resume = useCallback(() => {
-        if (!isSupported) return;
-        if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
+        if (audioRef.current && audioRef.current.paused) {
+            audioRef.current.play();
             setIsPaused(false);
             setIsSpeaking(true);
         }
-    }, [isSupported]);
+    }, []);
 
     // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (isSupported) {
-                window.speechSynthesis.cancel();
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
             }
         };
-    }, [isSupported]);
+    }, []);
 
     return {
         speak,
