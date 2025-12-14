@@ -6,7 +6,7 @@ import { ReactLenis } from 'lenis/react';
 import { Play } from 'lucide-react';
 import ParticleBackground from '@/components/ui/ParticleBackground';
 import { useRouter } from 'next/navigation';
-import { api } from '@/api/client';
+import { api } from '@/app/api/client';
 
 export default function QuizzesPage() {
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);

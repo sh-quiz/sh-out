@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { leaderboardService, LeaderboardEntry, UserRank } from '../api/leaderboard';
+import { leaderboardService, LeaderboardEntry, UserRank } from '../app/api/leaderboard';
 
 export const leaderboardKeys = {
     all: ['leaderboard'] as const,

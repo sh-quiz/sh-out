@@ -22,7 +22,7 @@ import {
     SpendDiamondsResponse,
     CurrencyTransaction,
     TransactionHistoryParams,
-} from '../lib/economy';
+} from '../../lib/economy';
 
 // ============================================================================
 // QUERY KEYS

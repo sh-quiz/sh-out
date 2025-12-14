@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { api } from '../../api/client';
+import { api } from '../../app/api/client';
 import ContributionGraph from './ContributionGraph';
 
 interface UserStatsResponse {

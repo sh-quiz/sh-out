@@ -7,7 +7,10 @@ export async function POST(req: NextRequest) {
     try {
         const { audioContent, config } = await req.json();
 
+        console.log(`[API/STT] Received request. Audio length: ${audioContent?.length}, Config:`, config);
+
         if (!audioContent) {
+            console.error("[API/STT] No audio content provided");
             return NextResponse.json({ error: "No audio content provided" }, { status: 400 });
         }
 

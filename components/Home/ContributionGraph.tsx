@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { getContributions, Contribution } from '../../api/contributions';
+import { getContributions, Contribution } from '../../app/api/contributions';
 
 export default function ContributionGraph() {
     const { data: contributions, isLoading } = useQuery({

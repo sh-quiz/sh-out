@@ -58,6 +58,7 @@ export const useSTT = (
     const [isSupported, setIsSupported] = useState(false);
     const [result, setResult] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const isListeningRef = useRef(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<BlobPart[]>([]);
 
@@ -105,6 +106,7 @@ export const useSTT = (
         if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
             mediaRecorderRef.current.stop();
             setIsListening(false);
+            isListeningRef.current = false;
         }
 
         // Cleanup Audio Context
@@ -126,9 +128,9 @@ export const useSTT = (
     }, [stopListening]);
 
 
-    const processAudio = async (blob: Blob) => {
+    const processAudio = async (blob: Blob, mimeType: string) => {
         try {
-            console.log(`[STT] Processing audio blob. Size: ${blob.size}, Type: ${blob.type}`);
+            console.log(`[STT] Processing audio blob. Size: ${blob.size}, Type: ${mimeType}`);
 
             if (blob.size < 1000) {
                 console.warn("[STT] Audio too short, skipping.");
@@ -143,6 +145,13 @@ export const useSTT = (
                 try {
                     console.log("[STT] Sending audio to /api/stt...");
 
+                    // Simple heuristic to match Google's encoding
+                    let encoding = "WEBM_OPUS";
+                    if (mimeType.includes("wav")) encoding = "LINEAR16";
+                    // Google STT is picky. If it's webm, usually WEBM_OPUS is the safe bet if Opus is used.
+                    // If the browser doesn't support Opus in WebM, this might fail, but let's log what we have.
+                    console.log(`[STT] Using encoding config: ${encoding} for mimeType: ${mimeType}`);
+
                     const response = await fetch("/api/stt", {
                         method: "POST",
                         headers: {
@@ -150,7 +159,7 @@ export const useSTT = (
                         },
                         body: JSON.stringify({
                             config: {
-                                encoding: "WEBM_OPUS",
+                                encoding: encoding,
                                 sampleRateHertz: 48000,
                                 languageCode: "en-US",
                             },
@@ -194,8 +203,11 @@ export const useSTT = (
     };
 
     const detectSilence = () => {
-        console.log("[STT] detectSilence called, analyser exists:", !!analyserRef.current, "isListening:", isListening);
-        if (!analyserRef.current || !isListening) return;
+        // Use ref for current value in loop
+        if (!analyserRef.current || !isListeningRef.current) {
+            console.log("[STT] detectSilence stopping. Analyser:", !!analyserRef.current, "Listening:", isListeningRef.current);
+            return;
+        }
 
         const bufferLength = analyserRef.current.fftSize;
         const dataArray = new Uint8Array(bufferLength);
@@ -210,7 +222,7 @@ export const useSTT = (
         const rms = Math.sqrt(sum / bufferLength); // Root Mean Square (volume)
 
         // Real-time volume monitoring (enabled for debugging)
-        console.log("[STT] Volume:", rms.toFixed(4));
+        // console.log("[STT] Volume:", rms.toFixed(4)); // Commented out to reduce noise, enable if needed
 
         if (rms < SILENCE_THRESHOLD) {
             if (!silenceStartRef.current) {
@@ -269,9 +281,10 @@ export const useSTT = (
 
                 // Determine blob type from recorder if possible
                 const blobType = mediaRecorder.mimeType || "audio/webm";
+                console.log(`[STT] Finalizing blob with type: ${blobType}, chunks: ${chunksRef.current.length}`);
                 const blob = new Blob(chunksRef.current, { type: blobType });
 
-                processAudio(blob);
+                processAudio(blob, blobType);
 
                 // Stop all tracks to release microphone
                 stream.getTracks().forEach(track => track.stop());
@@ -279,8 +292,9 @@ export const useSTT = (
 
             mediaRecorder.start();
             setIsListening(true);
+            isListeningRef.current = true;
             setError(null);
-            console.log(`[STT] Recorder started with mimeType: ${mediaRecorder.mimeType}`);
+            console.log(`[STT] Recorder started. Selected mimeType: ${mediaRecorder.mimeType}`);
 
 
             // 2. Setup Audio Analysis (Silence Detection)
@@ -290,11 +304,11 @@ export const useSTT = (
                 const audioContext = new AudioContext();
                 audioContextRef.current = audioContext;
                 console.log("[STT] AudioContext created:", audioContext.state);
-                
+
                 const source = audioContext.createMediaStreamSource(stream);
                 sourceRef.current = source;
                 console.log("[STT] MediaStreamSource created");
-                
+
                 const analyser = audioContext.createAnalyser();
                 analyser.fftSize = 256; // Small enough for realtime
                 analyserRef.current = analyser;
