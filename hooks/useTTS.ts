@@ -18,8 +18,8 @@ export const useTTS = (): UseTTSReturn => {
     const [isSupported, setIsSupported] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    // Hardcoded API Key as requested
-    const API_KEY = "AIzaSyDpc09szDuRW7khLC1brTZQNvuE-ZGQMg8";
+    // API Key from environment variables
+    const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
     useEffect(() => {
         if (typeof window !== "undefined" && typeof window.Audio !== "undefined") {
