@@ -21,14 +21,14 @@ export default function HomePage() {
             </section>
 
                         {/* 2. Performance Grid (Stats Row) */}
-            <section>
+            {/* <section>
                 <PerformanceGrid />
-            </section>
+            </section> */}
 
             {/* 5. Calendar Teaser */}
-            <section>
+            {/* <section>
                 <CalendarTeaser />
-            </section>
+            </section> */}
         </div>
     );
 }

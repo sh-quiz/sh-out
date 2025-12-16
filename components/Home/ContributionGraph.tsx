@@ -71,7 +71,7 @@ export default function ContributionGraph() {
                 {isLoading ? (
                     <div className="h-32 flex items-center justify-center text-gray-500">Loading contributions...</div>
                 ) : (
-                    <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 w-full">
                         <div className="grid grid-rows-7 grid-flow-col gap-[3px] min-w-max">
                             {days.map((dateStr) => {
                                 const count = contributionsMap.get(dateStr) || 0;

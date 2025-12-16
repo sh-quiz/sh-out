@@ -32,7 +32,7 @@ export default function ActivitySection() {
         const year = new Date().getFullYear();
         const startOfYear = new Date(year, 0, 1);
         const endOfYear = new Date(year, 11, 31);
-        
+
         // Create map of date string to level
         const activityMap = new Map<string, number>();
         heatmap.forEach(item => {
@@ -62,7 +62,7 @@ export default function ActivitySection() {
     // Process monthly progress
     const processMonthlyStats = () => {
         if (!heatmap.length) return [];
-        
+
         // Group by month
         const monthlyData = new Map<string, { daysStudied: number, totalDays: number }>();
         const year = new Date().getFullYear();
@@ -75,7 +75,7 @@ export default function ActivitySection() {
         // The original code showed Dec, Nov, Oct (reverse chronological).
         // Let's show the last 3 months.
         const currentMonth = new Date().getMonth();
-        
+
         const result = [];
         for (let i = 0; i < 3; i++) {
             let mIndex = currentMonth - i;
@@ -84,10 +84,10 @@ export default function ActivitySection() {
                 mIndex += 12;
                 y -= 1;
             }
-            
+
             const monthName = `${monthNames[mIndex]} ${y}`;
             const daysInMonth = new Date(y, mIndex + 1, 0).getDate();
-            
+
             // Calculate days studied in this month
             let daysStudied = 0;
             heatmap.forEach(h => {
@@ -128,7 +128,7 @@ export default function ActivitySection() {
                 </h2>
 
                 {/* Contribution Graph Container */}
-                <div className="p-2 bg-[#171717] rounded-md border border-white/5 mb-12 overflow-x-auto no-scrollbar">
+                <div className="p-2 bg-[#171717] rounded-md border border-white/5 mb-12 overflow-x-auto no-scrollbar max-w-full">
                     <div className="min-w-max">
                         {/* 
                            Grid needs to be careful with rows/cols.

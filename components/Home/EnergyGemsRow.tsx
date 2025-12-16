@@ -39,14 +39,14 @@ export default function EnergyGemsRow() {
     };
 
     return (
-        <div className="px-6 mb-12">
+        <div className="px-4 md:px-6 mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Energy Card */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
-                    className="p-6 bg-[#171717] rounded-md border border-white/5 flex flex-col justify-between min-h-[140px]"
+                    className="p-6 bg-[#171717] rounded-md border border-white/5 flex flex-col justify-between min-h-[140px] overflow-hidden"
                 >
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-[15px] font-medium text-white">Energy</span>

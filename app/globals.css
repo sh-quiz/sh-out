@@ -41,11 +41,17 @@
   --foreground: #E8E9EA;
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
