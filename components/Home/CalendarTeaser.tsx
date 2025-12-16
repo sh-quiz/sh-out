@@ -19,8 +19,8 @@ export default function CalendarTeaser() {
                 </div>
 
                 <div className="grid grid-cols-7 gap-y-6 gap-x-2 text-center">
-                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day) => (
-                        <span key={day} className="text-xs text-[#878D96]/50 font-medium">{day}</span>
+                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+                        <span key={`${day}-${index}`} className="text-xs text-[#878D96]/50 font-medium">{day}</span>
                     ))}
 
                     {days.map((day) => {

@@ -72,7 +72,7 @@ export default function CustomCursor() {
                 animate={{
                     width: cursorType === 'avatar' ? 100 : (isHovering ? 40 : 16),
                     height: cursorType === 'avatar' ? 100 : (isHovering ? 40 : 16),
-                    backgroundColor: cursorType === 'avatar' ? "rgba(0, 0, 0, 0.5)" : "transparent",
+                    backgroundColor: cursorType === 'avatar' ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 0)",
                     borderWidth: cursorType === 'avatar' ? "0px" : "2px",
                     borderColor: "#007AFF",
                     borderRadius: "50%",

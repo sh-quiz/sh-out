@@ -15,7 +15,7 @@ export default function MainPage() {
         setMounted(true);
         const isAuth = authService.isAuthenticated();
         if (!isAuth) {
-            router.push('/login');
+            router.push('/auth/login');
         } else {
             setIsAuthenticated(true);
         }

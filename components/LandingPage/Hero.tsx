@@ -36,7 +36,7 @@ export default function Hero() {
                     transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
                     className="mt-12 md:mt-16"
                 >
-                    <Link href="/login" className="group relative px-8 py-4 md:px-12 md:py-6 bg-[#FF2D55] text-white text-lg md:text-xl font-bold tracking-wider uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 inline-block">
+                    <Link href="/auth/login" className="group relative px-8 py-4 md:px-12 md:py-6 bg-[#FF2D55] text-white text-lg md:text-xl font-bold tracking-wider uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 inline-block">
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
                         <span className="relative flex items-center gap-4">
                             Start Quiz
