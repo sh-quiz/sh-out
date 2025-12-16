@@ -32,7 +32,7 @@ export default function SignPage() {
 
         try {
             await authService.signup(formData);
-            router.push('/dashboard'); // Or wherever appropriate
+            router.push('/home'); // Or wherever appropriate
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to create account');
         } finally {

@@ -19,7 +19,7 @@ export default function Leaderboard() {
                     <p className="text-[#E8E9EA]/60">The ocean's deadliest players this week</p>
                 </div>
 
-                <div className="relative bg-[#1C2128]/50 backdrop-blur-md border border-[#E8E9EA]/10 rounded-none p-8">
+                <div className="relative bg-[#1C2128]/50 backdrop-blur-md border border-[#E8E9EA]/10 rounded-none p-4 md:p-8">
                     {players.map((player, i) => (
                         <motion.div
                             key={i}
@@ -27,18 +27,18 @@ export default function Leaderboard() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className="flex items-center justify-between py-6 border-b border-[#E8E9EA]/5 last:border-0 hover:bg-[#E8E9EA]/5 px-4 transition-colors"
+                            className="flex items-center justify-between py-6 border-b border-[#E8E9EA]/5 last:border-0 hover:bg-[#E8E9EA]/5 px-2 md:px-4 transition-colors"
                         >
-                            <div className="flex items-center gap-6">
-                                <span className={`text-2xl font-black ${i === 0 ? 'text-[#FF2D55]' : 'text-[#E8E9EA]/40'}`}>
+                            <div className="flex items-center gap-3 md:gap-6">
+                                <span className={`text-xl md:text-2xl font-black ${i === 0 ? 'text-[#FF2D55]' : 'text-[#E8E9EA]/40'}`}>
                                     #{player.rank}
                                 </span>
                                 <div className="flex flex-col">
-                                    <span className="text-lg font-bold text-[#E8E9EA]">{player.name}</span>
-                                    <span className="text-xs text-[#E8E9EA]/40 uppercase tracking-wider">{player.species}</span>
+                                    <span className="text-base md:text-lg font-bold text-[#E8E9EA]">{player.name}</span>
+                                    <span className="text-[10px] md:text-xs text-[#E8E9EA]/40 uppercase tracking-wider">{player.species}</span>
                                 </div>
                             </div>
-                            <span className="text-xl font-mono text-[#FF2D55]">{player.score}</span>
+                            <span className="text-lg md:text-xl font-mono text-[#FF2D55]">{player.score}</span>
                         </motion.div>
                     ))}
 

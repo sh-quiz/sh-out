@@ -15,7 +15,7 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 100 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-                    className="text-[120px] md:text-[200px] leading-[0.8] font-black tracking-[-0.04em] text-[#E8E9EA] mix-blend-difference select-none"
+                    className="text-[80px] md:text-[200px] leading-[0.8] font-black tracking-[-0.04em] text-[#E8E9EA] mix-blend-difference select-none"
                     style={{ fontFamily: 'var(--font-display, sans-serif)' }}
                 >
                     SHARKS
@@ -25,7 +25,7 @@ export default function Hero() {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: [0.76, 0, 0.24, 1], delay: 0.4 }}
-                    className="mt-8 text-xl md:text-3xl font-light text-[#E8E9EA]/80 max-w-2xl tracking-wide"
+                    className="mt-8 text-lg md:text-3xl font-light text-[#E8E9EA]/80 max-w-2xl tracking-wide"
                 >
                     How long will you survive the ultimate predator quiz?
                 </motion.p>
@@ -34,13 +34,13 @@ export default function Hero() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
-                    className="mt-16"
+                    className="mt-12 md:mt-16"
                 >
-                    <Link href="/login" className="group relative px-12 py-6 bg-[#FF2D55] text-white text-xl font-bold tracking-wider uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 inline-block">
+                    <Link href="/login" className="group relative px-8 py-4 md:px-12 md:py-6 bg-[#FF2D55] text-white text-lg md:text-xl font-bold tracking-wider uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 inline-block">
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
                         <span className="relative flex items-center gap-4">
                             Start Quiz
-                            <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                            <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
                         </span>
                     </Link>
                 </motion.div>

@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     try {
       await authService.login(formData);
-      router.push('/dashboard'); // Or wherever you want to redirect
+      router.push('/home'); // Or wherever you want to redirect
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {

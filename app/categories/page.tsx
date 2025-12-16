@@ -78,7 +78,7 @@ export default function CategoriesPage() {
             <GrainOverlay />
             <CustomCursor />
             {/* HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-72 pr-8 py-6 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:pl-72 md:pr-8 py-6 pointer-events-none">
 
 
                 <div className="pointer-events-auto flex items-center gap-4 bg-black/40 backdrop-blur-xl border border-white/5 rounded-full px-4 py-2">
@@ -101,13 +101,13 @@ export default function CategoriesPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 pl-72">
-                        <div className="flex items-end justify-between w-full max-w-[90rem] mx-auto">
+                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 md:pl-72">
+                        <div className="flex flex-col md:flex-row items-end justify-between w-full max-w-[90rem] mx-auto gap-8 md:gap-0">
                             <div className="space-y-4">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded text-[#FF3B30] text-xs font-bold tracking-[0.2em] uppercase">
                                     Live Combat
                                 </div>
-                                <h2 className="text-7xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                <h2 className="text-5xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
                                     Online <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">Match</span>
                                 </h2>
@@ -116,18 +116,20 @@ export default function CategoriesPage() {
                                 </p>
                             </div>
 
-                            <div className="relative group/btn">
+                            <div className="relative group/btn w-full md:w-auto">
                                 <div className="absolute -inset-1 bg-gradient-to-r from-[#FF3B30] to-[#FF9500] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="relative flex items-center justify-center -skew-x-12 px-12 py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)]"
-                                >
-                                    <div className="skew-x-12 flex items-center gap-3">
-                                        <span className="text-lg font-black tracking-widest uppercase">Enter Battle</span>
-                                        <ArrowLeft className="w-5 h-5 rotate-180" />
-                                    </div>
-                                </motion.button>
+                                <Link href="/quizzes">
+                                    <motion.div
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="relative flex items-center justify-center -skew-x-12 px-12 py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)]"
+                                    >
+                                        <div className="skew-x-12 flex items-center gap-3">
+                                            <span className="text-lg font-black tracking-widest uppercase">Enter Battle</span>
+                                            <ArrowLeft className="w-5 h-5 rotate-180" />
+                                        </div>
+                                    </motion.div>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -151,21 +153,21 @@ export default function CategoriesPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-end pb-16 px-6 md:px-12 pl-72">
+                    <div className="relative z-10 h-full flex flex-col justify-end pb-16 px-6 md:px-12 md:pl-72">
                         <div className="w-full max-w-[90rem] mx-auto">
-                            <div className="flex items-end justify-between mb-12">
+                            <div className="flex flex-col md:flex-row items-end justify-between mb-8 md:mb-12 gap-8 md:gap-0">
                                 <div className="space-y-4">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FFB340]/10 border border-[#FFB300]/20 rounded text-[#FFB340] text-xs font-bold tracking-[0.2em] uppercase">
                                         <Sparkles className="w-3 h-3" />
                                         Single Player
                                     </div>
-                                    <h2 className="text-7xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                    <h2 className="text-5xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
                                         Arcade <br />
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB340] via-[#FFE5A0] to-[#FFB340]/50">Mode</span>
                                     </h2>
                                 </div>
 
-                                <div className="relative group/btn">
+                                <div className="relative group/btn w-full md:w-auto">
                                     <div className="absolute -inset-1 bg-gradient-to-r from-[#FFB340] to-[#FFE5A0] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
                                     <div className="relative flex flex-col items-center justify-center -skew-x-12 px-8 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)] gap-4">
                                         <div className="skew-x-12 flex flex-col items-center gap-2 w-full">
@@ -215,7 +217,7 @@ export default function CategoriesPage() {
                             </div>
 
                             {/* HUD Stats Bar */}
-                            <div className="flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-8 mt-8">
+                            <div className="flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-8 mt-8 gap-4 md:gap-0">
                                 <div className="flex items-center gap-8 text-[#878D96] text-sm font-mono tracking-wider uppercase">
                                     <span>System Ready</span>
                                     <span>v2.4.0</span>

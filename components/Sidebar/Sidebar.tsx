@@ -21,14 +21,13 @@ export default function Sidebar() {
     const navItems = [
         { name: 'Home', href: '/home', icon: Home },
         { name: 'Categories', href: '/categories', icon: Library },
-        { name: 'Question Bank', href: '/quizzes', icon: BookOpen },
         { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
         { name: 'Shop', href: '/shop', icon: ShoppingBag },
         { name: 'Account', href: '/account', icon: User },
     ];
 
     return (
-        <div className="w-64 h-screen bg-black text-[#878D96] flex flex-col border-r border-[#161B22] fixed left-0 top-0 z-40">
+        <div className="hidden md:flex flex-col w-64 h-screen bg-black text-[#878D96] border-r border-[#161B22] fixed left-0 top-0 z-40">
             {/* Logo */}
             <div className="flex items-center gap-3 mb-8 px-6 pt-8">
                 <div className="w-8 h-8 flex items-center justify-center">

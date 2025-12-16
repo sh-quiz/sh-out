@@ -71,22 +71,24 @@ export default function ContributionGraph() {
                 {isLoading ? (
                     <div className="h-32 flex items-center justify-center text-gray-500">Loading contributions...</div>
                 ) : (
-                    <div className="flex flex-wrap gap-[3px]">
-                        {days.map((dateStr) => {
-                            const count = contributionsMap.get(dateStr) || 0;
-                            const level = getContributionLevel(count);
-                            return (
-                                <motion.div
-                                    key={dateStr}
-                                    className={`w-[10px] h-[10px] rounded-sm ${getColor(level)}`}
-                                    title={`${count} contributions on ${dateStr}`}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.5 }}
-                                    whileHover={{ scale: 1.2 }}
-                                />
-                            );
-                        })}
+                    <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div className="grid grid-rows-7 grid-flow-col gap-[3px] min-w-max">
+                            {days.map((dateStr) => {
+                                const count = contributionsMap.get(dateStr) || 0;
+                                const level = getContributionLevel(count);
+                                return (
+                                    <motion.div
+                                        key={dateStr}
+                                        className={`w-[10px] h-[10px] rounded-sm ${getColor(level)}`}
+                                        title={`${count} contributions on ${dateStr}`}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.5 }}
+                                        whileHover={{ scale: 1.2 }}
+                                    />
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
                 <div className="flex items-center justify-end mt-4 gap-2 text-xs text-gray-500">

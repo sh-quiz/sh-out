@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { authService } from '@/lib/auth';
 import Sidebar from '@/components/Sidebar/Sidebar';
+import BottomNav from '@/components/BottomNav';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -39,9 +40,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-black">
             <Sidebar />
-            <main className="flex-1 pl-64 transition-all duration-300 ease-in-out">
+            <BottomNav />
+            <main className="flex-1 md:pl-64 pb-20 md:pb-0 transition-all duration-300 ease-in-out">
                 {children}
             </main>
         </div>
