@@ -190,9 +190,16 @@ export default function QuizPlayer({
         const isQSubmitted = submittedQuestions.has(currentQ.id);
 
         if (timeLeft === 0 && !isQSubmitted) {
-            handleSkip();
+            // Check if there is a selected answer
+            const hasAnswer = answers[currentQ.id] !== undefined;
+
+            if (hasAnswer) {
+                submitCurrentAnswer();
+            } else {
+                handleSkip();
+            }
         }
-    }, [timeLeft, quiz, submittedQuestions, currentQuestionIndex]);
+    }, [timeLeft, quiz, submittedQuestions, currentQuestionIndex, answers]);
 
     // Cleanup speech on unmount
     useEffect(() => {

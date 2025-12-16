@@ -40,17 +40,23 @@ export default function StatCard({ title, value, subValue, type = 'default', del
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay, ease: "easeOut" }}
             className={`
-                relative overflow-hidden rounded-2xl p-5 flex flex-col items-center justify-center text-center
+                relative overflow-hidden rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 flex flex-col items-center justify-center text-center
                 bg-[#161B22]/90 backdrop-blur-[32px] border transition-all duration-300
                 ${getGlowColor()}
-                h-[140px] w-full
+                h-[110px] sm:h-[130px] md:h-[140px] w-full
+                focus-within:ring-2 focus-within:ring-blue-500/50
             `}
+            role="article"
+            aria-label={`${title}: ${value}`}
+            tabIndex={0}
         >
-            <span className="text-zinc-400 text-xs font-medium mb-2 uppercase tracking-wide">{title}</span>
+            <span className="text-zinc-400 text-[10px] sm:text-xs font-medium mb-1.5 sm:mb-2 uppercase tracking-wide">
+                {title}
+            </span>
 
             {type === 'accuracy' ? (
-                <div className="relative w-16 h-16 flex items-center justify-center">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
                         <path
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
@@ -68,17 +74,19 @@ export default function StatCard({ title, value, subValue, type = 'default', del
                             transition={{ duration: 1.5, delay: delay + 0.5, ease: "circOut" }}
                         />
                     </svg>
-                    <span className="absolute text-sm font-bold text-blue-500">{accuracy}%</span>
+                    <span className="absolute text-xs sm:text-sm font-bold text-blue-500">
+                        {accuracy}%
+                    </span>
                 </div>
             ) : (
                 <div className="flex flex-col items-center">
-                    <span className={`text-3xl font-bold ${getValueColor()}`}>
+                    <span className={`text-2xl sm:text-2xl md:text-3xl font-bold ${getValueColor()}`}>
                         {value}
                     </span>
                     {subValue && (
-                        <div className="flex items-center gap-1 mt-1">
-                            {type === 'speed' && <Zap className="w-3 h-3 text-blue-500 fill-blue-500" />}
-                            <span className="text-zinc-400 text-sm font-medium">{subValue}</span>
+                        <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
+                            {type === 'speed' && <Zap className="w-3 h-3 text-blue-500 fill-blue-500" aria-hidden="true" />}
+                            <span className="text-zinc-400 text-xs sm:text-sm font-medium">{subValue}</span>
                         </div>
                     )}
                 </div>
