@@ -69,7 +69,8 @@ export function useConsumeEnergy(
     options?: UseMutationOptions<
         ConsumeEnergyResponse,
         Error,
-        ConsumeEnergyRequest
+        ConsumeEnergyRequest,
+        { previousEnergy: EnergyStatus | undefined }
     >
 ) {
     const queryClient = useQueryClient();
@@ -121,7 +122,12 @@ export function useConsumeEnergy(
  * Updates both energy and diamond balances
  */
 export function useRefillEnergy(
-    options?: UseMutationOptions<RefillEnergyResponse, Error, RefillEnergyRequest>
+    options?: UseMutationOptions<
+        RefillEnergyResponse,
+        Error,
+        RefillEnergyRequest,
+        { previousEnergy: EnergyStatus | undefined; previousDiamonds: DiamondBalance | undefined }
+    >
 ) {
     const queryClient = useQueryClient();
 
@@ -277,7 +283,8 @@ export function useSpendDiamonds(
     options?: UseMutationOptions<
         SpendDiamondsResponse,
         Error,
-        SpendDiamondsRequest
+        SpendDiamondsRequest,
+        { previousDiamonds: DiamondBalance | undefined }
     >
 ) {
     const queryClient = useQueryClient();

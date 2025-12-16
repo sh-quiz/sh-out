@@ -13,7 +13,9 @@ interface Props {
     attemptToken: string;
     isMultiplayer?: boolean;
     opponentScore?: number;
+    isOpponentFinished?: boolean;
     onScoreUpdate?: (score: number) => void;
+    onMultiplayerFinish?: () => void;
 }
 
 export default function QuizPlayer({
@@ -22,7 +24,9 @@ export default function QuizPlayer({
     attemptToken,
     isMultiplayer = false,
     opponentScore = 0,
-    onScoreUpdate
+    isOpponentFinished = false,
+    onScoreUpdate,
+    onMultiplayerFinish
 }: Props) {
     const [quiz, setQuiz] = useState<QuizDetail | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -312,6 +316,9 @@ export default function QuizPlayer({
             // For now, redirecting to result of dummy attempt will fail.
             // Let's redirect to categories for now or stay on screen.
             if (isMultiplayer) {
+                if (onMultiplayerFinish) {
+                    onMultiplayerFinish();
+                }
                 setShowResults(true);
                 return;
             }
@@ -345,7 +352,10 @@ export default function QuizPlayer({
                     <div className="bg-red-900/20 backdrop-blur-md border border-red-500/30 p-3 rounded-xl flex items-center gap-3 w-48">
                         <Users className="text-red-500 w-5 h-5" />
                         <div className="flex flex-col w-full">
-                            <span className="text-xs text-red-400 font-bold uppercase tracking-wider">Opponent</span>
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs text-red-400 font-bold uppercase tracking-wider">Opponent</span>
+                                {isOpponentFinished && <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded font-bold">DONE</span>}
+                            </div>
                             <div className="flex items-end justify-between">
                                 <span className="text-xl font-mono font-bold text-white">{opponentScore}</span>
                                 <div className="h-1.5 flex-1 ml-3 bg-red-900/50 rounded-full overflow-hidden">
