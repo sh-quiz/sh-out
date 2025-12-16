@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { economyService, EnergyStatus, DiamondStatus } from '../lib/economy';
+import { economyService, EnergyStatus, DiamondBalance } from '../lib/economy';
 
 export const economyKeys = {
     all: ['economy'] as const,
@@ -18,11 +18,11 @@ export function useEnergy(
 }
 
 export function useDiamonds(
-    options?: Omit<UseQueryOptions<DiamondStatus>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<DiamondBalance>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: economyKeys.diamonds,
-        queryFn: () => economyService.getDiamonds(),
+        queryFn: () => economyService.getDiamondBalance(),
         ...options,
     });
 }

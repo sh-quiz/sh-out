@@ -85,7 +85,7 @@ export default function CategoriesPage() {
                 </div>
             </header>
 
-            <div className="flex flex-col h-screen w-full">
+            <div className="flex flex-col min-h-screen w-full">
                 {/* ONLINE MATCH SECTION */}
                 <section className="relative flex-1 group overflow-hidden border-b border-white/5">
                     {/* Background Image */}
@@ -95,19 +95,16 @@ export default function CategoriesPage() {
                             alt="Online Match Background"
                             className="w-full h-full object-cover opacity-50"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-black/80" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
-                        <div className="absolute inset-0 bg-[#FF3B30]/5 mix-blend-overlay" />
                     </div>
 
                     {/* Content */}
                     <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 md:pl-72">
-                        <div className="flex flex-col md:flex-row items-end justify-between w-full max-w-[90rem] mx-auto gap-8 md:gap-0">
-                            <div className="space-y-4">
+                        <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full max-w-[90rem] mx-auto gap-8 md:gap-0">
+                            <div className="space-y-4 flex flex-col items-start text-left">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded text-[#FF3B30] text-xs font-bold tracking-[0.2em] uppercase">
                                     Live Combat
                                 </div>
-                                <h2 className="text-5xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                <h2 className="text-6xl md:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
                                     Online <br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">Match</span>
                                 </h2>
@@ -122,7 +119,7 @@ export default function CategoriesPage() {
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="relative flex items-center justify-center -skew-x-12 px-12 py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)]"
+                                        className="relative flex items-center justify-center -skew-x-12 px-8 md:px-12 py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)] w-full md:w-auto"
                                     >
                                         <div className="skew-x-12 flex items-center gap-3">
                                             <span className="text-lg font-black tracking-widest uppercase">Enter Battle</span>
@@ -155,13 +152,13 @@ export default function CategoriesPage() {
                     {/* Content */}
                     <div className="relative z-10 h-full flex flex-col justify-end pb-16 px-6 md:px-12 md:pl-72">
                         <div className="w-full max-w-[90rem] mx-auto">
-                            <div className="flex flex-col md:flex-row items-end justify-between mb-8 md:mb-12 gap-8 md:gap-0">
-                                <div className="space-y-4">
+                            <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-12 gap-8 md:gap-0">
+                                <div className="space-y-4 flex flex-col items-start text-left">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FFB340]/10 border border-[#FFB300]/20 rounded text-[#FFB340] text-xs font-bold tracking-[0.2em] uppercase">
                                         <Sparkles className="w-3 h-3" />
                                         Single Player
                                     </div>
-                                    <h2 className="text-5xl md:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                    <h2 className="text-6xl md:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
                                         Arcade <br />
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB340] via-[#FFE5A0] to-[#FFB340]/50">Mode</span>
                                     </h2>
@@ -169,7 +166,7 @@ export default function CategoriesPage() {
 
                                 <div className="relative group/btn w-full md:w-auto">
                                     <div className="absolute -inset-1 bg-gradient-to-r from-[#FFB340] to-[#FFE5A0] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
-                                    <div className="relative flex flex-col items-center justify-center -skew-x-12 px-8 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)] gap-4">
+                                    <div className="relative flex flex-col items-center justify-center -skew-x-12 px-6 md:px-8 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)] gap-4 w-full md:w-auto">
                                         <div className="skew-x-12 flex flex-col items-center gap-2 w-full">
                                             {gameState.gameId ? (
                                                 <div className="flex flex-col items-center gap-2">

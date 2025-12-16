@@ -15,15 +15,15 @@ export default function ShopPage() {
                 <div className="flex items-center gap-2 rounded-full bg-[#1e1e2d] px-4 py-2 shadow-lg border border-white/5">
                     <Zap className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-bold text-sm">
-                        {stats ? `${stats.energy}/${stats.maxEnergy}` : "..."}
+                        {stats ? `${stats.energy}/30` : "..."}
                     </span>
                 </div>
 
-                {/* Gems */}
+                {/* Diamonds */}
                 <div className="flex items-center gap-2 rounded-full bg-[#1e1e2d] px-4 py-2 shadow-lg border border-white/5">
                     <Gem className="h-4 w-4 fill-blue-400 text-blue-400" />
                     <span className="font-bold text-sm">
-                        {stats ? stats.gems.toLocaleString() : "..."}
+                        {stats ? stats.diamonds.toLocaleString() : "..."}
                     </span>
                 </div>
             </div>
@@ -40,11 +40,11 @@ export default function ShopPage() {
                     {/* Card 1: Energy Boost */}
                     <ShopCard
                         title="Energy Boost"
-                        price="N3,500"
+                        price="GH₵ 1"
                         description="Recharge your power instantly with pure energy packs."
                         icon={<Zap className="h-10 w-10 fill-yellow-400 text-yellow-400" />}
                         features={[
-                            "100 Energy Bars",
+                            "Full Energy Bars",
                         ]}
                         buttonText="Purchase"
                         delay={0.1}
@@ -53,11 +53,11 @@ export default function ShopPage() {
                     {/* Card 2: Gem Vault */}
                     <ShopCard
                         title="Gem Vault"
-                        price="N10,000"
+                        price="GH₵ 5"
                         description="Stock up on precious gems to unlock rare items and boosts."
                         icon={<Gem className="h-10 w-10 fill-blue-400 text-blue-400" />}
                         features={[
-                            "3,000 Gems",
+                            "5 Gems",
                         ]}
                         buttonText="Purchase"
                         delay={0.2}
@@ -66,16 +66,15 @@ export default function ShopPage() {
                     {/* Card 3: Premium Access */}
                     <ShopCard
                         title="Premium Access"
-                        price="N30,000"
+                        price="GH₵ 20"
                         priceSuffix="per year"
                         description="Unlock everything – full access for a year of ultimate power."
                         icon={<Key className="h-10 w-10 fill-yellow-400 text-yellow-400" />}
                         features={[
                             "Unlimited energy refills",
                             "All gems bundles",
-                            "Exclusive avatars",
+                            "All these and for a whole year",
                             "Streak protectors",
-                            "VIP perks",
                         ]}
                         isBestValue={true}
                         buttonText="Purchase"

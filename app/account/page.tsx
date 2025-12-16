@@ -117,7 +117,7 @@ export default function AccountPage() {
                     <div className="flex justify-center md:justify-start">
                         <StatNumber
                             label="Gems"
-                            value={`${stats.gems}`}
+                            value={`${stats.diamonds}`}
                             accentColor="sapphire"
                             delay={0.6}
                         />

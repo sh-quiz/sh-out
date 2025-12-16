@@ -15,6 +15,7 @@ export interface UserStats {
     top3Finishes: number;
     energy: number;
     maxEnergy: number;
+    diamonds: number;
     lastEnergyRefillAt: string;
     createdAt: string;
     updatedAt: string;
