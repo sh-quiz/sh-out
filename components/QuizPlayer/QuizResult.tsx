@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { quizService, AttemptResult } from '@/lib/quiz';
+import { economyService } from '@/lib/economy';
 import { useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Share2, ArrowRight } from 'lucide-react';
@@ -21,6 +22,7 @@ interface Props {
 export default function QuizResult({ attemptId }: Props) {
     const [result, setResult] = useState<AttemptResult | null>(null);
     const [loading, setLoading] = useState(true);
+    const [hasClaimed, setHasClaimed] = useState(false);
     const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,8 +30,7 @@ export default function QuizResult({ attemptId }: Props) {
     useEffect(() => {
         // Only enable smooth scroll on larger screens
         const mediaQuery = window.matchMedia('(min-width: 768px)');
-
-        if (!mediaQuery.matches) return; // Skip on mobile
+        if (!mediaQuery.matches) return;
 
         const lenis = new Lenis({
             duration: 1.2,
@@ -59,6 +60,19 @@ export default function QuizResult({ attemptId }: Props) {
         try {
             const data = await quizService.getResult(attemptId);
             setResult(data);
+
+            // Award energy if perfect score
+            if (data && data.score === data.totalPoints && !hasClaimed) {
+                try {
+                    await economyService.awardEnergy({
+                        amount: 6,
+                        reason: `Perfect Score: Quiz ${data.quiz.title}`
+                    });
+                    setHasClaimed(true);
+                } catch (error) {
+                    console.error('Failed to claim reward:', error);
+                }
+            }
         } catch (err) {
             console.error(err);
         } finally {
@@ -163,7 +177,7 @@ export default function QuizResult({ attemptId }: Props) {
                             <RewardCard type="gems" value="+250 Gems" delay={1.1} />
                         </div>
                         <div className="snap-center shrink-0">
-                            <RewardCard type="energy" value="+5 Energy Bars" delay={1.2} />
+                            <RewardCard type="energy" value={`+${correctAnswers === result.totalPoints ? 0 : 5} Energy Bars`} delay={1.2} />
                         </div>
 
                     </div>

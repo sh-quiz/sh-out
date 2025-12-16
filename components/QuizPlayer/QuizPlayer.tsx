@@ -227,6 +227,11 @@ export default function QuizPlayer({
     const handleAnswer = (questionId: number, value: any) => {
         if (submittedQuestions.has(questionId)) return;
         setAnswers((prev) => ({ ...prev, [questionId]: value }));
+
+        // Auto-advance: Submit immediately (with slight delay for visual feedback)
+        setTimeout(() => {
+            submitCurrentAnswer(value);
+        }, 300);
     };
 
 

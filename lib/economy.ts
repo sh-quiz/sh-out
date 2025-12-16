@@ -67,6 +67,17 @@ export interface SpendDiamondsResponse {
     remainingDiamonds: number;
 }
 
+export interface AwardEnergyRequest {
+    amount: number;
+    reason?: string;
+}
+
+export interface AwardEnergyResponse {
+    success: boolean;
+    awardedAmount: number;
+    currentEnergy: number;
+}
+
 export interface TransactionHistoryParams {
     page?: number;
     limit?: number;
@@ -149,6 +160,11 @@ export const economyService = {
         currentEnergy: number;
     }> {
         const { data } = await api.post('/energy/convert', { diamonds });
+        return data;
+    },
+
+    async awardEnergy(req: AwardEnergyRequest): Promise<AwardEnergyResponse> {
+        const { data } = await api.post('/energy/award', req);
         return data;
     },
 };
