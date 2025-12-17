@@ -67,8 +67,11 @@ export const useSTT = (
         }
     }, []);
 
+    const shouldListenRef = useRef(false);
+
     const stopListening = useCallback(() => {
         console.log("[STT] Stopping listening...");
+        shouldListenRef.current = false;
         if (recognitionRef.current) {
             recognitionRef.current.stop();
             setIsListening(false);
@@ -88,56 +91,82 @@ export const useSTT = (
             return;
         }
 
-        try {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognitionRef.current = recognition;
+        shouldListenRef.current = true;
 
-            recognition.continuous = true; // Keep listening until stopped
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+        // If already listening, do nothing
+        if (isListening) return;
 
-            recognition.onstart = () => {
-                console.log("[STT] Recognition started");
-                setIsListening(true);
-                setError(null);
-            };
+        const startRecognition = () => {
+            try {
+                // If we shouldn't be listening anymore (e.g. stopped while waiting for retry), abort
+                if (!shouldListenRef.current) return;
 
-            recognition.onresult = (event: SpeechRecognitionEvent) => {
-                const transcript = event.results[event.results.length - 1][0].transcript;
-                const cleanResult = transcript.trim().toLowerCase();
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognitionRef.current = recognition;
 
-                if (!cleanResult) return; // Ignore empty results
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
 
-                console.log("[STT] Result received:", cleanResult, "(raw:", transcript, ")");
-                setResult(cleanResult);
-                if (onResultRef.current) {
-                    onResultRef.current(cleanResult);
-                }
-            };
+                recognition.onstart = () => {
+                    console.log("[STT] Recognition started");
+                    setIsListening(true);
+                    setError(null);
+                };
 
-            recognition.onerror = (event: SpeechRecognitionError) => {
-                console.error("[STT] Error:", event.error);
-                setError(event.error);
-                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                    setIsListening(false);
-                }
-            };
+                recognition.onresult = (event: SpeechRecognitionEvent) => {
+                    const transcript = event.results[event.results.length - 1][0].transcript;
+                    const cleanResult = transcript.trim().toLowerCase();
 
-            recognition.onend = () => {
-                console.log("[STT] Recognition ended");
-                // If we didn't manually stop, and it's supposed to be listening, restart it (for continuous effect)
-                // But generally, let's just mark it as stopped to avoid infinite loops if permission denied
+                    if (!cleanResult) return;
+
+                    console.log("[STT] Result received:", cleanResult, "(raw:", transcript, ")");
+                    setResult(cleanResult);
+                    if (onResultRef.current) {
+                        onResultRef.current(cleanResult);
+                    }
+                };
+
+                recognition.onerror = (event: SpeechRecognitionError) => {
+                    console.error("[STT] Error:", event.error);
+                    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                        shouldListenRef.current = false;
+                        setIsListening(false);
+                        setError(event.error);
+                    } else {
+                        // For other errors, we might want to ignore or retry, but let onend handle the restart
+                        setError(event.error);
+                    }
+                };
+
+                recognition.onend = () => {
+                    console.log("[STT] Recognition ended");
+                    setIsListening(false); // Briefly false
+
+                    if (shouldListenRef.current) {
+                        console.log("[STT] Auto-restarting recognition...");
+                        // Add a small delay to prevent rapid-fire loops
+                        setTimeout(() => {
+                            if (shouldListenRef.current) {
+                                startRecognition();
+                            }
+                        }, 100);
+                    }
+                };
+
+                console.log("[STT] Calling recognition.start()");
+                recognition.start();
+            } catch (err) {
+                console.error("[STT] Exception starting recognition:", err);
+                setError("Failed to start speech recognition.");
+                shouldListenRef.current = false; // Stop trying if we crash on instantiation
                 setIsListening(false);
-            };
+            }
+        };
 
-            console.log("[STT] Calling recognition.start()");
-            recognition.start();
-        } catch (err) {
-            console.error("[STT] Exception starting recognition:", err);
-            setError("Failed to start speech recognition.");
-        }
-    }, [isSupported]);
+        startRecognition();
+    }, [isSupported, isListening]);
 
     // Cleanup
     useEffect(() => {

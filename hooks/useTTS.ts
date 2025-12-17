@@ -17,6 +17,7 @@ export const useTTS = (): UseTTSReturn => {
     const [isPaused, setIsPaused] = useState(false);
     const [isSupported, setIsSupported] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const requestRef = useRef<string | null>(null);
 
     // API Key from environment variables
     const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
@@ -28,6 +29,9 @@ export const useTTS = (): UseTTSReturn => {
     }, []);
 
     const cancel = useCallback(() => {
+        // Invalidate any pending requests
+        requestRef.current = null;
+        
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -39,8 +43,16 @@ export const useTTS = (): UseTTSReturn => {
     const speak = useCallback(async (text: string) => {
         if (!isSupported) return;
 
-        // Cancel any ongoing speech
+        // Cancel any ongoing speech and invalidate previous requests
         cancel();
+
+        // Generate a unique ID for this request
+        const requestId = Date.now().toString();
+        // Store it in a ref to track the latest request (we'll need to add this ref)
+        if (requestRef.current) {
+            // Invalidate previous request logic if we were using an AbortController
+        }
+        requestRef.current = requestId;
 
         try {
             setIsSpeaking(true);
@@ -56,6 +68,11 @@ export const useTTS = (): UseTTSReturn => {
                 }),
             });
 
+            // Check if this request is still the latest one
+            if (requestRef.current !== requestId) {
+                return; // Ignore this response as a new request has started
+            }
+
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("Google TTS API error:", JSON.stringify(errorData, null, 2));
@@ -64,6 +81,11 @@ export const useTTS = (): UseTTSReturn => {
 
             const data = await response.json();
             const audioContent = data.audioContent;
+
+            // Check again before playing
+            if (requestRef.current !== requestId) {
+                return;
+            }
 
             if (audioContent) {
                 const audio = new Audio(`data:audio/mp3;base64,${audioContent}`);
@@ -77,6 +99,12 @@ export const useTTS = (): UseTTSReturn => {
                 try {
                     await audio.play();
                 } catch (playError: any) {
+                    // Check if we were cancelled while trying to play
+                    if (requestRef.current !== requestId) {
+                        audio.pause();
+                        return;
+                    }
+
                     if (playError.name === 'NotAllowedError') {
                         console.warn("[TTS] Autoplay blocked. Waiting for user interaction.");
                         setIsSpeaking(false);
@@ -90,8 +118,11 @@ export const useTTS = (): UseTTSReturn => {
                 setIsSpeaking(false);
             }
         } catch (error) {
-            console.error("Error calling Google TTS:", error);
-            setIsSpeaking(false);
+            // If it's a stale request, we don't care about errors usually, but logging is fine
+            if (requestRef.current === requestId) {
+                console.error("Error calling Google TTS:", error);
+                setIsSpeaking(false);
+            }
         }
     }, [isSupported, cancel, API_KEY]);
 

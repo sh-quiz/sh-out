@@ -442,13 +442,7 @@ export default function QuizPlayer({
                         )}
                         <button
                             onClick={() => {
-                                const newMutedState = !isMuted;
-                                setIsMuted(newMutedState);
-                                if (newMutedState) {
-                                    cancel();
-                                } else {
-                                    setTimeout(() => readCurrentQuestion(), 100);
-                                }
+                                setIsMuted(!isMuted);
                             }}
                             className="p-2 bg-blue-900 rounded-full hover:bg-blue-950 transition-colors"
                         >
