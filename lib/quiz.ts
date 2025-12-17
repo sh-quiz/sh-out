@@ -38,6 +38,25 @@ export interface SubmitAnswerData {
     idempotencyKey?: string;
 }
 
+export interface AnswerDetail {
+    questionId: number;
+    questionText: string;
+    explanation: string | null;
+    solution: string | null;
+    yourAnswer: {
+        choiceId: number;
+        choiceText: string;
+    };
+    isCorrect: boolean;
+    correctAnswer: {
+        id: number;
+        text: string;
+        isCorrect: boolean;
+    } | null;
+    pointsAwarded: number;
+    maxPoints: number;
+}
+
 export interface AttemptResult {
     id: number;
     quiz: Quiz;
@@ -47,7 +66,7 @@ export interface AttemptResult {
     passed: boolean;
     completedAt: string;
     timeTaken: number;
-    answers: any[];
+    answers: AnswerDetail[];
 }
 
 export const quizService = {

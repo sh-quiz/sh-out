@@ -14,6 +14,7 @@ import ScoreHero from './ScoreHero';
 import StatCard from './StatCard';
 import RewardCard from './RewardCard';
 import RankReveal from './RankReveal';
+import QuestionReview from './QuestionReview';
 
 interface Props {
     attemptId: number;
@@ -25,6 +26,11 @@ export default function QuizResult({ attemptId }: Props) {
     const [hasClaimed, setHasClaimed] = useState(false);
     const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
+    const reviewRef = useRef<HTMLDivElement>(null);
+
+    const scrollToReview = () => {
+        reviewRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     // Smooth Scroll - Disabled on mobile for better performance
     useEffect(() => {
@@ -186,6 +192,11 @@ export default function QuizResult({ attemptId }: Props) {
                 {/* Rank Reveal */}
                 <RankReveal climb={rankClimb} rank={globalRank} />
 
+                {/* Question Review Section */}
+                <div ref={reviewRef} className="w-full">
+                    {result && <QuestionReview answers={result.answers} />}
+                </div>
+
             </main>
 
             {/* Fixed Bottom CTA Bar */}
@@ -217,7 +228,7 @@ export default function QuizResult({ attemptId }: Props) {
 
                     <button
                         className="hidden md:block text-zinc-500 hover:text-zinc-300 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 py-1"
-                        aria-label="Review your mistakes"
+                        onClick={scrollToReview}
                     >
                         Review Mistakes
                     </button>
