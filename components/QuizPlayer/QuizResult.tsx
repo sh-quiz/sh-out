@@ -14,6 +14,7 @@ import ScoreHero from './ScoreHero';
 import StatCard from './StatCard';
 import RewardCard from './RewardCard';
 import RankReveal from './RankReveal';
+import { useUserRank } from '@/hooks/useLeaderboard';
 import QuestionReview from './QuestionReview';
 
 interface Props {
@@ -71,7 +72,7 @@ export default function QuizResult({ attemptId }: Props) {
             if (data && data.score === data.totalPoints && !hasClaimed) {
                 try {
                     await economyService.awardEnergy({
-                        amount: 6,
+                        amount: 5,
                         reason: `Perfect Score: Quiz ${data.quiz.title}`
                     });
                     setHasClaimed(true);
@@ -102,16 +103,25 @@ export default function QuizResult({ attemptId }: Props) {
         );
     }
 
+    // Data Fetching
+    const { data: userRank } = useUserRank();
+
     // Derived Data
     const correctAnswers = result.score;
     const wrongAnswers = result.totalPoints - result.score;
     const accuracy = Math.round(result.percentage);
 
-    // Mock Data for Visuals
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    // Mock Data for Visuals (some still mocked)
     const speedRank = "Top 15%";
-    const timeTaken = "02:15";
-    const rankClimb = 127;
-    const globalRank = 842;
+    const timeTaken = formatTime(result.timeTaken || 0);
+    const rankClimb = 0; // Climbing calculation requires historical data not yet available
+    const globalRank = userRank?.rank ?? 0;
 
     return (
         <div ref={containerRef} className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 relative overflow-x-hidden">
@@ -123,7 +133,7 @@ export default function QuizResult({ attemptId }: Props) {
                 <ScoreHero
                     score={correctAnswers}
                     total={result.totalPoints}
-                    streak={8} // Mock streak
+                    streak={1} // Mock streak
                 />
 
                 {/* Performance Breakdown */}
@@ -134,20 +144,23 @@ export default function QuizResult({ attemptId }: Props) {
                     className="w-full mb-12 sm:mb-14 lg:mb-16"
                 >
                     <h3 className="text-center text-zinc-400 font-medium mb-4 sm:mb-5 lg:mb-6 text-sm sm:text-base">Performance Breakdown</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+                    <div className="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-5">
                         <StatCard
+                            className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-1rem)]"
                             title="Correct Answers"
                             value={correctAnswers}
                             type="correct"
                             delay={0.5}
                         />
                         <StatCard
+                            className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-1rem)]"
                             title="Wrong Answers"
                             value={wrongAnswers}
                             type="wrong"
                             delay={0.6}
                         />
                         <StatCard
+                            className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-1rem)]"
                             title="Accuracy"
                             value={`${accuracy}%`}
                             type="accuracy"
@@ -155,17 +168,11 @@ export default function QuizResult({ attemptId }: Props) {
                             delay={0.7}
                         />
                         <StatCard
+                            className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-1rem)]"
                             title="Time Taken"
                             value={timeTaken}
                             type="default"
                             delay={0.8}
-                        />
-                        <StatCard
-                            title="Speed Rank"
-                            value={speedRank}
-                            subValue="" // Icon handled inside
-                            type="speed"
-                            delay={0.9}
                         />
                     </div>
                 </motion.div>
@@ -178,12 +185,12 @@ export default function QuizResult({ attemptId }: Props) {
                     className="w-full mb-16 sm:mb-18 lg:mb-20"
                 >
                     <h3 className="text-center text-zinc-400 font-medium mb-4 sm:mb-5 lg:mb-6 text-sm sm:text-base">Rewards Unlocked</h3>
-                    <div className="flex overflow-x-auto pb-6 sm:pb-8 gap-3 sm:gap-4 px-3 sm:px-4 -mx-3 sm:-mx-4 scrollbar-hide snap-x" role="list">
+                    <div className="flex overflow-x-auto pb-6 sm:pb-8 gap-3 sm:gap-4 px-3 sm:px-4 -mx-3 sm:-mx-4 scrollbar-hide snap-x justify-center" role="list">
                         <div className="snap-center shrink-0">
-                            <RewardCard type="gems" value="+250 Gems" delay={1.1} />
+                            <RewardCard type="gems" value="+0 Gems" delay={1.1} />
                         </div>
                         <div className="snap-center shrink-0">
-                            <RewardCard type="energy" value={`+${correctAnswers === result.totalPoints ? 0 : 5} Energy Bars`} delay={1.2} />
+                            <RewardCard type="energy" value={`+${correctAnswers === result.totalPoints ? 5 : 0} Energy Bars`} delay={1.2} />
                         </div>
 
                     </div>

@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { leaderboardService, LeaderboardEntry, UserRank } from '../app/api/leaderboard';
+import { fetchGlobalLeaderboard, fetchUserRank, LeaderboardEntry, UserRank } from '@/lib/leaderboard';
 
 export const leaderboardKeys = {
     all: ['leaderboard'] as const,
@@ -13,7 +13,7 @@ export function useGlobalLeaderboard(
 ) {
     return useQuery({
         queryKey: leaderboardKeys.global(limit),
-        queryFn: () => leaderboardService.getGlobalLeaderboard(limit),
+        queryFn: () => fetchGlobalLeaderboard(limit),
         ...options,
     });
 }
@@ -23,7 +23,7 @@ export function useUserRank(
 ) {
     return useQuery({
         queryKey: leaderboardKeys.me,
-        queryFn: () => leaderboardService.getUserRank(),
+        queryFn: () => fetchUserRank(),
         ...options,
     });
 }

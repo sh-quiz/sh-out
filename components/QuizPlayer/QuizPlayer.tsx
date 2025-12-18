@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { quizService, QuizDetail, SubmitAnswerData } from '@/lib/quiz';
 import { useRouter } from 'next/navigation';
 import { Volume2, VolumeX, Flame, ChevronRight, Mic, MicOff, Users } from 'lucide-react';
@@ -34,6 +34,7 @@ export default function QuizPlayer({
     const [submittedQuestions, setSubmittedQuestions] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const submittingRef = useRef(false);
     const [isMuted, setIsMuted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
     const [myScore, setMyScore] = useState(0); // Track local score for multiplayer
@@ -236,7 +237,7 @@ export default function QuizPlayer({
 
 
     const submitCurrentAnswer = async (answerOverride?: any) => {
-        if (!quiz || submitting) return;
+        if (!quiz || submittingRef.current) return;
         const question = quiz.questions[currentQuestionIndex];
 
         if (submittedQuestions.has(question.id)) {
@@ -261,6 +262,7 @@ export default function QuizPlayer({
         }
 
         setSubmitting(true);
+        submittingRef.current = true;
         try {
             // Skip persistence in multiplayer for now to avoid invalid attempt errors
             if (!isMultiplayer) {
@@ -308,6 +310,7 @@ export default function QuizPlayer({
             alert(err.response?.data?.message || 'Failed to submit answer');
         } finally {
             setSubmitting(false);
+            submittingRef.current = false;
         }
     };
 

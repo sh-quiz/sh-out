@@ -11,9 +11,10 @@ interface Props {
     type?: 'default' | 'correct' | 'wrong' | 'accuracy' | 'speed';
     delay?: number;
     accuracy?: number;
+    className?: string;
 }
 
-export default function StatCard({ title, value, subValue, type = 'default', delay = 0, accuracy = 0 }: Props) {
+export default function StatCard({ title, value, subValue, type = 'default', delay = 0, accuracy = 0, className = '' }: Props) {
     const getGlowColor = () => {
         switch (type) {
             case 'correct': return 'shadow-[0_0_20px_rgba(74,222,128,0.1)] hover:shadow-[0_0_30px_rgba(74,222,128,0.2)] border-green-500/20';
@@ -45,6 +46,7 @@ export default function StatCard({ title, value, subValue, type = 'default', del
                 ${getGlowColor()}
                 h-[110px] sm:h-[130px] md:h-[140px] w-full
                 focus-within:ring-2 focus-within:ring-blue-500/50
+                ${className}
             `}
             role="article"
             aria-label={`${title}: ${value}`}
