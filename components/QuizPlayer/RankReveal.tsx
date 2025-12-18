@@ -10,15 +10,17 @@ interface Props {
 export default function RankReveal({ climb, rank }: Props) {
     return (
         <div className="flex flex-col items-center justify-center mb-12 sm:mb-14 lg:mb-16 relative">
-            <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="text-zinc-400 text-xs sm:text-sm font-medium mb-3 sm:mb-4 px-4 text-center"
-            >
-                You just climbed <span className="text-white font-bold">{climb} places!</span>
-            </motion.p>
+            {climb > 0 && (
+                <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className="text-zinc-400 text-xs sm:text-sm font-medium mb-3 sm:mb-4 px-4 text-center"
+                >
+                    You just climbed <span className="text-white font-bold">{climb} places!</span>
+                </motion.p>
+            )}
 
             <div className="relative">
                 {/* Crackling Border Effect */}
@@ -53,10 +55,10 @@ export default function RankReveal({ climb, rank }: Props) {
                     }}
                     className="relative z-10 bg-black/80 backdrop-blur-md px-6 sm:px-8 py-3 sm:py-4 rounded-lg border border-blue-500/30"
                     role="status"
-                    aria-label={`New global rank: ${rank}`}
+                    aria-label={`Global rank: ${rank}`}
                 >
                     <p className="text-center text-blue-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-0.5 sm:mb-1">
-                        New Global Rank
+                        Global Rank
                     </p>
                     <h3
                         className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter"

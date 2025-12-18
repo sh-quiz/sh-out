@@ -29,6 +29,9 @@ export default function QuizResult({ attemptId }: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
     const reviewRef = useRef<HTMLDivElement>(null);
 
+    // Data Fetching
+    const { data: userRank } = useUserRank();
+
     const scrollToReview = () => {
         reviewRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -103,8 +106,7 @@ export default function QuizResult({ attemptId }: Props) {
         );
     }
 
-    // Data Fetching
-    const { data: userRank } = useUserRank();
+
 
     // Derived Data
     const correctAnswers = result.score;
