@@ -17,7 +17,7 @@ import { quizService, AttemptResponse } from "@/lib/quiz";
 export default function CategoriesPage() {
     const { data: energyData } = useEnergy();
     const { data: diamondsData } = useDiamonds();
-    const { createGame, joinGame, gameState, isConnected, submitScore, finishGame } = useGamemode();
+    const { createGame, joinGame, gameState, isConnected, submitScore, finishGame, resetGame } = useGamemode();
     const [joinInput, setJoinInput] = useState("");
     const [currentAttempt, setCurrentAttempt] = useState<AttemptResponse | null>(null);
 
@@ -97,6 +97,10 @@ export default function CategoriesPage() {
                     isOpponentFinished={gameState.isOpponentFinished}
                     onScoreUpdate={(score, correctCount) => gameState.gameId && submitScore(gameState.gameId, myPlayerId, score, correctCount)}
                     onMultiplayerFinish={() => gameState.gameId && finishGame(gameState.gameId, myPlayerId)}
+                    onLeave={() => {
+                        resetGame();
+                        setCurrentAttempt(null);
+                    }}
                 />
             </main>
         );

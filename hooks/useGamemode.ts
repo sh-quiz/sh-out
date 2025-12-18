@@ -116,6 +116,16 @@ export const useGamemode = () => {
         }
     }, [socket]);
 
+    const resetGame = useCallback(() => {
+        setGameState({
+            gameId: null,
+            status: 'idle',
+            players: [],
+            opponentScore: 0,
+            isOpponentFinished: false,
+        });
+    }, []);
+
     return {
         socket,
         isConnected,
@@ -124,5 +134,6 @@ export const useGamemode = () => {
         joinGame,
         submitScore,
         finishGame,
+        resetGame,
     };
 };

@@ -17,6 +17,7 @@ interface Props {
     isOpponentFinished?: boolean;
     onScoreUpdate?: (score: number, correctCount: number) => void;
     onMultiplayerFinish?: () => void;
+    onLeave?: () => void;
 }
 
 export default function QuizPlayer({
@@ -28,7 +29,8 @@ export default function QuizPlayer({
     opponentCorrectCount,
     isOpponentFinished = false,
     onScoreUpdate,
-    onMultiplayerFinish
+    onMultiplayerFinish,
+    onLeave
 }: Props) {
     const [quiz, setQuiz] = useState<QuizDetail | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -635,7 +637,7 @@ export default function QuizPlayer({
                             {/* Actions */}
                             <div className="relative z-10 w-full space-y-4">
                                 <button
-                                    onClick={() => router.push('/categories')}
+                                    onClick={() => onLeave ? onLeave() : router.push('/categories')}
                                     className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/40 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
                                 >
                                     Return directly to Lobby
