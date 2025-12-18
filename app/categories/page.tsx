@@ -12,11 +12,14 @@ import { useEnergy, useDiamonds } from "@/hooks/useEconomy";
 import { useGamemode } from "@/hooks/useGamemode";
 import QuizPlayer from "@/components/QuizPlayer/QuizPlayer";
 
+import { quizService, AttemptResponse } from "@/lib/quiz";
+
 export default function CategoriesPage() {
     const { data: energyData } = useEnergy();
     const { data: diamondsData } = useDiamonds();
     const { createGame, joinGame, gameState, isConnected, submitScore, finishGame } = useGamemode();
     const [joinInput, setJoinInput] = useState("");
+    const [currentAttempt, setCurrentAttempt] = useState<AttemptResponse | null>(null);
 
     // Persist player ID so refreshing doesn't lose identity in demo
     const myPlayerId = useMemo(() => {
@@ -52,21 +55,47 @@ export default function CategoriesPage() {
         };
     }, []);
 
+    // Start attempt when game starts
+    useEffect(() => {
+        const startMultiplayerAttempt = async () => {
+            if (gameState.status === 'playing' && gameState.quizId && !currentAttempt) {
+                try {
+                    console.log("Starting multiplayer attempt for quiz:", gameState.quizId);
+                    const attempt = await quizService.startAttempt(gameState.quizId);
+                    setCurrentAttempt(attempt);
+                } catch (error) {
+                    console.error("Failed to start multiplayer attempt:", error);
+                }
+            }
+        };
+
+        startMultiplayerAttempt();
+    }, [gameState.status, gameState.quizId, currentAttempt]);
+
     // Auto-join if we created game and haven't joined yet? 
     // Simplified: User must click Join for now to keep it robust in demo.
 
     if (gameState.status === 'playing') {
+        if (!currentAttempt) {
+            return (
+                <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] font-sans flex items-center justify-center">
+                    <div className="animate-pulse text-blue-500 font-mono">INITIALIZING BATTLE...</div>
+                </main>
+            );
+        }
+
         console.log("Playing with quizId:", gameState.quizId);
         return (
             <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] font-sans">
                 <QuizPlayer
                     quizId={gameState.quizId || 1}
-                    attemptId={123}
-                    attemptToken="demo"
+                    attemptId={currentAttempt.attemptId}
+                    attemptToken={currentAttempt.attemptToken}
                     isMultiplayer={true}
                     opponentScore={gameState.opponentScore}
+                    opponentCorrectCount={gameState.opponentCorrectCount}
                     isOpponentFinished={gameState.isOpponentFinished}
-                    onScoreUpdate={(score) => gameState.gameId && submitScore(gameState.gameId, myPlayerId, score)}
+                    onScoreUpdate={(score, correctCount) => gameState.gameId && submitScore(gameState.gameId, myPlayerId, score, correctCount)}
                     onMultiplayerFinish={() => gameState.gameId && finishGame(gameState.gameId, myPlayerId)}
                 />
             </main>

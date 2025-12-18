@@ -8,6 +8,7 @@ interface GameState {
     status: 'idle' | 'waiting' | 'playing';
     players: string[];
     opponentScore?: number;
+    opponentCorrectCount?: number;
     quizId?: number;
     isOpponentFinished?: boolean;
 }
@@ -68,7 +69,11 @@ export const useGamemode = () => {
 
         newSocket.on('opponentScoreUpdate', (data: any) => {
             console.log('Opponent score update:', data);
-            setGameState((prev) => ({ ...prev, opponentScore: data.score }));
+            setGameState((prev) => ({
+                ...prev,
+                opponentScore: data.score,
+                opponentCorrectCount: data.correctCount
+            }));
         });
 
         newSocket.on('opponentFinished', (data: any) => {
@@ -99,9 +104,9 @@ export const useGamemode = () => {
         }
     }, [socket]);
 
-    const submitScore = useCallback((gameId: string, playerId: string, score: number) => {
+    const submitScore = useCallback((gameId: string, playerId: string, score: number, correctCount: number) => {
         if (socket) {
-            socket.emit('updateScore', { gameId, playerId, score });
+            socket.emit('updateScore', { gameId, playerId, score, correctCount });
         }
     }, [socket]);
 

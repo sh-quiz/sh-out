@@ -13,8 +13,9 @@ interface Props {
     attemptToken: string;
     isMultiplayer?: boolean;
     opponentScore?: number;
+    opponentCorrectCount?: number;
     isOpponentFinished?: boolean;
-    onScoreUpdate?: (score: number) => void;
+    onScoreUpdate?: (score: number, correctCount: number) => void;
     onMultiplayerFinish?: () => void;
 }
 
@@ -24,6 +25,7 @@ export default function QuizPlayer({
     attemptToken,
     isMultiplayer = false,
     opponentScore = 0,
+    opponentCorrectCount,
     isOpponentFinished = false,
     onScoreUpdate,
     onMultiplayerFinish
@@ -89,20 +91,8 @@ export default function QuizPlayer({
     const loadQuizAndAttempt = async () => {
         try {
             if (isMultiplayer) {
-                // In multiplayer, we don't fetch a previous attempt result from persistence
-                // We just load the quiz definition
-                const quizData = await quizService.getById(quizId);
-                setQuiz(quizData);
-                setAnswers({});
-                setSubmittedQuestions(new Set());
-                setMyScore(0);
-
-                // Reset to first question
-                if (quizData.questions && quizData.questions.length > 0) {
-                    setCurrentQuestionIndex(0);
-                }
-                setLoading(false);
-                return;
+                // In multiplayer, we still need to load quiz and attempt to be robust
+                // But we handle it same as single player now to ensure state sync
             }
 
             const [quizData, attemptData] = await Promise.all([
@@ -264,36 +254,23 @@ export default function QuizPlayer({
         setSubmitting(true);
         submittingRef.current = true;
         try {
-            // Skip persistence in multiplayer for now to avoid invalid attempt errors
-            if (!isMultiplayer) {
-                const submitData: SubmitAnswerData = {
-                    questionId: question.id,
-                    selectedChoiceId: choiceId,
-                    idempotencyKey: Math.random().toString(36).substring(7) + Date.now().toString(),
-                };
+            const submitData: SubmitAnswerData = {
+                questionId: question.id,
+                selectedChoiceId: choiceId,
+                idempotencyKey: Math.random().toString(36).substring(7) + Date.now().toString(),
+            };
 
-                const res = await quizService.submitAnswer(attemptId, attemptToken, submitData);
+            const res = await quizService.submitAnswer(attemptId, attemptToken, submitData);
 
-                if (res.isCorrect) {
-                    setCorrectCount(prev => prev + 1);
-                }
-
-                setMyScore(res.currentScore);
-                if (onScoreUpdate) {
-                    onScoreUpdate(res.currentScore);
-                }
-            } else {
-                setSubmittedQuestions(prev => new Set(prev).add(question.id));
-
-                // Hacky score increment for demo
-                const newScore = myScore + 100; // Assume correct for visual pop
-                setMyScore(newScore);
-                // Assuming always correct in demo multiplayer for now for consistency with score
+            if (res.isCorrect) {
                 setCorrectCount(prev => prev + 1);
+            }
 
-                if (onScoreUpdate) {
-                    onScoreUpdate(newScore);
-                }
+            setMyScore(res.currentScore);
+            if (onScoreUpdate) {
+                // Calculate expected correct count to send immediately
+                const newCorrectCount = res.isCorrect ? correctCount + 1 : correctCount;
+                onScoreUpdate(res.currentScore, newCorrectCount);
             }
 
             setSubmittedQuestions(prev => new Set(prev).add(question.id));
@@ -324,9 +301,7 @@ export default function QuizPlayer({
     const finishQuiz = async () => {
         setSubmitting(true);
         try {
-            if (!isMultiplayer) {
-                await quizService.finishAttempt(attemptId, attemptToken);
-            }
+            await quizService.finishAttempt(attemptId, attemptToken);
             // In multiplayer we might just want to show a "Game Over" screen or summary inside the modal?
             // For now, redirecting to result of dummy attempt will fail.
             // Let's redirect to categories for now or stay on screen.
@@ -642,7 +617,7 @@ export default function QuizPlayer({
                                             <span className="text-3xl font-black text-white mb-2">{opponentScore}</span>
                                             <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                                                <span className="text-[10px] text-gray-400 font-medium">{Math.floor((opponentScore / 100) * quiz.questions.length) || 0}/{quiz.questions.length} Correct</span>
+                                                <span className="text-[10px] text-gray-400 font-medium">{opponentCorrectCount !== undefined ? opponentCorrectCount : (Math.floor((opponentScore / 100) * quiz.questions.length) || 0)}/{quiz.questions.length} Correct</span>
                                             </div>
                                         </>
                                     ) : (
