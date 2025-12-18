@@ -558,29 +558,42 @@ export default function QuizPlayer({
 
                             {/* Result Status */}
                             <div className="relative z-10 flex flex-col items-center mb-8">
-                                <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-3">
-                                    {/* Icon based on result */}
-                                    {myScore === opponentScore ? (
-                                        <Users className="text-yellow-500 w-6 h-6" /> // Using Scale/Balance icon would be better if available, falling back to Users or standard
-                                    ) : myScore > opponentScore ? (
-                                        <Flame className="text-yellow-500 w-6 h-6" /> // Trophy equivalent
-                                    ) : (
-                                        <VolumeX className="text-gray-500 w-6 h-6" /> // Skull equivalent
-                                    )}
-                                </div>
-
-                                {myScore === opponentScore ? (
-                                    <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg">
-                                        DRAW
-                                    </div>
-                                ) : myScore > opponentScore ? (
-                                    <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-green-300 to-green-600 drop-shadow-lg">
-                                        VICTORY
-                                    </div>
+                                {!isOpponentFinished ? (
+                                    <>
+                                        <div className="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-3 animate-pulse">
+                                            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                        </div>
+                                        <div className="text-2xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-blue-300 to-blue-600 drop-shadow-lg text-center leading-tight">
+                                            WAITING FOR<br />OPPONENT
+                                        </div>
+                                    </>
                                 ) : (
-                                    <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-red-300 to-red-600 drop-shadow-lg">
-                                        DEFEAT
-                                    </div>
+                                    <>
+                                        <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-3">
+                                            {/* Icon based on result */}
+                                            {myScore === opponentScore ? (
+                                                <Users className="text-yellow-500 w-6 h-6" />
+                                            ) : myScore > opponentScore ? (
+                                                <Flame className="text-yellow-500 w-6 h-6" />
+                                            ) : (
+                                                <VolumeX className="text-gray-500 w-6 h-6" />
+                                            )}
+                                        </div>
+
+                                        {myScore === opponentScore ? (
+                                            <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg">
+                                                DRAW
+                                            </div>
+                                        ) : myScore > opponentScore ? (
+                                            <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-green-300 to-green-600 drop-shadow-lg">
+                                                VICTORY
+                                            </div>
+                                        ) : (
+                                            <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-red-300 to-red-600 drop-shadow-lg">
+                                                DEFEAT
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
 
@@ -607,25 +620,40 @@ export default function QuizPlayer({
                                 </div>
 
                                 {/* OPPONENT */}
-                                <div className="bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner">
+                                <div className={`bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner ${!isOpponentFinished ? 'animate-pulse opacity-80' : ''}`}>
                                     <div className="relative mb-3">
                                         <div className="w-16 h-16 rounded-full bg-gradient-to-b from-pink-200 to-pink-100 p-0.5 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
                                             <div className="w-full h-full rounded-full bg-gray-300 overflow-hidden">
                                                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=Opponent`} alt="Opponent" />
                                             </div>
                                         </div>
-                                        {/* Status icon for opponent - can be dynamic, hardcoded to X for visual match to design */}
-                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center border-2 border-[#131922]">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        {/* Status icon for opponent */}
+                                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#131922] ${isOpponentFinished ? 'bg-red-500' : 'bg-gray-600'}`}>
+                                            {isOpponentFinished ? (
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            ) : (
+                                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            )}
                                         </div>
                                     </div>
                                     <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">OPPONENT</span>
-                                    <span className="text-3xl font-black text-white mb-2">{opponentScore}</span>
-                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                                        {/* Randomized or calculated stat for opponent */}
-                                        <span className="text-[10px] text-gray-400 font-medium">{Math.floor((opponentScore / 100) * quiz.questions.length) || 0}/{quiz.questions.length} Correct</span>
-                                    </div>
+                                    {isOpponentFinished ? (
+                                        <>
+                                            <span className="text-3xl font-black text-white mb-2">{opponentScore}</span>
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                                                <span className="text-[10px] text-gray-400 font-medium">{Math.floor((opponentScore / 100) * quiz.questions.length) || 0}/{quiz.questions.length} Correct</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-xl font-bold text-gray-500 mb-2 italic">Playing...</span>
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full opacity-50">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-gray-500"></div>
+                                                <span className="text-[10px] text-gray-400 font-medium">--/-- Correct</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
