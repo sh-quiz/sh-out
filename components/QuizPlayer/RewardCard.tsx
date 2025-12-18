@@ -46,8 +46,7 @@ export default function RewardCard({ type, value, delay = 0 }: Props) {
                 h-[110px] sm:h-[130px] md:h-[140px] 
                 rounded-xl sm:rounded-2xl p-4 sm:p-4 md:p-5 
                 flex flex-col items-center justify-center text-center gap-2 sm:gap-3
-                bg-[#161B22]/90 backdrop-blur-[32px] border border-zinc-800/60
-                shadow-[0_0_20px_rgba(0,0,0,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]
+                backdrop-blur-[32px] border border-zinc-800/60
                 transition-all duration-300
                 focus-within:ring-2 focus-within:ring-blue-500/50
             "

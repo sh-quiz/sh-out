@@ -42,7 +42,7 @@ export default function StatCard({ title, value, subValue, type = 'default', del
             transition={{ duration: 0.5, delay, ease: "easeOut" }}
             className={`
                 relative overflow-hidden rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 flex flex-col items-center justify-center text-center
-                bg-[#161B22]/90 backdrop-blur-[32px] border transition-all duration-300
+                 backdrop-blur-[32px] border transition-all duration-300
                 ${getGlowColor()}
                 h-[110px] sm:h-[130px] md:h-[140px] w-full
                 focus-within:ring-2 focus-within:ring-blue-500/50
