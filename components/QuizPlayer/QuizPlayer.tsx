@@ -641,9 +641,9 @@ export default function QuizPlayer({
                             <div className="relative z-10 w-full space-y-4">
                                 <button
                                     onClick={() => onLeave ? onLeave() : router.push('/categories')}
-                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/40 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-blue-600 text-white text-xs font-bold uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/40 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
                                 >
-                                    Return directly to Lobby
+                                    Return  to Lobby
                                     <ChevronRight size={14} />
                                 </button>
 

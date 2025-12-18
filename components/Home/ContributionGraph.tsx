@@ -2,9 +2,27 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { getContributions, Contribution } from '../../app/api/contributions';
 
 export default function ContributionGraph() {
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+    useEffect(() => {
+        const checkScreenSize = () => {
+            setIsSmallScreen(window.innerWidth < 768); // md breakpoint
+        };
+
+        // Check on mount
+        checkScreenSize();
+
+        // Add event listener
+        window.addEventListener('resize', checkScreenSize);
+
+        // Cleanup
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
+
     const { data: contributions, isLoading } = useQuery({
         queryKey: ['contributions'],
         queryFn: getContributions,
@@ -60,8 +78,8 @@ export default function ContributionGraph() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <div className="px-6 mb-8">
-            <div className="p-6 bg-[#0a0a0a] rounded-md border border-white/5">
+        <div className="w-full">
+            <div className="p-4 sm:p-6 bg-[#0a0a0a] rounded-xl border border-white/5">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-sm font-medium text-white mb-2">
                         {totalContributions} contributions in the last year
@@ -73,7 +91,7 @@ export default function ContributionGraph() {
                 ) : (
                     <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 w-full">
                         <div className="grid grid-rows-7 grid-flow-col gap-[3px] min-w-max">
-                            {days.map((dateStr) => {
+                            {(isSmallScreen ? days.slice(Math.floor(days.length / 2)) : days).map((dateStr) => {
                                 const count = contributionsMap.get(dateStr) || 0;
                                 const level = getContributionLevel(count);
                                 return (
