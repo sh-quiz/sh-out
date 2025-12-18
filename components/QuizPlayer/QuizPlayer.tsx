@@ -318,6 +318,9 @@ export default function QuizPlayer({
         } catch (err: any) {
             console.error("Finish failed", err);
             if (isMultiplayer) {
+                if (onMultiplayerFinish) {
+                    onMultiplayerFinish(); // Ensure we signal finish even if API fails
+                }
                 setShowResults(true);
             } else {
                 router.push(`/attempts/${attemptId}/result`);
