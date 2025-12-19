@@ -91,7 +91,7 @@ export default function ContributionGraph() {
                 ) : (
                     <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 w-full">
                         <div className="grid grid-rows-7 grid-flow-col gap-[3px] min-w-max">
-                            {(isSmallScreen ? days.slice(Math.floor(days.length / 2)) : days).map((dateStr) => {
+                            {(isSmallScreen ? days.slice(-90) : days).map((dateStr) => {
                                 const count = contributionsMap.get(dateStr) || 0;
                                 const level = getContributionLevel(count);
                                 return (

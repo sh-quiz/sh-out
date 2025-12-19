@@ -108,19 +108,33 @@ export default function CategoriesPage() {
 
     return (
         <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] selection:bg-[#FF3B30] selection:text-white overflow-hidden font-sans">
-            <GrainOverlay />
+            {/* <GrainOverlay /> */}
             <CustomCursor />
             {/* HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:pl-72 md:pr-8 py-6 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 pointer-events-none">
+                {/* HUD Stats Bar */}
+                <div className="pointer-events-auto flex items-center bg-black/40 backdrop-blur-md rounded-lg border border-white/5 p-1.5 sm:p-2 gap-1.5 sm:gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4 px-3 sm:px-4 md:px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="w-2 h-2 rounded-sm bg-yellow-500 shadow-[0_0_8px_#EAB308]" />
+                        <div>
+                            <div className="text-[8px] sm:text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Energy</div>
+                            <div className="text-white font-mono font-bold leading-none text-xs sm:text-sm">{energyData?.energy ?? 0}<span className="text-gray-500">/{energyData?.maxEnergy ?? 30}</span></div>
+                        </div>
+                    </div>
 
-
-                <div className="pointer-events-auto flex items-center gap-4 bg-black/40 backdrop-blur-xl border border-white/5 rounded-full px-4 py-2">
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4 px-3 sm:px-4 md:px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="w-2 h-2 rounded-sm bg-blue-500 shadow-[0_0_8px_#3B82F6]" />
+                        <div>
+                            <div className="text-[8px] sm:text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Diamonds</div>
+                            <div className="text-white font-mono font-bold leading-none text-xs sm:text-sm">{diamondsData?.diamonds ?? 0}</div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
             <div className="flex flex-col min-h-screen w-full">
                 {/* ONLINE MATCH SECTION */}
-                <section className="relative flex-1 group overflow-hidden border-b border-white/5">
+                <section className="relative flex-1 group overflow-hidden border-b border-white/5 min-h-[60vh] md:min-h-0">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0 scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out">
                         <img
@@ -131,32 +145,33 @@ export default function CategoriesPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 md:pl-72">
-                        <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full max-w-[90rem] mx-auto gap-8 md:gap-0">
-                            <div className="space-y-4 flex flex-col items-start text-left">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded text-[#FF3B30] text-xs font-bold tracking-[0.2em] uppercase">
-                                    Live Combat
-                                </div>
-                                <h2 className="text-6xl md:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
-                                    Online <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">Match</span>
-                                </h2>
-                                <p className="text-gray-400 text-sm md:text-base font-mono tracking-widest uppercase opacity-80 pt-4">
-                                    // 12,847 Warriors Online <span className="text-[#FF3B30] mx-2">•</span> 7 Battles Active
-                                </p>
+                    <div className="relative z-10 h-full flex flex-col px-4 sm:px-6 md:px-12 md:pl-72 py-12 md:py-20">
+                        {/* Text Content at Top */}
+                        <div className="flex flex-col items-start text-left space-y-4 mb-8">
+                            <div className="inline-flex items-center gap-2 px-2.5 md:px-3 py-1 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded text-[#FF3B30] text-[10px] md:text-xs font-bold tracking-[0.15em] md:tracking-[0.2em] uppercase">
+                                Live Combat
                             </div>
+                            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                Online <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">Match</span>
+                            </h2>
+                            <p className="text-gray-400 text-xs sm:text-sm md:text-base font-mono tracking-wider md:tracking-widest uppercase opacity-80 pt-2">
+                                <span className="hidden sm:inline">// </span>12,847 Warriors <span className="text-[#FF3B30] mx-1 md:mx-2">•</span> <span className="hidden sm:inline">7 Battles Active</span><span className="sm:hidden">Live</span>
+                            </p>
+                        </div>
 
-                            <div className="relative group/btn w-full md:w-auto">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-[#FF3B30] to-[#FF9500] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
+                        {/* Button Centered Vertically & Horizontally in remaining space */}
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="relative group/btn w-full sm:w-auto min-w-[280px] max-w-md">
                                 <Link href="/quizzes">
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="relative flex items-center justify-center -skew-x-12 px-8 md:px-12 py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)] w-full md:w-auto"
+                                        className="relative flex items-center justify-center -skew-x-12 px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)] w-full min-h-[56px]"
                                     >
-                                        <div className="skew-x-12 flex items-center gap-3">
-                                            <span className="text-lg font-black tracking-widest uppercase">Enter Battle</span>
-                                            <ArrowLeft className="w-5 h-5 rotate-180" />
+                                        <div className="skew-x-12 flex items-center gap-2 sm:gap-3">
+                                            <span className="text-base sm:text-lg font-black tracking-wider sm:tracking-widest uppercase">Enter Battle</span>
+                                            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 rotate-180" />
                                         </div>
                                     </motion.div>
                                 </Link>
@@ -165,13 +180,11 @@ export default function CategoriesPage() {
                     </div>
 
                     {/* Laser Beams / Tech Detials */}
-                    <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#FF3B30]/50 to-transparent opacity-50" />
-                    </div>
+
                 </section>
 
                 {/* ARCADE MODE SECTION */}
-                <section className="relative flex-1 group overflow-hidden">
+                <section className="relative flex-1 group overflow-hidden min-h-[60vh] md:min-h-0">
                     {/* Background Image */}
                     <div
                         className="absolute inset-0 z-0 bg-cover bg-center scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out"
@@ -183,15 +196,15 @@ export default function CategoriesPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col justify-end pb-16 px-6 md:px-12 md:pl-72">
+                    <div className="relative z-10 h-full flex flex-col justify-end pb-8 sm:pb-12 md:pb-16 px-4 sm:px-6 md:px-12 md:pl-72">
                         <div className="w-full max-w-[90rem] mx-auto">
-                            <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-12 gap-8 md:gap-0">
-                                <div className="space-y-4 flex flex-col items-start text-left">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FFB340]/10 border border-[#FFB300]/20 rounded text-[#FFB340] text-xs font-bold tracking-[0.2em] uppercase">
-                                        <Sparkles className="w-3 h-3" />
+                            <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-6 sm:mb-8 md:mb-12 gap-6 sm:gap-8 md:gap-0">
+                                <div className="space-y-3 md:space-y-4 flex flex-col items-start text-left">
+                                    <div className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1 bg-[#FFB340]/10 border border-[#FFB300]/20 rounded text-[#FFB340] text-[10px] md:text-xs font-bold tracking-[0.15em] md:tracking-[0.2em] uppercase">
+                                        <Sparkles className="w-2.5 h-2.5 md:w-3 md:h-3" />
                                         Single Player
                                     </div>
-                                    <h2 className="text-6xl md:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
+                                    <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic">
                                         Arcade <br />
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB340] via-[#FFE5A0] to-[#FFB340]/50">Mode</span>
                                     </h2>
@@ -199,25 +212,25 @@ export default function CategoriesPage() {
 
                                 <div className="relative group/btn w-full md:w-auto">
                                     <div className="absolute -inset-1 bg-gradient-to-r from-[#FFB340] to-[#FFE5A0] rounded-lg blur opacity-20 group-hover/btn:opacity-50 transition duration-500" />
-                                    <div className="relative flex flex-col items-center justify-center -skew-x-12 px-6 md:px-8 py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)] gap-4 w-full md:w-auto">
+                                    <div className="relative flex flex-col items-center justify-center -skew-x-12 px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-[#FFB340] hover:bg-[#ffc163] text-black transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,179,64,0.3)] gap-3 md:gap-4 w-full md:w-auto min-h-[56px]">
                                         <div className="skew-x-12 flex flex-col items-center gap-2 w-full">
                                             {gameState.gameId ? (
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <span className="text-lg font-black tracking-widest uppercase">Game ID Created</span>
-                                                    <div className="text-2xl font-mono font-bold bg-black/20 px-4 py-2 rounded border border-black/10 select-all">
+                                                <div className="flex flex-col items-center gap-2 w-full">
+                                                    <span className="text-sm sm:text-base md:text-lg font-black tracking-wider sm:tracking-widest uppercase">Game ID Created</span>
+                                                    <div className="text-lg sm:text-xl md:text-2xl font-mono font-bold bg-black/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded border border-black/10 select-all">
                                                         {gameState.gameId}
                                                     </div>
-                                                    <p className="text-xs font-mono uppercase opacity-70">Share with player 2</p>
+                                                    <p className="text-[10px] sm:text-xs font-mono uppercase opacity-70">Share with player 2</p>
                                                     <button
                                                         onClick={() => joinGame(gameState.gameId!, myPlayerId)}
-                                                        className="text-xs bg-black/20 px-2 py-1 rounded hover:bg-black/30"
+                                                        className="text-xs sm:text-sm bg-black/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded hover:bg-black/30 transition-colors min-h-[40px] w-full sm:w-auto"
                                                     >
                                                         Join Lobby
                                                     </button>
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <button onClick={createGame} className="w-full bg-black/10 hover:bg-black/20 p-2 rounded uppercase font-bold tracking-wider transition-colors">
+                                                    <button onClick={createGame} className="w-full bg-black/10 hover:bg-black/20 p-2.5 sm:p-3 rounded uppercase font-bold tracking-wider transition-colors text-sm sm:text-base min-h-[44px]">
                                                         Create Game ID
                                                     </button>
 
@@ -229,12 +242,12 @@ export default function CategoriesPage() {
                                                             value={joinInput}
                                                             onChange={(e) => setJoinInput(e.target.value)}
                                                             placeholder="ENTER ID"
-                                                            className="w-full bg-black/10 border-none outline-none px-2 py-1 font-mono text-sm placeholder:text-black/30"
+                                                            className="flex-1 bg-black/10 border-none outline-none px-2.5 sm:px-3 py-2 sm:py-2.5 font-mono text-xs sm:text-sm placeholder:text-black/30 rounded min-h-[44px]"
                                                         />
                                                         <button
                                                             onClick={() => joinGame(joinInput, myPlayerId)}
                                                             disabled={!joinInput}
-                                                            className="bg-black text-[#FFB340] px-3 py-1 font-bold uppercase text-xs disabled:opacity-50"
+                                                            className="bg-black text-[#FFB340] px-4 sm:px-5 py-2 sm:py-2.5 font-bold uppercase text-xs sm:text-sm disabled:opacity-50 rounded min-h-[44px]"
                                                         >
                                                             Join
                                                         </button>
@@ -246,32 +259,7 @@ export default function CategoriesPage() {
                                 </div>
                             </div>
 
-                            {/* HUD Stats Bar */}
-                            <div className="flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-8 mt-8 gap-4 md:gap-0">
-                                <div className="flex items-center gap-8 text-[#878D96] text-sm font-mono tracking-wider uppercase">
-                                    <span>System Ready</span>
-                                    <span>v2.4.0</span>
-                                </div>
 
-                                <div className="flex items-center bg-black/40 backdrop-blur-md rounded-lg border border-white/5 p-2 gap-2">
-                                    <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
-                                        <div className="w-2 h-2 rounded-sm bg-yellow-500 shadow-[0_0_8px_#EAB308]" />
-                                        <div>
-                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Energy</div>
-                                            <div className="text-white font-mono font-bold leading-none">{energyData?.energy ?? 0}<span className="text-gray-500">/{energyData?.maxEnergy ?? 30}</span></div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
-                                        <div className="w-2 h-2 rounded-sm bg-blue-500 shadow-[0_0_8px_#3B82F6]" />
-                                        <div>
-                                            <div className="text-[9px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Diamonds</div>
-                                            <div className="text-white font-mono font-bold leading-none">{diamondsData?.diamonds ?? 0}</div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
