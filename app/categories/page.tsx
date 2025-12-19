@@ -111,7 +111,7 @@ export default function CategoriesPage() {
             {/* <GrainOverlay /> */}
             <CustomCursor />
             {/* HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 pointer-events-none">
+            <header className="fixed top-0 left-0 md:left-64 right-0 z-50 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 pointer-events-none">
                 {/* HUD Stats Bar */}
                 <div className="pointer-events-auto flex items-center bg-black/40 backdrop-blur-md rounded-lg border border-white/5 p-1.5 sm:p-2 gap-1.5 sm:gap-2">
                     <div className="flex items-center gap-2 sm:gap-3 md:gap-4 px-3 sm:px-4 md:px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors">
