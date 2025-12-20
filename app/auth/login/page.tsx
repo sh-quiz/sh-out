@@ -9,7 +9,6 @@ import Lenis from 'lenis';
 
 // Components
 import AuthInput from '@/components/Auth/AuthInput';
-import GoogleButton from '@/components/Auth/GoogleButton';
 import ParticleBackground from '@/components/ui/ParticleBackground';
 
 export default function LoginPage() {
@@ -143,11 +142,6 @@ export default function LoginPage() {
             )}
           </motion.button>
         </form>
-
-        {/* Google Button */}
-        <div className="w-full mb-8">
-          <GoogleButton />
-        </div>
 
         {/* Footer Link */}
         <motion.p
