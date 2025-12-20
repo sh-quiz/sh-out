@@ -31,7 +31,7 @@ export const authService = {
     },
 
     async login(data: LoginData): Promise<AuthResponse> {
-        const response = await api.post('/auth/login', data);
+        const response = await api.post('/auth', data);
         this.saveTokens(response.data);
         return response.data;
     },

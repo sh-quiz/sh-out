@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         const isAuthenticated = authService.isAuthenticated();
 
         if (!isAuthenticated && !isPublicPage) {
-            router.push('/auth/login');
+            router.push('/auth');
         }
     }, [pathname, isPublicPage, router, mounted]);
 

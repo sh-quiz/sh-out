@@ -6,19 +6,19 @@ export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Define public routes that don't require authentication
-    const publicRoutes = ['/', '/auth/login', '/auth/signup'];
+    const publicRoutes = ['/', '/auth', '/auth/signup'];
 
     // Check if the current path is a public route
     const isPublicRoute = publicRoutes.includes(pathname);
 
     if (token) {
         // If user is logged in and tries to access login or signup, redirect to dashboard
-        if (pathname === '/auth/login' || pathname === '/auth/signup') {
+        if (pathname === '/auth' || pathname === '/auth/signup') {
             return NextResponse.redirect(new URL('/home', request.url));
         }
     } else {
         if (!isPublicRoute) {
-            return NextResponse.redirect(new URL('/auth/login', request.url));
+            return NextResponse.redirect(new URL('/auth', request.url));
         }
     }
 
