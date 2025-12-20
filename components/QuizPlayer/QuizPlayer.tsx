@@ -341,32 +341,13 @@ export default function QuizPlayer({
     return (
         <div className="min-h-screen bg-black text-white flex flex-col font-sans relative">
 
-            {/* Multiplayer HUD */}
-            {isMultiplayer && (
-                <div className="fixed top-28 right-6 z-50 flex flex-col gap-2 pointer-events-none">
-                    <div className="bg-red-900/20 backdrop-blur-md border border-red-500/30 p-3 rounded-xl flex items-center gap-3 w-48">
-                        <Users className="text-red-500 w-5 h-5" />
-                        <div className="flex flex-col w-full">
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs text-red-400 font-bold uppercase tracking-wider">Opponent</span>
-                                {isOpponentFinished && <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded font-bold">DONE</span>}
-                            </div>
-                            <div className="flex items-end justify-between">
-                                <span className="text-xl font-mono font-bold text-white">{opponentScore}</span>
-                                <div className="h-1.5 flex-1 ml-3 bg-red-900/50 rounded-full overflow-hidden">
-                                    <div className="h-full bg-red-500 transition-all duration-500" style={{ width: `${Math.min((opponentScore || 0) / 10, 100)}%` }} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+
 
 
             {/* Header */}
-            <div className="px-6 py-2 flex items-center justify-between max-w-5xl mx-auto w-full pt-20"> {/* added padding top to avoid header overlap */}
-                <div className="flex flex-col w-full max-w-2xl">
-                    <span className="text-gray-400 text-sm font-medium mb-2">
+            <div className="px-2 py-1 flex items-center justify-between max-w-5xl mx-auto w-full pt-20"> {/* added padding top to avoid header overlap */}
+                <div className="flex flex-col w-full max-w-md">
+                    <span className="text-gray-400 md:text-sm text-xs font-medium mb-2 whitespace-nowrap">
                         Question {currentQuestionIndex + 1} of {quiz.questions.length}
                     </span>
                     <div className="h-1.5 bg-gray-800 rounded-full w-full overflow-hidden">
@@ -377,31 +358,70 @@ export default function QuizPlayer({
                     </div>
                 </div>
 
-                {/* Timer Circle */}
-                <div className="ml-6 relative w-12 h-12 flex items-center justify-center">
-                    <svg className="w-full h-full transform -rotate-90">
-                        <circle
-                            cx="24"
-                            cy="24"
-                            r="20"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                            fill="transparent"
-                            className="text-gray-800"
-                        />
-                        <circle
-                            cx="24"
-                            cy="24"
-                            r="20"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                            fill="transparent"
-                            strokeDasharray={125.6}
-                            strokeDashoffset={125.6 * (1 - timeLeft / 60)}
-                            className="text-blue-900 transition-all duration-1000 ease-linear"
-                        />
-                    </svg>
-                    <span className="absolute text-sm font-bold">{timeLeft}</span>
+                {/* Right Side: Opponent Score + Timer */}
+                <div className="flex items-center gap-4 ml-6">
+                    {/* Opponent Score (Multiplayer) */}
+                    {isMultiplayer && (
+                        <div className="relative group">
+                            <div className="absolute inset-0 bg-red-600/10 blur-xl rounded-full opacity-50 transition-opacity duration-500" />
+                            <div className="relative bg-[#0F1115] border border-red-500/20 px-3 py-1.5 rounded-2xl flex items-center gap-2 min-w-[140px] shadow-lg shadow-black/40 backdrop-blur-md">
+
+                                {/* Icon container with glow */}
+                                <div className="md:w-7 md:h-7 sm:w-6 sm:h-6 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+                                    <Users className="text-red-500 w-3.5 h-3.5" />
+                                </div>
+
+                                <div className="flex flex-col w-full">
+                                    <div className="flex justify-between items-center mb-0.5">
+                                        <span className="text-[9px] text-red-400/80 font-bold uppercase tracking-[0.15em] leading-none">Opponent</span>
+                                        {isOpponentFinished && (
+                                            <span className="text-[8px] bg-red-500/20 text-red-400 border border-red-500/30 px-1 py-px rounded-md font-bold leading-none animate-pulse">
+                                                DONE
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className="text-lg font-mono font-black text-white leading-none tracking-tight shadow-black drop-shadow-md">{opponentScore}</span>
+
+                                        {/* Progress Bar */}
+                                        <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden relative">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)] transition-all duration-700 ease-out rounded-full"
+                                                style={{ width: `${Math.min((opponentScore || 0) / 10, 100)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Timer Circle */}
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90">
+                            <circle
+                                cx="24"
+                                cy="24"
+                                r="20"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                fill="transparent"
+                                className="text-gray-800"
+                            />
+                            <circle
+                                cx="24"
+                                cy="24"
+                                r="20"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                fill="transparent"
+                                strokeDasharray={125.6}
+                                strokeDashoffset={125.6 * (1 - timeLeft / 60)}
+                                className="text-blue-900 transition-all duration-1000 ease-linear"
+                            />
+                        </svg>
+                        <span className="absolute text-sm font-bold">{timeLeft}</span>
+                    </div>
                 </div>
             </div>
 

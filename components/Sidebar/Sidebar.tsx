@@ -71,11 +71,6 @@ export default function Sidebar() {
                 <h3 className="text-xs font-semibold text-[#878D96]/50 uppercase px-4 mb-2 tracking-wider">More</h3>
 
                 <button className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-white rounded-xl transition-colors text-sm group">
-                    <span>View public quizzes</span>
-                    <FileText className="w-4 h-4 text-[#878D96] group-hover:text-white" />
-                </button>
-
-                <button className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-white rounded-xl transition-colors text-sm group">
                     <span>Use on telegram</span>
                     <Send className="w-4 h-4 text-[#007AFF]" />
                 </button>
