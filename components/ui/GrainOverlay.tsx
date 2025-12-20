@@ -27,7 +27,7 @@ function GrainShader() {
       precision mediump float;
       uniform vec2 resolution;
       uniform float time;
-      
+
       float random(vec2 st) {
           return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
       }
@@ -36,20 +36,20 @@ function GrainShader() {
           vec2 st = gl_FragCoord.xy / resolution.xy;
           float r = random(st + time);
           // 4% monochrome noise means mostly transparent, with some white/black specs?
-          // Or just a uniform noise overlay? Usually "film grain" is uniform noise.
-          // Let's do standard film grain.
-          
-          float noise = (r - 0.5) * 0.08; // Strength
-          
-          // We want it to be an overlay. 
-          // Since we can't easily mix-blend-mode in WebGL without reading the background (which we can't do here easily),
-          // we will output a color with alpha.
-          
-          gl_FragColor = vec4(vec3(noise + 0.5), 0.07); // 0.07 opacity matches the previous CSS
+
+
+
+          float noise = (r - 0.5) * 0.08;
+
+
+
+
+
+          gl_FragColor = vec4(vec3(noise + 0.5), 0.07);
       }
     `;
 
-        // Compile shaders...
+
         const createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
             const shader = gl.createShader(type);
             if (!shader) return null;

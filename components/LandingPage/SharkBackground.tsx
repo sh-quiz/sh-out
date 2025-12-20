@@ -10,7 +10,7 @@ function LiquidShark() {
 
     useFrame((state) => {
         if (meshRef.current) {
-            // Subtle rotation
+
             meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.2;
             meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
         }

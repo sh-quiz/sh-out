@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { User, Lock, Diamond, Mail } from 'lucide-react';
 import Lenis from 'lenis';
 
-// Components
+
 import AuthInput from '@/components/Auth/AuthInput';
 import ParticleBackground from '@/components/ui/ParticleBackground';
 
@@ -31,7 +31,7 @@ export default function SignPage() {
 
         try {
             await authService.signup(formData);
-            router.push('/home'); // Or wherever appropriate
+            router.push('/home');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to create account');
         } finally {
@@ -44,7 +44,7 @@ export default function SignPage() {
         const isAuth = authService.isAuthenticated();
         setIsAuthenticated(isAuth);
 
-        // Smooth Scroll
+
         const lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -71,15 +71,15 @@ export default function SignPage() {
         <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 relative overflow-hidden flex flex-col items-center justify-center">
             <ParticleBackground />
 
-            {/* Subtle Gradient Overlay */}
+
             <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 via-transparent to-transparent pointer-events-none" />
 
-            {/* Bottom Lens Flare Glow */}
+
             <div className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
 
             <main className="relative z-10 w-full max-w-md px-6 flex flex-col items-center">
 
-                {/* Logo Section */}
+
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -99,7 +99,7 @@ export default function SignPage() {
                     <p className="text-[#878D96] text-sm font-light tracking-wide">Master Anything.</p>
                 </motion.div>
 
-                {/* Form Section */}
+
                 <form className="w-full space-y-2 mb-8" onSubmit={handleSignup}>
                     {error && (
                         <motion.div
@@ -168,7 +168,7 @@ export default function SignPage() {
 
 
 
-                {/* Footer Link */}
+
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -186,7 +186,7 @@ export default function SignPage() {
 
             </main>
 
-            {/* Bottom Amber Line */}
+
             <div className="absolute bottom-8 right-8 w-16 h-1 bg-amber-500/50 rounded-full blur-[1px]" />
         </div>
     );

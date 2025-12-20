@@ -8,7 +8,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Share2, ArrowRight } from 'lucide-react';
 import Lenis from 'lenis';
 
-// Components
+
 import ParticleBackground from '@/components/ui/ParticleBackground';
 import ScoreHero from './ScoreHero';
 import StatCard from './StatCard';
@@ -29,16 +29,16 @@ export default function QuizResult({ attemptId }: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
     const reviewRef = useRef<HTMLDivElement>(null);
 
-    // Data Fetching
+
     const { data: userRank } = useUserRank();
 
     const scrollToReview = () => {
         reviewRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // Smooth Scroll - Disabled on mobile for better performance
+
     useEffect(() => {
-        // Only enable smooth scroll on larger screens
+
         const mediaQuery = window.matchMedia('(min-width: 768px)');
         if (!mediaQuery.matches) return;
 
@@ -71,7 +71,7 @@ export default function QuizResult({ attemptId }: Props) {
             const data = await quizService.getResult(attemptId);
             setResult(data);
 
-            // Award energy if perfect score
+
             if (data && data.score === data.totalPoints && !hasClaimed) {
                 try {
                     await economyService.awardEnergy({
@@ -108,7 +108,7 @@ export default function QuizResult({ attemptId }: Props) {
 
 
 
-    // Derived Data
+
     const correctAnswers = result.score;
     const wrongAnswers = result.totalPoints - result.score;
     const accuracy = Math.round(result.percentage);
@@ -119,10 +119,10 @@ export default function QuizResult({ attemptId }: Props) {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // Mock Data for Visuals (some still mocked)
+
     const speedRank = "Top 15%";
     const timeTaken = formatTime(result.timeTaken || 0);
-    const rankClimb = 0; // Climbing calculation requires historical data not yet available
+    const rankClimb = 0;
     const globalRank = userRank?.rank ?? 0;
 
     return (
@@ -131,14 +131,14 @@ export default function QuizResult({ attemptId }: Props) {
 
             <main className="relative z-10 max-w-sm sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 pb-24 sm:pb-28 lg:pb-32 flex flex-col items-center w-full" role="main">
 
-                {/* Hero Section */}
+
                 <ScoreHero
                     score={correctAnswers}
                     total={result.totalPoints}
-                    streak={1} // Mock streak
+                    streak={1}
                 />
 
-                {/* Performance Breakdown */}
+
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -179,7 +179,7 @@ export default function QuizResult({ attemptId }: Props) {
                     </div>
                 </motion.div>
 
-                {/* Rewards Unlocked */}
+
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -198,17 +198,17 @@ export default function QuizResult({ attemptId }: Props) {
                     </div>
                 </motion.div>
 
-                {/* Rank Reveal */}
+
                 <RankReveal climb={rankClimb} rank={globalRank} />
 
-                {/* Question Review Section */}
+
                 <div ref={reviewRef} className="w-full">
                     {result && <QuestionReview answers={result.answers} />}
                 </div>
 
             </main>
 
-            {/* Fixed Bottom CTA Bar */}
+
             <motion.div
                 initial={{ y: 100 }}
                 animate={{ y: 0 }}

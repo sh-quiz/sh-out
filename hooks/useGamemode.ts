@@ -14,7 +14,7 @@ interface GameState {
     isOpponentFinished?: boolean;
 }
 
-// Helper to load game state from localStorage
+
 const loadGameState = (): GameState => {
     if (typeof window === 'undefined') {
         return {
@@ -46,7 +46,7 @@ const loadGameState = (): GameState => {
     };
 };
 
-// Helper to save game state to localStorage
+
 const saveGameState = (state: GameState) => {
     if (typeof window === 'undefined') return;
 
@@ -64,7 +64,7 @@ export const useGamemode = () => {
     const [gameState, setGameState] = useState<GameState>(loadGameState);
 
 
-    // Save game state to localStorage whenever it changes
+
     useEffect(() => {
         saveGameState(gameState);
     }, [gameState]);
@@ -76,11 +76,11 @@ export const useGamemode = () => {
             console.log('Connected to WebSocket server');
             setIsConnected(true);
 
-            // Rejoin game if we have a saved gameId (e.g., after page refresh)
+
             if (gameState.gameId && gameState.status !== 'idle') {
                 console.log('[useGamemode] Detected saved game state, attempting to rejoin...');
-                // Note: Backend needs to handle rejoin logic properly
-                // This ensures the socket is aware of the player being in this game
+
+
                 newSocket.emit('rejoinGame', { gameId: gameState.gameId });
             }
         });
@@ -104,7 +104,7 @@ export const useGamemode = () => {
             if (data) {
                 setGameState((prev) => ({
                     ...prev,
-                    gameId: data.gameId || prev.gameId, // maintain if already set
+                    gameId: data.gameId || prev.gameId,
                     status: data.status || 'waiting',
                     players: data.players || []
                 }));
@@ -131,9 +131,9 @@ export const useGamemode = () => {
 
         newSocket.on('opponentFinished', (data: any) => {
             console.log('[useGamemode] Opponent finished event received:', data);
-            // If the message is from someone else (which it should be based on gateway logic, or we check ID)
-            // Ideally gateway shouldn't echo to sender, but we can double check logic or just set state
-            // Depending on architecture, we might verify ID. safely just setting true for demo.
+
+
+
             setGameState((prev) => ({ ...prev, isOpponentFinished: true }));
         });
 
@@ -142,7 +142,7 @@ export const useGamemode = () => {
         return () => {
             newSocket.disconnect();
         };
-    }, []); // Only depend on initial mount, not gameState to avoid reconnection loops
+    }, []);
 
 
     const createGame = useCallback(() => {
@@ -180,7 +180,7 @@ export const useGamemode = () => {
             isOpponentFinished: false,
         };
         setGameState(newState);
-        // Also clear from localStorage
+
         if (typeof window !== 'undefined') {
             localStorage.removeItem(GAME_STATE_KEY);
             console.log('[useGamemode] Cleared game state from localStorage');

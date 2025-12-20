@@ -27,19 +27,19 @@ export default function ActivitySection() {
         fetchData();
     }, []);
 
-    // Process heatmap data for the contribution graph
+
     const processContributionData = () => {
         const year = new Date().getFullYear();
         const startOfYear = new Date(year, 0, 1);
         const endOfYear = new Date(year, 11, 31);
 
-        // Create map of date string to level
+
         const activityMap = new Map<string, number>();
         heatmap.forEach(item => {
             let level = 0;
             if (item.count > 0) {
                 // Determine level based on count/intensity
-                // This logic can be tuned. Assuming count is somewhat proportional to activity.
+
                 if (item.count >= 10) level = 3;
                 else if (item.count >= 5) level = 2;
                 else level = 1;
@@ -59,11 +59,11 @@ export default function ActivitySection() {
 
     const contributionData = processContributionData();
 
-    // Process monthly progress
+
     const processMonthlyStats = () => {
         if (!heatmap.length) return [];
 
-        // Group by month
+
         const monthlyData = new Map<string, { daysStudied: number, totalDays: number }>();
         const year = new Date().getFullYear();
         const monthNames = [
@@ -71,9 +71,9 @@ export default function ActivitySection() {
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
 
-        // Initialize all months? Or just recent ones?
-        // The original code showed Dec, Nov, Oct (reverse chronological).
-        // Let's show the last 3 months.
+
+
+
         const currentMonth = new Date().getMonth();
 
         const result = [];
@@ -88,7 +88,7 @@ export default function ActivitySection() {
             const monthName = `${monthNames[mIndex]} ${y}`;
             const daysInMonth = new Date(y, mIndex + 1, 0).getDate();
 
-            // Calculate days studied in this month
+
             let daysStudied = 0;
             heatmap.forEach(h => {
                 const d = new Date(h.date);
@@ -109,7 +109,7 @@ export default function ActivitySection() {
 
     const months = processMonthlyStats();
 
-    // Calculate total days studied this year from heatmap
+
     const totalDaysStudied = heatmap.filter(h => h.date.startsWith(new Date().getFullYear().toString()) && h.count > 0).length;
 
     if (loading) {
@@ -127,23 +127,18 @@ export default function ActivitySection() {
                     {new Date().getFullYear()} · {totalDaysStudied} days studied
                 </h2>
 
-                {/* Contribution Graph Container */}
+
                 <div className="p-2 bg-[#171717] rounded-md border border-white/5 mb-12 overflow-x-auto no-scrollbar max-w-full">
                     <div className="min-w-max">
-                        {/* 
-                           Grid needs to be careful with rows/cols.
-                           1 year is approx 53 weeks.
-                           grid-rows-7 means it fills 7 items vertically then moves to next column.
-                           So we just need to render all days and CSS grid handles the layout.
-                        */}
+
                         <div className="grid grid-rows-7 grid-flow-col gap-1.5">
                             {contributionData.map((level, i) => (
                                 <div
                                     key={i}
                                     className={`w-3 h-3 rounded-sm ${level === 0 ? 'bg-[#2C2C2E]' :
-                                        level === 1 ? 'bg-[#004080]' : // Dark blue
-                                            level === 2 ? 'bg-[#007AFF]' : // Medium blue
-                                                'bg-[#5AC8FA]' // Light blue
+                                        level === 1 ? 'bg-[#004080]' :
+                                            level === 2 ? 'bg-[#007AFF]' :
+                                                'bg-[#5AC8FA]'
                                         }`}
                                     title={`Day ${i + 1}`}
                                 />
@@ -152,7 +147,7 @@ export default function ActivitySection() {
                     </div>
                 </div>
 
-                {/* Monthly Progress */}
+
                 <div className="space-y-8">
                     {months.map((month, index) => (
                         <div key={month.name} className="space-y-2">

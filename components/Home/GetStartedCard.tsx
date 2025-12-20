@@ -11,7 +11,7 @@ export default function GetStartedCard() {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="relative mx-6 my-8 p-8 rounded-[24px] bg-black border border-[#161B22] overflow-hidden text-center"
         >
-            {/* Local Grain Overlay */}
+
             <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
 
             <div className="relative z-10 flex flex-col items-center">

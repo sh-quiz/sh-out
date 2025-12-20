@@ -15,7 +15,7 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
             transition={{ delay, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className={`relative flex flex-col items-center ${isFirst ? '-mt-12 z-20' : 'z-10'}`}
         >
-            {/* Crown for #1 */}
+
             {isFirst && (
                 <motion.div
                     animate={{ y: [-4, 4, -4] }}
@@ -27,7 +27,7 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
                 </motion.div>
             )}
 
-            {/* Avatar Circle */}
+
             <motion.div
                 animate={{ y: [-4, 4, -4] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: isFirst ? 0 : 1 }}
@@ -38,14 +38,14 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
                 `}
             >
                 <div className="w-full h-full rounded-full bg-[#0D1117] border border-black overflow-hidden relative">
-                    {/* Placeholder Avatar */}
+
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
                     <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white/20">
                         IMG
                     </div>
                 </div>
 
-                {/* Rank Badge with Stroke Animation */}
+
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center">
                     <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 32 32">
                         <motion.circle
@@ -68,7 +68,7 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
                 </div>
             </motion.div>
 
-            {/* User Info */}
+
             <div className="text-center">
                 <h3 className="text-white font-medium text-sm mb-1">{user.name}</h3>
                 <p className="text-[#878D96] text-xs mb-3">{user.school}</p>
@@ -80,7 +80,7 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
                 </span>
             </div>
 
-            {/* Glow Effect */}
+
             <div className={`
                 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-[60px] -z-10 pointer-events-none
                 ${isFirst ? 'bg-[#34D399]/10' : 'bg-[#FFB340]/5'}
@@ -91,7 +91,7 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
 
 
     export default function Podium({ users }: { users: any[] }) {
-    // Ensure we always have 3 spots, even if empty
+
     const podiumUsers = [
         users.find(u => u.rank === 2) || null,
         users.find(u => u.rank === 1) || null,
@@ -105,13 +105,13 @@ const PodiumCard = ({ rank, user, delay }: { rank: number, user: any, delay: num
                 school: podiumUsers[0].user.school || 'Unknown School',
                 score: podiumUsers[0].score.toLocaleString()
             }} delay={0.2} />}
-            
+
             {podiumUsers[1] && <PodiumCard rank={1} user={{
                 name: `${podiumUsers[1].user.firstName} ${podiumUsers[1].user.lastName.charAt(0)}.`,
                 school: podiumUsers[1].user.school || 'Unknown School',
                 score: podiumUsers[1].score.toLocaleString()
             }} delay={0} />}
-            
+
             {podiumUsers[2] && <PodiumCard rank={3} user={{
                 name: `${podiumUsers[2].user.firstName} ${podiumUsers[2].user.lastName.charAt(0)}.`,
                 school: podiumUsers[2].user.school || 'Unknown School',

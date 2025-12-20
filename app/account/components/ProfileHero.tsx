@@ -23,7 +23,7 @@ export default function ProfileHero({
 }: ProfileHeroProps) {
     return (
         <div className="relative flex flex-col items-center justify-center py-12 md:py-20">
-            {/* Background Glow */}
+
             {streak > 0 && (
                 <motion.div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-gradient-radial from-[#FFB340]/10 to-transparent rounded-full blur-3xl pointer-events-none"
@@ -32,7 +32,7 @@ export default function ProfileHero({
                 />
             )}
 
-            {/* Avatar */}
+
             <motion.div
                 className="relative group cursor-pointer"
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -43,7 +43,7 @@ export default function ProfileHero({
                 data-cursor-image={avatarUrl}
             >
                 <div className={`relative w-[120px] h-[120px] md:w-[180px] md:h-[180px] rounded-full overflow-hidden border-2 ${isPremium ? "border-[#007AFF]" : "border-white/10"}`}>
-                    <div className="absolute inset-0 bg-[#161B22] animate-pulse" /> {/* Placeholder */}
+                    <div className="absolute inset-0 bg-[#161B22] animate-pulse" />
                     {avatarUrl && (
                         <Image
                             src={avatarUrl}
@@ -53,14 +53,14 @@ export default function ProfileHero({
                         />
                     )}
 
-                    {/* Edit Overlay */}
+
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <Edit2 className="w-6 h-6 text-white" />
                     </div>
                 </div>
             </motion.div>
 
-            {/* Name */}
+
             <div className="mt-8 text-center">
                 <motion.h1
                     className="text-3xl md:text-4xl font-medium text-[#F0F2F5] tracking-tight"

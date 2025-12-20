@@ -89,18 +89,18 @@ export default function SubjectCard({
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
         >
-            {/* Active Glow */}
+
             {isActive && (
                 <div className="absolute inset-0 bg-[#007AFF] opacity-[0.03]" />
             )}
 
-            {/* Hover Glow */}
+
             <motion.div
                 className="absolute inset-0 bg-[#007AFF] opacity-0 blur-2xl"
                 animate={{ opacity: isHovered ? 0.05 : 0 }}
             />
 
-            {/* Icon */}
+
             <div className={cn("mb-6 relative", isActive ? "text-[#007AFF]" : "text-[#F0F2F5]")}>
                 {isActive && (
                     <svg className="absolute -inset-4 w-[calc(100%+32px)] h-[calc(100%+32px)] rotate-[-90deg]">
@@ -118,7 +118,7 @@ export default function SubjectCard({
                 {Icons[iconType](isHovered || isActive ? 1 : 0)}
             </div>
 
-            {/* Text */}
+
             <h3 className="text-2xl font-semibold text-[#F0F2F5] mb-2 text-center">{subject}</h3>
             <p className="text-sm text-[#878D96]">{count}</p>
         </motion.div>

@@ -27,21 +27,21 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
     const levels = useMemo(() => {
         const totalLevels = quizzes.length;
 
-        // Find the index of the first non-completed quiz (Current Level)
+
         let currentFound = false;
 
-        // Create nodes
+
         const nodes = quizzes.map((quiz, index) => {
-            // 1-based level index for display
+
             const levelNum = index + 1;
 
-            // Zigzag logic
+
             const x = 50 + 30 * Math.sin(levelNum * 0.5);
 
-            // Y position: Start from bottom.
+
             const y = (totalLevels - 1 - index) * 180 + 100;
 
-            // Determine status
+
             let status: 'completed' | 'current' | 'locked' = 'locked';
 
             if (quiz.isCompleted) {
@@ -66,20 +66,20 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
     }, [quizzes]);
 
 
-    // Generate SVG Path
+
     const pathData = useMemo(() => {
         if (levels.length === 0) return "";
 
-        // Sort by y to draw path from top to bottom?
-        // SVG coordinates: y=0 is top.
-        // Our levels have y calculated. Level N is at y=100 (top), Level 1 is at y=Max (bottom).
-        // We should draw from top (Level N) down to Level 1? Or Level 1 up?
-        // The previous code drew from levels[0] to end.
-        // If levels are sorted by ID 1..N:
-        // Level 1: y = (N-1)*180 + 100 (Bottom)
-        // Level N: y = 0*180 + 100 (Top)
-        // Drawing from 1 to N means drawing from Bottom to Top.
-        // Let's sort levels by Y ascending (Top to Bottom) for the path.
+
+
+
+
+
+
+
+
+
+
 
         const sortedLevels = [...levels].sort((a, b) => a.position.y - b.position.y);
 
@@ -89,7 +89,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
             const current = sortedLevels[i];
             const next = sortedLevels[i + 1];
 
-            // Control points for smooth curve
+
             const cp1x = current.position.x;
             const cp1y = current.position.y + 90;
             const cp2x = next.position.x;
@@ -103,12 +103,12 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
 
     return (
         <div ref={containerRef} className="relative w-full min-h-screen pb-40">
-            {/* Background Grid/Stars Effect */}
+
             <div className="fixed inset-0 z-0 pointer-events-none">
-                {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#111_0%,_#000_100%)]" /> */}
+
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-                {/* Tiny stars */}
-                {/* Simplified stars for performance/cleanliness in this edit */}
+
+
                 <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full opacity-20" />
                 {Array.from({ length: 20 }).map((_, i) => (
                     <div
@@ -125,9 +125,9 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
                 ))}
             </div>
 
-            {/* SVG Path Layer */}
+
             <svg className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-visible">
-                {/* Glow Filter */}
+
                 <defs>
                     <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="4" result="blur" />
@@ -140,7 +140,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
                     </linearGradient>
                 </defs>
 
-                {/* The Path */}
+
                 <path
                     d={pathData}
                     fill="none"
@@ -152,7 +152,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
                 />
             </svg>
 
-            {/* Nodes and Cards Layer */}
+
             <div className="relative z-20 w-full h-full max-w-md mx-auto">
                 {levels.map((level) => (
                     <div key={level.id}>

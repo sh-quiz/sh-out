@@ -21,7 +21,7 @@ export default function PerformanceGrid() {
         },
     });
 
-    // Format study time (seconds -> hours)
+
     const formatStudyTime = (seconds: number | string) => {
         const totalSeconds = typeof seconds === 'string' ? parseInt(seconds, 10) : seconds;
         const hours = Math.floor(totalSeconds / 3600);

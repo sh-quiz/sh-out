@@ -34,20 +34,20 @@ export default function QuizPlayer({
 }: Props) {
     const [quiz, setQuiz] = useState<QuizDetail | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Record<number, any>>({});
+    const [answers, setAnswers] = useState<Record<number, any>>();
     const [submittedQuestions, setSubmittedQuestions] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const submittingRef = useRef(false);
     const [isMuted, setIsMuted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
-    const [myScore, setMyScore] = useState(0); // Track local score for multiplayer
+    const [myScore, setMyScore] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
     const [showResults, setShowResults] = useState(false);
     const { speak, cancel } = useTTS();
     const [hasInteracted, setHasInteracted] = useState(false);
 
-    // Voice Command Handler
+
     const handleVoiceCommand = useCallback((text: string) => {
         console.log("[QuizPlayer] Voice command received:", text);
         if (!quiz) return;
@@ -92,10 +92,7 @@ export default function QuizPlayer({
 
     const loadQuizAndAttempt = async () => {
         try {
-            if (isMultiplayer) {
-                // In multiplayer, we still need to load quiz and attempt to be robust
-                // But we handle it same as single player now to ensure state sync
-            }
+            if (isMultiplayer)
 
             const [quizData, attemptData] = await Promise.all([
                 quizService.getById(quizId),
@@ -104,8 +101,8 @@ export default function QuizPlayer({
 
             setQuiz(quizData);
 
-            // Process existing answers
-            const initialAnswers: Record<number, any> = {};
+
+            const initialAnswers: Record<number, any> = ;
             const submitted = new Set<number>();
             let score = 0;
             let correct = 0;
@@ -142,14 +139,14 @@ export default function QuizPlayer({
 
         } catch (err) {
             console.error(err);
-            // In demo mode or if error, we might just fail silently or show error
+
         } finally {
             setLoading(false);
         }
     };
 
 
-    // Effect to read question when index changes or quiz loads
+
     useEffect(() => {
         if (quiz && !loading && !isMuted && hasInteracted) {
             readCurrentQuestion();
@@ -158,7 +155,7 @@ export default function QuizPlayer({
         }
     }, [currentQuestionIndex, quiz, loading, isMuted, hasInteracted]);
 
-    // Timer logic
+
     useEffect(() => {
         setTimeLeft(60);
     }, [currentQuestionIndex]);
@@ -183,7 +180,7 @@ export default function QuizPlayer({
         const isQSubmitted = submittedQuestions.has(currentQ.id);
 
         if (timeLeft === 0 && !isQSubmitted) {
-            // Check if there is a selected answer
+
             const hasAnswer = answers[currentQ.id] !== undefined;
 
             if (hasAnswer) {
@@ -194,7 +191,7 @@ export default function QuizPlayer({
         }
     }, [timeLeft, quiz, submittedQuestions, currentQuestionIndex, answers]);
 
-    // Cleanup speech on unmount
+
     useEffect(() => {
         return () => {
             cancel();
@@ -221,7 +218,7 @@ export default function QuizPlayer({
         if (submittedQuestions.has(questionId)) return;
         setAnswers((prev) => ({ ...prev, [questionId]: value }));
 
-        // Auto-advance: Submit immediately (with slight delay for visual feedback)
+
         setTimeout(() => {
             submitCurrentAnswer(value);
         }, 300);
@@ -270,7 +267,7 @@ export default function QuizPlayer({
 
             setMyScore(res.currentScore);
             if (onScoreUpdate) {
-                // Calculate expected correct count to send immediately
+
                 const newCorrectCount = res.isCorrect ? correctCount + 1 : correctCount;
                 onScoreUpdate(res.currentScore, newCorrectCount);
             }
@@ -283,9 +280,9 @@ export default function QuizPlayer({
                 await finishQuiz();
             }
         } catch (err: any) {
-            // Only alert if it's not a "mock" error or if we want to suppress for demo
+
             console.error("Submission failed", err);
-            // Proceed anyway for demo flow if needed? No, let's keep it strict.
+
             alert(err.response?.data?.message || 'Failed to submit answer');
         } finally {
             setSubmitting(false);
@@ -304,9 +301,9 @@ export default function QuizPlayer({
         setSubmitting(true);
         try {
             await quizService.finishAttempt(attemptId, attemptToken);
-            // In multiplayer we might just want to show a "Game Over" screen or summary inside the modal?
-            // For now, redirecting to result of dummy attempt will fail.
-            // Let's redirect to categories for now or stay on screen.
+
+
+
             if (isMultiplayer) {
                 if (onMultiplayerFinish) {
                     onMultiplayerFinish();
@@ -319,7 +316,7 @@ export default function QuizPlayer({
             console.error("Finish failed", err);
             if (isMultiplayer) {
                 if (onMultiplayerFinish) {
-                    onMultiplayerFinish(); // Ensure we signal finish even if API fails
+                    onMultiplayerFinish();
                 }
                 setShowResults(true);
             } else {
@@ -344,8 +341,8 @@ export default function QuizPlayer({
 
 
 
-            {/* Header */}
-            <div className="px-2 py-1 flex items-center justify-between max-w-5xl mx-auto w-full pt-20"> {/* added padding top to avoid header overlap */}
+
+            <div className="px-2 py-1 flex items-center justify-between max-w-5xl mx-auto w-full pt-20">
                 <div className="flex flex-col w-full max-w-md">
                     <span className="text-gray-400 md:text-sm text-xs font-medium mb-2 whitespace-nowrap">
                         Question {currentQuestionIndex + 1} of {quiz.questions.length}
@@ -358,15 +355,15 @@ export default function QuizPlayer({
                     </div>
                 </div>
 
-                {/* Right Side: Opponent Score + Timer */}
+
                 <div className="flex items-center gap-4 ml-6">
-                    {/* Opponent Score (Multiplayer) */}
+
                     {isMultiplayer && (
                         <div className="relative group">
                             <div className="absolute inset-0 bg-red-600/10 blur-xl rounded-full opacity-50 transition-opacity duration-500" />
                             <div className="relative bg-[#0F1115] border border-red-500/20 px-3 py-1.5 rounded-2xl flex items-center gap-2 min-w-[140px] shadow-lg shadow-black/40 backdrop-blur-md">
 
-                                {/* Icon container with glow */}
+
                                 <div className="md:w-7 md:h-7 sm:w-6 sm:h-6 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.1)]">
                                     <Users className="text-red-500 w-3.5 h-3.5" />
                                 </div>
@@ -383,7 +380,7 @@ export default function QuizPlayer({
                                     <div className="flex items-center justify-between gap-2">
                                         <span className="text-lg font-mono font-black text-white leading-none tracking-tight shadow-black drop-shadow-md">{opponentScore}</span>
 
-                                        {/* Progress Bar */}
+
                                         <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden relative">
                                             <div
                                                 className="h-full bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)] transition-all duration-700 ease-out rounded-full"
@@ -396,7 +393,7 @@ export default function QuizPlayer({
                         </div>
                     )}
 
-                    {/* Timer Circle */}
+
                     <div className="relative w-12 h-12 flex items-center justify-center">
                         <svg className="w-full h-full transform -rotate-90">
                             <circle
@@ -425,12 +422,12 @@ export default function QuizPlayer({
                 </div>
             </div>
 
-            {/* Main Content */}
+
             <div className="flex-1 flex flex-col items-center justify-start pt-2 px-4 pb-20 max-w-4xl mx-auto w-full">
-                {/* Question Card */}
+
                 <div className="bg-[#0A0F16] border border-gray-900 rounded-3xl p-6 w-full mb-4 relative min-h-[200px] flex items-center justify-center text-center shadow-2xl">
 
-                    {/* Controls container */}
+
                     <div className="absolute top-4 right-4 flex gap-2">
                         {isSTTSupported && (
                             <button
@@ -458,12 +455,12 @@ export default function QuizPlayer({
                     </h2>
                 </div>
 
-                {/* Options */}
+
                 <div className="w-full space-y-2">
                     {(currentQuestion.type === 'single_choice' || currentQuestion.type === 'true_false') && (
                         currentQuestion.choices?.map((choice: any, index: number) => {
                             const isSelected = currentAnswer === choice.id;
-                            const letter = String.fromCharCode(65 + index); // A, B, C, D...
+                            const letter = String.fromCharCode(65 + index);
 
                             return (
                                 <button
@@ -508,7 +505,7 @@ export default function QuizPlayer({
                 </div>
             </div>
 
-            {/* Footer */}
+
             <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md border-t border-gray-900 p-3 z-10">
                 <div className="max-w-5xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-2 text-white font-bold text-lg">
@@ -540,13 +537,13 @@ export default function QuizPlayer({
             </div>
 
 
-            {/* Match Results Overlay */}
+
             {
                 showResults && (
                     <div className="fixed inset-0 z-[100] bg-[#020508]/95 backdrop-blur-xl flex items-center justify-center p-4">
                         <div className="bg-[#0A0F16] border border-white/5 rounded-[3rem] p-8 max-w-sm w-full text-center relative overflow-hidden shadow-2xl shadow-black/50">
 
-                            {/* Header */}
+
                             <div className="relative z-10 mb-8">
                                 <h2 className="text-xl font-bold text-white tracking-wider mb-1">
                                     MATCH COMPLETE
@@ -556,7 +553,7 @@ export default function QuizPlayer({
                                 </div>
                             </div>
 
-                            {/* Result Status */}
+
                             <div className="relative z-10 flex flex-col items-center mb-8">
                                 {!isOpponentFinished ? (
                                     <>
@@ -570,7 +567,7 @@ export default function QuizPlayer({
                                 ) : (
                                     <>
                                         <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-3">
-                                            {/* Icon based on result */}
+
                                             {myScore === opponentScore ? (
                                                 <Users className="text-yellow-500 w-6 h-6" />
                                             ) : myScore > opponentScore ? (
@@ -597,9 +594,9 @@ export default function QuizPlayer({
                                 )}
                             </div>
 
-                            {/* Players Grid */}
+
                             <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
-                                {/* YOU */}
+
                                 <div className="bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner">
                                     <div className="relative mb-3">
                                         <div className="w-16 h-16 rounded-full bg-gradient-to-b from-blue-200 to-blue-100 p-0.5 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
@@ -619,7 +616,7 @@ export default function QuizPlayer({
                                     </div>
                                 </div>
 
-                                {/* OPPONENT */}
+
                                 <div className={`bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner ${!isOpponentFinished ? 'animate-pulse opacity-80' : ''}`}>
                                     <div className="relative mb-3">
                                         <div className="w-16 h-16 rounded-full bg-gradient-to-b from-pink-200 to-pink-100 p-0.5 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
@@ -627,7 +624,7 @@ export default function QuizPlayer({
                                                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=Opponent`} alt="Opponent" />
                                             </div>
                                         </div>
-                                        {/* Status icon for opponent */}
+
                                         <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#131922] ${isOpponentFinished ? 'bg-red-500' : 'bg-gray-600'}`}>
                                             {isOpponentFinished ? (
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -657,7 +654,7 @@ export default function QuizPlayer({
                                 </div>
                             </div>
 
-                            {/* Actions */}
+
                             <div className="relative z-10 w-full space-y-4">
                                 <button
                                     onClick={() => onLeave ? onLeave() : router.push('/categories')}
@@ -668,7 +665,7 @@ export default function QuizPlayer({
                                 </button>
 
                                 <button
-                                    onClick={() => alert("Rematch requested!")} // Placeholder functionality
+                                    onClick={() => alert("Rematch requested!")}
                                     className="flex items-center justify-center gap-2 text-gray-500 text-xs font-medium hover:text-white transition-colors"
                                 >
                                     <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
@@ -682,7 +679,7 @@ export default function QuizPlayer({
                 )
             }
 
-            {/* Interaction Overlay to enable Autoplay */}
+
             {!hasInteracted && !loading && quiz && !showResults && (
                 <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
                     <div className="bg-[#0A0F16] border border-blue-500/30 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl shadow-blue-900/40 relative overflow-hidden group">

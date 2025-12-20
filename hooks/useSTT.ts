@@ -11,7 +11,7 @@ interface UseSTTReturn {
     error: string | null;
 }
 
-// Add strict typing for the SpeechRecognition API
+
 interface SpeechRecognition extends EventTarget {
     continuous: boolean;
     interimResults: boolean;
@@ -40,7 +40,7 @@ interface SpeechRecognitionError {
     error: string;
 }
 
-// Window interface extension
+
 declare global {
     interface Window {
         SpeechRecognition: {
@@ -93,12 +93,12 @@ export const useSTT = (
 
         shouldListenRef.current = true;
 
-        // If already listening, do nothing
+
         if (isListening) return;
 
         const startRecognition = () => {
             try {
-                // If we shouldn't be listening anymore (e.g. stopped while waiting for retry), abort
+
                 if (!shouldListenRef.current) return;
 
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -135,18 +135,18 @@ export const useSTT = (
                         setIsListening(false);
                         setError(event.error);
                     } else {
-                        // For other errors, we might want to ignore or retry, but let onend handle the restart
+
                         setError(event.error);
                     }
                 };
 
                 recognition.onend = () => {
                     console.log("[STT] Recognition ended");
-                    setIsListening(false); // Briefly false
+                    setIsListening(false);
 
                     if (shouldListenRef.current) {
                         console.log("[STT] Auto-restarting recognition...");
-                        // Add a small delay to prevent rapid-fire loops
+
                         setTimeout(() => {
                             if (shouldListenRef.current) {
                                 startRecognition();
@@ -160,7 +160,7 @@ export const useSTT = (
             } catch (err) {
                 console.error("[STT] Exception starting recognition:", err);
                 setError("Failed to start speech recognition.");
-                shouldListenRef.current = false; // Stop trying if we crash on instantiation
+                shouldListenRef.current = false;
                 setIsListening(false);
             }
         };
@@ -168,7 +168,7 @@ export const useSTT = (
         startRecognition();
     }, [isSupported, isListening]);
 
-    // Cleanup
+
     useEffect(() => {
         return () => {
             if (recognitionRef.current) {

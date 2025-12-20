@@ -9,7 +9,7 @@ export const api = axios.create({
   },
 });
 
-// Add request interceptor to include auth token
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Queue to store requests while token is refreshing
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
@@ -37,7 +37,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Add response interceptor for token refresh
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -77,10 +77,10 @@ api.interceptors.response.use(
             localStorage.setItem('refresh_token', data.refresh_token);
           }
 
-          // Update default header for future requests
+
           api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
 
-          // Update failing request header
+
           originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
 
           processQueue(null, data.access_token);
@@ -96,7 +96,7 @@ api.interceptors.response.use(
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/auth/login'; // Redirect to login
+        window.location.href = '/auth/login';
       } finally {
         isRefreshing = false;
       }

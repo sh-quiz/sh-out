@@ -34,7 +34,7 @@ export function useConvertDiamonds() {
         mutationFn: (diamonds: number) => economyService.convertDiamondsToEnergy(diamonds),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: economyKeys.all });
-            // Also invalidate user stats if they serve as a fallback
+
             queryClient.invalidateQueries({ queryKey: ['user', 'stats'] });
         },
     });

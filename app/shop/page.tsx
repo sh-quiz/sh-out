@@ -9,9 +9,9 @@ export default function ShopPage() {
 
     return (
         <div className="min-h-screen bg-[#0a0a16] text-white p-4 sm:p-6 md:p-8">
-            {/* Top Bar with Currency */}
+
             <div className="mx-auto flex max-w-6xl justify-end gap-3 sm:gap-4 mb-8 sm:mb-12 md:mb-20">
-                {/* Energy */}
+
                 <div className="flex items-center gap-2 rounded-full bg-[#1e1e2d] px-3 py-1.5 sm:px-4 sm:py-2 shadow-lg border border-white/5">
                     <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-bold text-xs sm:text-sm">
@@ -19,7 +19,7 @@ export default function ShopPage() {
                     </span>
                 </div>
 
-                {/* Diamonds */}
+
                 <div className="flex items-center gap-2 rounded-full bg-[#1e1e2d] px-3 py-1.5 sm:px-4 sm:py-2 shadow-lg border border-white/5">
                     <Gem className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-blue-400 text-blue-400" />
                     <span className="font-bold text-xs sm:text-sm">
@@ -28,16 +28,16 @@ export default function ShopPage() {
                 </div>
             </div>
 
-            {/* Main Content */}
+
             <div className="mx-auto max-w-6xl">
-                {/* Header */}
+
                 <h1 className="mb-8 sm:mb-12 md:mb-16 text-center text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] px-4">
                     Vault of Power – Unlock Your True Potential
                 </h1>
 
-                {/* Cards Grid */}
+
                 <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8">
-                    {/* Card 1: Energy Boost */}
+
                     <ShopCard
                         title="Energy Boost"
                         price="GH₵ 1"
@@ -50,7 +50,7 @@ export default function ShopPage() {
                         delay={0.1}
                     />
 
-                    {/* Card 2: Gem Vault */}
+
                     <ShopCard
                         title="Gem Vault"
                         price="GH₵ 5"
@@ -63,7 +63,7 @@ export default function ShopPage() {
                         delay={0.2}
                     />
 
-                    {/* Card 3: Premium Access */}
+
                     <ShopCard
                         title="Premium Access"
                         price="GH₵ 20"
@@ -82,7 +82,7 @@ export default function ShopPage() {
                     />
                 </div>
 
-                {/* Footer Note */}
+
                 <div className="mt-12 sm:mt-16 text-center text-xs sm:text-sm text-gray-500 pb-8">
                     Powered by Paystack
                 </div>

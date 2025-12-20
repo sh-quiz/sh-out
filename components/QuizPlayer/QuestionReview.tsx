@@ -36,7 +36,7 @@ export default function QuestionReview({ answers }: Props) {
 }
 
 function ReviewItem({ answer, index }: { answer: AnswerDetail; index: number }) {
-    const [isOpen, setIsOpen] = useState(!answer.isCorrect); // Auto-open wrong answers
+    const [isOpen, setIsOpen] = useState(!answer.isCorrect);
 
     return (
         <motion.div
@@ -89,9 +89,9 @@ function ReviewItem({ answer, index }: { answer: AnswerDetail; index: number }) 
                     >
                         <div className="p-6 pt-0 border-t border-zinc-800/50 space-y-6">
 
-                            {/* Choices Section */}
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                                {/* User Choice */}
+
                                 <div className={`
                                     p-4 rounded-xl border
                                     ${answer.isCorrect
@@ -106,7 +106,7 @@ function ReviewItem({ answer, index }: { answer: AnswerDetail; index: number }) 
                                     </div>
                                 </div>
 
-                                {/* Correct Choice (if wrong) */}
+
                                 {!answer.isCorrect && answer.correctAnswer && (
                                     <div className="p-4 rounded-xl border bg-green-500/10 border-green-500/30">
                                         <div className="text-xs uppercase tracking-wider font-semibold opacity-70 mb-1 text-green-400">
@@ -119,7 +119,7 @@ function ReviewItem({ answer, index }: { answer: AnswerDetail; index: number }) 
                                 )}
                             </div>
 
-                            {/* Explanation and Solution */}
+
                             <div className="space-y-4">
                                 {answer.explanation && (
                                     <div className="bg-zinc-900/50 rounded-xl p-4 border border-zinc-800">

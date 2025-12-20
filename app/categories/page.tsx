@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Lenis from "lenis";
-// GrainOverlay was commented out. I'll keep it commented out.
+
 
 import CustomCursor from "./components/CustomCursor";
 import { useEnergy, useDiamonds } from "@/hooks/useEconomy";
 import { useGamemode } from "@/hooks/useGamemode";
 import QuizPlayer from "@/components/QuizPlayer/QuizPlayer";
-// Import new components
+
 import { OnlineMatchSection } from "./components/OnlineMatchSection";
 import { ArcadeModeSection } from "./components/ArcadeModeSection";
 
@@ -16,7 +16,7 @@ import { quizService, AttemptResponse } from "@/lib/quiz";
 
 const ATTEMPT_STATE_KEY = 'current_attempt';
 
-// Helper to load attempt from localStorage
+
 const loadAttempt = (): AttemptResponse | null => {
     if (typeof window === 'undefined') return null;
     try {
@@ -38,7 +38,7 @@ export default function CategoriesPage() {
     const { createGame, joinGame, gameState, isConnected, submitScore, finishGame, resetGame } = useGamemode();
     const [currentAttempt, setCurrentAttempt] = useState<AttemptResponse | null>(loadAttempt);
 
-    // Persist player ID so refreshing doesn't lose identity in demo
+
     const myPlayerId = useMemo(() => {
         if (typeof window !== 'undefined') {
             let id = localStorage.getItem('playerId');
@@ -72,7 +72,7 @@ export default function CategoriesPage() {
         };
     }, []);
 
-    // Persist attempt to localStorage whenever it changes
+
     useEffect(() => {
         if (currentAttempt) {
             localStorage.setItem(ATTEMPT_STATE_KEY, JSON.stringify(currentAttempt));
@@ -83,7 +83,7 @@ export default function CategoriesPage() {
         }
     }, [currentAttempt]);
 
-    // Start attempt when game starts
+
     useEffect(() => {
         const startMultiplayerAttempt = async () => {
             if (gameState.status === 'playing' && gameState.quizId && !currentAttempt) {
@@ -134,9 +134,9 @@ export default function CategoriesPage() {
     return (
         <main className="min-h-screen w-full bg-[#050505] text-[#F0F2F5] selection:bg-[#FF3B30] selection:text-white overflow-hidden font-sans">
             <CustomCursor />
-            {/* HEADER */}
+
             <header className="fixed top-0 left-0 md:left-64 right-0 z-50 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 pointer-events-none">
-                {/* HUD Stats Bar */}
+
                 <div className="pointer-events-auto flex items-center bg-black/40 backdrop-blur-md rounded-lg border border-white/5 p-1.5 sm:p-2 gap-1.5 sm:gap-2">
                     <div className="flex items-center gap-2 sm:gap-3 md:gap-4 px-3 sm:px-4 md:px-6 py-2 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors group">
                         <div className="w-2 h-2 rounded-sm bg-yellow-500 shadow-[0_0_8px_#EAB308] group-hover:shadow-[0_0_12px_#EAB308] transition-shadow" />

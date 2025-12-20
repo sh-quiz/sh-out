@@ -7,7 +7,7 @@ interface TopicCardProps {
     title: string;
     subtitle: string;
     icon: React.ReactNode;
-    accentColor: string; // e.g., 'bg-blue-500', 'bg-amber-500'
+    accentColor: string;
     position: { x: number; y: number };
     align: 'left' | 'right';
 }
@@ -31,7 +31,7 @@ export default function TopicCard({ title, subtitle, icon, accentColor, position
         >
             <div className="relative overflow-hidden bg-[#161B22]/90 backdrop-blur-xl border border-white/5 rounded-xl p-4 w-64 shadow-2xl transition-all duration-300 group-hover:border-white/10 group-hover:shadow-[0_0_30px_rgba(0,0,0,0.5)]">
 
-                {/* Accent Bar */}
+
                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColor} shadow-[0_0_10px_currentColor] opacity-80`} />
 
                 <div className="flex items-start gap-3 pl-2">
@@ -48,7 +48,7 @@ export default function TopicCard({ title, subtitle, icon, accentColor, position
                     </div>
                 </div>
 
-                {/* Hover Effect: Subtle glow */}
+
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
             </div>
         </motion.div>

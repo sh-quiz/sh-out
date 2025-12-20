@@ -10,16 +10,16 @@ export default function ContributionGraph() {
 
     useEffect(() => {
         const checkScreenSize = () => {
-            setIsSmallScreen(window.innerWidth < 768); // md breakpoint
+            setIsSmallScreen(window.innerWidth < 768);
         };
 
-        // Check on mount
+
         checkScreenSize();
 
-        // Add event listener
+
         window.addEventListener('resize', checkScreenSize);
 
-        // Cleanup
+
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
 
@@ -28,13 +28,13 @@ export default function ContributionGraph() {
         queryFn: getContributions,
     });
 
-    // Helper to generate a grid of days for the last year
-    // For simplicity, we'll display the last 365 days or a fixed grid
-    // This is a simplified implementation of a GitHub-style graph
+
+
+
     const generateCalendarGrid = () => {
         const today = new Date();
         const days = [];
-        // Generate last ~1 year of days (52 weeks * 7 days = 364 days)
+
         for (let i = 364; i >= 0; i--) {
             const date = new Date(today);
             date.setDate(date.getDate() - i);
@@ -56,16 +56,16 @@ export default function ContributionGraph() {
 
     const getColor = (level: number) => {
         switch (level) {
-            case 0: return 'bg-[#1e1e1e]'; // Empty
-            case 1: return 'bg-emerald-900'; // Low
+            case 0: return 'bg-[#1e1e1e]';
+            case 1: return 'bg-emerald-900';
             case 2: return 'bg-emerald-700';
             case 3: return 'bg-emerald-500';
-            case 4: return 'bg-emerald-400'; // High
+            case 4: return 'bg-emerald-400';
             default: return 'bg-[#1e1e1e]';
         }
     };
 
-    // Transform API data to a map for easy lookup
+
     const contributionsMap = new Map<string, number>();
     if (contributions) {
         contributions.forEach((c: Contribution) => {
@@ -73,7 +73,7 @@ export default function ContributionGraph() {
         });
     }
 
-    // Calculate total contributions
+
     const totalContributions = contributions ? contributions.reduce((acc, curr) => acc + curr.count, 0) : 0;
     const currentYear = new Date().getFullYear();
 

@@ -26,7 +26,7 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
             onMouseLeave={() => setShowTooltip(false)}
             onClick={() => setShowTooltip(!showTooltip)}
         >
-            {/* Tooltip */}
+
             <AnimatePresence>
                 {showTooltip && (
                     <motion.div
@@ -36,22 +36,22 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
                         className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] uppercase font-bold px-3 py-1.5 rounded-full shadow-xl z-50 pointer-events-none"
                     >
                         {title}
-                        {/* Little triangle arrow */}
+
                         <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-white/20" />
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Current Level Halo & Effects */}
+
             {isCurrent && (
                 <>
-                    {/* Outer pulsing glow */}
+
                     <motion.div
                         className="absolute w-32 h-32 rounded-full bg-blue-500/20 blur-xl"
                         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
                         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     />
-                    {/* Thick electric ring */}
+
                     <motion.div
                         className="absolute w-24 h-24 rounded-full border-4 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                         animate={{ scale: [1, 1.05, 1] }}
@@ -60,7 +60,7 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
                 </>
             )}
 
-            {/* Main Node Circle */}
+
             <motion.div
                 className={`
                     relative flex items-center justify-center rounded-full shadow-lg transition-all duration-300
@@ -69,8 +69,8 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
                     ${isLocked ? 'w-10 h-10 bg-zinc-800 border border-zinc-700 text-zinc-400 shadow-lg' : ''}
                 `}
                 whileHover={{ scale: isCurrent ? 1.1 : 1.2 }}
-                animate={isCurrent ? { scale: [1, 1.06, 1] } : {}}
-                transition={isCurrent ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : {}}
+                animate={isCurrent ? { scale: [1, 1.06, 1] } : }
+                transition={isCurrent ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : }
             >
                 {isLocked ? (
                     <Lock className="w-4 h-4" />
@@ -80,13 +80,13 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
                     </span>
                 )}
 
-                {/* Completed subtle halo */}
+
                 {isCompleted && (
                     <div className="absolute inset-0 rounded-full bg-blue-400/20 blur-md -z-10" />
                 )}
             </motion.div>
 
-            {/* Flame for Current Level */}
+
             {isCurrent && (
                 <motion.div
                     className="absolute -bottom-8 text-amber-500 filter drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"
@@ -97,7 +97,7 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
                 </motion.div>
             )}
 
-         
+
         </div>
     );
 }

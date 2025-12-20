@@ -1,8 +1,8 @@
 import { api } from '../app/api/client';
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 export interface EnergyStatus {
     energy: number;
@@ -34,7 +34,7 @@ export interface RefillEnergyResponse {
 }
 
 export interface EnergyPricing {
-    refillCost: number; // Diamonds per unit
+    refillCost: number;
     maxEnergyUpgradeCost: number;
 }
 
@@ -95,12 +95,12 @@ export interface CurrencyTransaction {
     createdAt: string;
 }
 
-// ============================================================================
-// SERVICE
-// ============================================================================
+
+
+
 
 export const economyService = {
-    // Energy
+
     async getEnergy(): Promise<EnergyStatus> {
         const { data } = await api.get('/energy');
         return data;
@@ -117,13 +117,13 @@ export const economyService = {
     },
 
     async getEnergyPricing(): Promise<EnergyPricing> {
-        // Return static or fetch from API
+
         return {
-            refillCost: 10, // Example: 10 diamonds per refill
+            refillCost: 10,
             maxEnergyUpgradeCost: 100
         };
         // const { data } = await api.get('/energy/pricing');
-        // return data;
+
     },
 
     async getEnergyTransactions(params: TransactionHistoryParams): Promise<CurrencyTransaction[]> {
@@ -131,7 +131,7 @@ export const economyService = {
         return data;
     },
 
-    // Diamonds
+
     async getDiamondBalance(): Promise<DiamondBalance> {
         const { data } = await api.get('/diamonds');
         return data;

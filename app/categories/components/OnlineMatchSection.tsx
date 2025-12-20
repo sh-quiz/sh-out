@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 export const OnlineMatchSection = () => {
     return (
         <section className="relative flex-1 group overflow-hidden border-b border-white/5 min-h-[60vh] md:min-h-0">
-            {/* Background Image */}
+
             <div className="absolute inset-0 z-0 scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out">
                 <img
                     src="/assets/online_match_bg.png"
@@ -16,19 +16,19 @@ export const OnlineMatchSection = () => {
                 />
             </div>
 
-            {/* Tech Details / Laser Beams Overlay */}
+
             <div className="absolute inset-0 z-0 pointer-events-none">
-                {/* Grid Overlay */}
+
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,59,48,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,59,48,0.03)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]" />
 
-                {/* Scanning Line */}
+
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#FF3B30]/50 to-transparent animate-scan" />
             </div>
 
 
-            {/* Content */}
+
             <div className="relative z-10 h-full flex flex-col px-4 sm:px-6 md:px-8 md:pl-72 md:pr-8 py-12 md:py-20">
-                {/* Text Content at Top */}
+
                 <div className="flex flex-col items-start text-left space-y-4 mb-8 max-w-full">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -58,7 +58,7 @@ export const OnlineMatchSection = () => {
                     </motion.p>
                 </div>
 
-                {/* Button Centered Vertically & Horizontally in remaining space */}
+
                 <div className="flex-1 flex items-center justify-center md:justify-start">
                     <div className="relative group/btn w-full sm:w-auto min-w-[280px] max-w-md">
                         <Link href="/quizzes">

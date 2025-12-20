@@ -25,23 +25,23 @@ export default function EnergyGemsRow() {
         }
     };
 
-    // Calculate bars to display (max 30, split into groups of 5)
+
     // 30 / 5 = 6 groups
     const groups = [];
     for (let i = 0; i < 6; i++) {
         groups.push(i);
     }
 
-    // Helper to determine bar color status
+
     const getBarStatus = (groupIndex: number, barIndex: number) => {
-        const absoluteIndex = groupIndex * 5 + barIndex + 1; // 1-based index
+        const absoluteIndex = groupIndex * 5 + barIndex + 1;
         return absoluteIndex <= energy;
     };
 
     return (
         <div className="px-4 md:px-6 mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Energy Card */}
+
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -80,7 +80,7 @@ export default function EnergyGemsRow() {
                     <div className="mt-4 flex justify-between items-center text-xs text-[#878D96] font-medium">
                         <span>{energy}/{maxEnergy} bars based on activity</span>
 
-                        {/* Conversion Button if low energy and implies diamonds available */}
+
                         {diamonds > 0 && energy <= maxEnergy - 10 && (
                             <button
                                 onClick={handleConvert}
@@ -94,7 +94,7 @@ export default function EnergyGemsRow() {
                     </div>
                 </motion.div>
 
-                {/* Diamonds Card */}
+
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}

@@ -24,9 +24,9 @@ import {
     TransactionHistoryParams,
 } from '../../lib/economy';
 
-// ============================================================================
-// QUERY KEYS
-// ============================================================================
+
+
+
 
 export const queryKeys = {
     energy: {
@@ -42,29 +42,23 @@ export const queryKeys = {
     },
 } as const;
 
-// ============================================================================
-// ENERGY HOOKS
-// ============================================================================
 
-/**
- * Get current energy status with auto-refetch every 30 seconds
- * to catch energy regeneration
- */
+
+
+
+
 export function useEnergy(
     options?: Omit<UseQueryOptions<EnergyStatus>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.energy.status,
         queryFn: () => economyService.getEnergy(),
-        refetchInterval: 30 * 1000, // Refetch every 30 seconds for auto-regeneration
+        refetchInterval: 30 * 1000,
         ...options,
     });
 }
 
-/**
- * Consume energy (e.g., when starting a quiz)
- * Includes optimistic update for instant UI feedback
- */
+
 export function useConsumeEnergy(
     options?: UseMutationOptions<
         ConsumeEnergyResponse,
@@ -79,15 +73,15 @@ export function useConsumeEnergy(
         mutationFn: (data: ConsumeEnergyRequest) =>
             economyService.consumeEnergy(data),
         onMutate: async (variables): Promise<{ previousEnergy: EnergyStatus | undefined }> => {
-            // Cancel outgoing refetches
+
             await queryClient.cancelQueries({ queryKey: queryKeys.energy.status });
 
-            // Snapshot previous value
+
             const previousEnergy = queryClient.getQueryData<EnergyStatus>(
                 queryKeys.energy.status
             );
 
-            // Optimistically update
+
             if (previousEnergy) {
                 queryClient.setQueryData<EnergyStatus>(queryKeys.energy.status, {
                     ...previousEnergy,
@@ -98,7 +92,7 @@ export function useConsumeEnergy(
             return { previousEnergy };
         },
         onError: (err, variables, context) => {
-            // Rollback on error
+
             if (context?.previousEnergy) {
                 queryClient.setQueryData(
                     queryKeys.energy.status,
@@ -107,20 +101,17 @@ export function useConsumeEnergy(
             }
         },
         onSettled: () => {
-            // Refetch to ensure consistency
+
             queryClient.invalidateQueries({ queryKey: queryKeys.energy.status });
             queryClient.invalidateQueries({
-                queryKey: queryKeys.energy.transactions({}),
+                queryKey: queryKeys.energy.transactions(),
             });
         },
         ...options,
     });
 }
 
-/**
- * Refill energy using diamonds
- * Updates both energy and diamond balances
- */
+
 export function useRefillEnergy(
     options?: UseMutationOptions<
         RefillEnergyResponse,
@@ -145,7 +136,7 @@ export function useRefillEnergy(
                 queryKeys.diamonds.balance
             );
 
-            // Optimistically update energy
+
             if (previousEnergy) {
                 queryClient.setQueryData<EnergyStatus>(queryKeys.energy.status, {
                     ...previousEnergy,
@@ -159,7 +150,7 @@ export function useRefillEnergy(
             return { previousEnergy, previousDiamonds };
         },
         onSuccess: (data) => {
-            // Update diamond balance with actual cost
+
             const currentDiamonds = queryClient.getQueryData<DiamondBalance>(
                 queryKeys.diamonds.balance
             );
@@ -187,35 +178,31 @@ export function useRefillEnergy(
             queryClient.invalidateQueries({ queryKey: queryKeys.energy.status });
             queryClient.invalidateQueries({ queryKey: queryKeys.diamonds.balance });
             queryClient.invalidateQueries({
-                queryKey: queryKeys.energy.transactions({}),
+                queryKey: queryKeys.energy.transactions(),
             });
             queryClient.invalidateQueries({
-                queryKey: queryKeys.diamonds.transactions({}),
+                queryKey: queryKeys.diamonds.transactions(),
             });
         },
         ...options,
     });
 }
 
-/**
- * Get energy pricing information (static data)
- */
+
 export function useEnergyPricing(
     options?: Omit<UseQueryOptions<EnergyPricing>, 'queryKey' | 'queryFn'>
 ) {
     return useQuery({
         queryKey: queryKeys.energy.pricing,
         queryFn: () => economyService.getEnergyPricing(),
-        staleTime: Infinity, // Pricing rarely changes
+        staleTime: Infinity,
         ...options,
     });
 }
 
-/**
- * Get energy transaction history with pagination
- */
+
 export function useEnergyTransactions(
-    params: TransactionHistoryParams = {},
+    params: TransactionHistoryParams = ,
     options?: Omit<
         UseQueryOptions<CurrencyTransaction[]>,
         'queryKey' | 'queryFn'
@@ -228,13 +215,11 @@ export function useEnergyTransactions(
     });
 }
 
-// ============================================================================
-// DIAMOND HOOKS
-// ============================================================================
 
-/**
- * Get current diamond balance
- */
+
+
+
+
 export function useDiamondBalance(
     options?: Omit<UseQueryOptions<DiamondBalance>, 'queryKey' | 'queryFn'>
 ) {
@@ -245,9 +230,7 @@ export function useDiamondBalance(
     });
 }
 
-/**
- * Purchase diamonds (after payment verification)
- */
+
 export function usePurchaseDiamonds(
     options?: UseMutationOptions<
         PurchaseDiamondsResponse,
@@ -261,7 +244,7 @@ export function usePurchaseDiamonds(
         mutationFn: (data: PurchaseDiamondsRequest) =>
             economyService.purchaseDiamonds(data),
         onSuccess: (data) => {
-            // Update balance optimistically
+
             queryClient.setQueryData<DiamondBalance>(queryKeys.diamonds.balance, {
                 diamonds: data.diamonds,
             });
@@ -269,16 +252,14 @@ export function usePurchaseDiamonds(
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.diamonds.balance });
             queryClient.invalidateQueries({
-                queryKey: queryKeys.diamonds.transactions({}),
+                queryKey: queryKeys.diamonds.transactions(),
             });
         },
         ...options,
     });
 }
 
-/**
- * Spend diamonds on in-app purchases
- */
+
 export function useSpendDiamonds(
     options?: UseMutationOptions<
         SpendDiamondsResponse,
@@ -299,7 +280,7 @@ export function useSpendDiamonds(
                 queryKeys.diamonds.balance
             );
 
-            // Optimistically update
+
             if (previousDiamonds) {
                 queryClient.setQueryData<DiamondBalance>(queryKeys.diamonds.balance, {
                     diamonds: previousDiamonds.diamonds - variables.amount,
@@ -319,18 +300,16 @@ export function useSpendDiamonds(
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.diamonds.balance });
             queryClient.invalidateQueries({
-                queryKey: queryKeys.diamonds.transactions({}),
+                queryKey: queryKeys.diamonds.transactions(),
             });
         },
         ...options,
     });
 }
 
-/**
- * Get diamond transaction history with pagination
- */
+
 export function useDiamondTransactions(
-    params: TransactionHistoryParams = {},
+    params: TransactionHistoryParams = ,
     options?: Omit<
         UseQueryOptions<CurrencyTransaction[]>,
         'queryKey' | 'queryFn'

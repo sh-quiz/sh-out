@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-const API_KEY = "AIzaSyDpc09szDuRW7khLC1brTZQNvuE-ZGQMg8"; // In production, move to process.env.GOOGLE_API_KEY
+const API_KEY = "AIzaSyDpc09szDuRW7khLC1brTZQNvuE-ZGQMg8";
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "No audio content provided" }, { status: 400 });
         }
 
-        // Default config if not provided
+
         const sttConfig = config || {
             encoding: "WEBM_OPUS",
             sampleRateHertz: 48000,

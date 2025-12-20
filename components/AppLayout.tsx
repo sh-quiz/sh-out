@@ -32,11 +32,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
 
     if (!mounted) {
-        return null; // Prevent flash of protected content
+        return null;
     }
 
     if (!authService.isAuthenticated()) {
-        return null; // Don't render protected layout if not authenticated
+        return null;
     }
 
     return (

@@ -36,9 +36,9 @@ export default function ParticleBackground() {
         window.addEventListener('resize', resize);
         resize();
 
-        // Particle configuration
+
         const particleCount = 150;
-        const colors = ['#007AFF', '#0055BB', '#4499FF']; // Sapphire shades
+        const colors = ['#007AFF', '#0055BB', '#4499FF'];
 
         const createParticle = (isInitial = false): Particle => ({
             x: Math.random() * width,
@@ -49,21 +49,21 @@ export default function ParticleBackground() {
             color: colors[Math.floor(Math.random() * colors.length)],
         });
 
-        // Initialize particles
+
         for (let i = 0; i < particleCount; i++) {
             particles.push(createParticle(true));
         }
 
-        // Intensify effect on load
+
         let speedMultiplier = 3;
         const startTime = Date.now();
-        const intensifyDuration = 3000; // 3 seconds
+        const intensifyDuration = 3000;
 
         const animate = () => {
             const now = Date.now();
             const elapsed = now - startTime;
 
-            // Smoothly reduce speed multiplier from 3 to 1 over 3 seconds
+
             if (elapsed < intensifyDuration) {
                 const progress = elapsed / intensifyDuration;
                 speedMultiplier = 3 - (progress * 2);
@@ -76,14 +76,14 @@ export default function ParticleBackground() {
             particles.forEach((p, index) => {
                 p.y -= p.speedY * speedMultiplier;
 
-                // Draw particle
+
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.opacity;
                 ctx.fill();
 
-                // Reset particle if it goes off screen
+
                 if (p.y < -10) {
                     particles[index] = createParticle();
                 }

@@ -35,7 +35,7 @@ export default function AccountPage() {
     const [stats, setStats] = useState<UserStats | null>(null);
 
     useEffect(() => {
-        // Fetch stats separately for now (could be a hook too)
+
         statsService.getStats().then(setStats).catch(console.error);
     }, []);
 
@@ -58,23 +58,23 @@ export default function AccountPage() {
         return `${h}h ${m}m`;
     };
 
-    // Derived Data
+
     const displayData = {
         name: userProfile?.name || "User",
-        username: userProfile?.email || "user", // Display email instead of username
+        username: userProfile?.email || "user",
         school: userProfile?.school || "No School",
         avatarUrl: userProfile?.profilePicture || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop",
-        isPremium: true, // Hardcoded for now
+        isPremium: true,
         streak: stats.dayStreak,
         stats: {
-            solved: stats.top3Finishes, // Assuming 'quizzesSolved' is not in UserStats interface yet, using placeholder or derived
-            rank: stats.xp, // Global rank logic is in backend service but not strictly in UserStats interface here? Check stats.ts
+            solved: stats.top3Finishes,
+            rank: stats.xp,
             top500: true
         },
         records: [
             { label: "Current Streak", value: `${stats.dayStreak} days`, icon: Zap },
-            { label: "XP", value: `${stats.xp}`, icon: BookOpen }, // Replaced Best Subject
-            { label: "Gems", value: `${stats.gems}`, icon: Crown, accent: true }, // Replaced Fastest Solve
+            { label: "XP", value: `${stats.xp}`, icon: BookOpen },
+            { label: "Gems", value: `${stats.gems}`, icon: Crown, accent: true },
             // { label: "Total study time", value: "127h 34m", icon: Clock } // Missing in UserStats interface provided earlier?
         ]
     };
@@ -82,7 +82,7 @@ export default function AccountPage() {
     return (
         <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] pb-32 overflow-x-hidden selection:bg-[#007AFF]/30">
 
-            {/* 1. HERO PROFILE CARD */}
+
             <section className="pt-24 pb-12 px-6">
                 <ProfileHero
                     name={displayData.name}
@@ -94,7 +94,7 @@ export default function AccountPage() {
                 />
             </section>
 
-            {/* 2. LIFETIME ACHIEVEMENTS PODIUM */}
+
             <section className="px-6 mb-16">
                 <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 text-center md:text-left">
                     <div className="flex justify-center md:justify-start">
@@ -125,7 +125,7 @@ export default function AccountPage() {
                 </div>
             </section>
 
-            {/* 3. MEMBERSHIP CARD */}
+
             <section className="px-6 mb-20">
                 <div className="max-w-md mx-auto">
                     <GlassCard className="p-8" hoverEffect>
@@ -139,7 +139,7 @@ export default function AccountPage() {
                                     <p className="text-sm text-[#878D96]">Lifetime Access</p>
                                 </div>
                             </div>
-                            {/* Status Pill */}
+
                             <div className="px-3 py-1 rounded-full border border-[#007AFF]/30 bg-[#007AFF]/10 text-xs font-medium text-[#007AFF]">
                                 ACTIVE
                             </div>
@@ -157,7 +157,7 @@ export default function AccountPage() {
                 </div>
             </section>
 
-            {/* 4. PERSONAL RECORDS SECTION */}
+
             <section className="px-6 mb-24">
                 <div className="max-w-2xl mx-auto space-y-8">
                     <motion.h2
@@ -195,7 +195,7 @@ export default function AccountPage() {
                 </div>
             </section>
 
-            {/* 5. SETTINGS & ACTIONS */}
+
             <section className="px-6 pb-20">
                 <div className="max-w-2xl mx-auto">
                     <div className="space-y-1">
@@ -215,7 +215,7 @@ export default function AccountPage() {
                                 </div>
                             </motion.button>
                         ))}
-                        {/* Sign Out */}
+
                         <motion.button
                             onClick={handleLogout}
                             className="w-full h-16 flex items-center justify-between border-b border-white/5 group hover:bg-white/[0.02] transition-colors px-4 -mx-4 rounded-md mt-8"
@@ -227,7 +227,7 @@ export default function AccountPage() {
                             <LogOut className="w-4 h-4 text-[#878D96] group-hover:text-[#FF453A] transition-colors" />
                         </motion.button>
 
-                        {/* Delete Account (Hidden/Subtle) */}
+
                         <div className="pt-12 flex justify-center">
                             <button className="text-xs text-[#161B22] hover:text-[#FF453A] transition-colors duration-500">
                                 Delete Account

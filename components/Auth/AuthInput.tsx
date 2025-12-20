@@ -40,12 +40,12 @@ export default function AuthInput({ label, type, icon: Icon, placeholder, value,
             className="relative w-full mb-4"
         >
             <div className="relative group">
-                {/* Icon */}
+
                 <div className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-blue-500">
                     <Icon className="w-5 h-5" />
                 </div>
 
-                {/* Input */}
+
                 <input
                     type={inputType}
                     className="w-full h-15 pl-14 pr-12 bg-[#161B22]/90 backdrop-blur-[32px] border border-zinc-800/60 rounded-[32px] text-white placeholder-transparent focus:outline-none focus:border-blue-500/50 focus:bg-[#161B22] transition-all duration-300"
@@ -56,7 +56,7 @@ export default function AuthInput({ label, type, icon: Icon, placeholder, value,
                     value={value}
                 />
 
-                {/* Floating Label */}
+
                 <motion.label
                     initial={false}
                     animate={{
@@ -71,7 +71,7 @@ export default function AuthInput({ label, type, icon: Icon, placeholder, value,
                     {isFocused || hasValue ? label : placeholder}
                 </motion.label>
 
-                {/* Password Toggle */}
+
                 {isPassword && (
                     <button
                         type="button"

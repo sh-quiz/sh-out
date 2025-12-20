@@ -93,7 +93,7 @@ body {
   color: var(--color-shark-white);
 }
 
-/* Custom Scrollbar */
+
 ::-webkit-scrollbar {
   width: 8px;
 }

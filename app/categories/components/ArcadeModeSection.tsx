@@ -4,8 +4,8 @@ import { Sparkles, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// We can define a subset of GameState or use any if we want to avoid deep imports, 
-// but for robustness let's define what we need.
+
+
 interface ArcadeModeProps {
     gameState: {
         gameId: string | null;
@@ -31,7 +31,7 @@ export const ArcadeModeSection = ({ gameState, createGame, joinGame, myPlayerId 
 
     return (
         <section className="relative flex-1 group overflow-hidden min-h-[60vh] md:min-h-0">
-            {/* Background Image */}
+
             <div
                 className="absolute inset-0 z-0 bg-cover bg-center scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out"
                 style={{ backgroundImage: 'url(/assets/arcade_mode_bg.png)' }}
@@ -41,17 +41,17 @@ export const ArcadeModeSection = ({ gameState, createGame, joinGame, myPlayerId 
                 <div className="absolute inset-0 bg-[#FFB340]/5 mix-blend-overlay" />
             </div>
 
-            {/* Tech Details / Overlay */}
+
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,179,64,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,179,64,0.03)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]" />
             </div>
 
-            {/* Content */}
+
             <div className="relative z-10 h-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8">
                 <div className="w-full">
                     <div className="flex flex-col items-center mb-6 sm:mb-8 md:mb-12 gap-6 sm:gap-8">
 
-                        {/* Title Section */}
+
                         <div className="space-y-3 md:space-y-4 flex flex-col items-center text-center max-w-full">
                             <motion.div
                                 initial={{ opacity: 0, x: -20 }}
@@ -73,7 +73,7 @@ export const ArcadeModeSection = ({ gameState, createGame, joinGame, myPlayerId 
                             </motion.h2>
                         </div>
 
-                        {/* Interactive Form Section */}
+
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
@@ -114,8 +114,7 @@ export const ArcadeModeSection = ({ gameState, createGame, joinGame, myPlayerId 
                                                     <p className="text-[10px] font-bold uppercase opacity-60 self-center">Players in Lobby:</p>
                                                     <div className="flex gap-1 flex-wrap justify-center">
                                                         <span className="text-xs bg-black/10 px-2 py-0.5 rounded font-mono">You</span>
-                                                        {/* We could list other players if we had them in a separate updated list, 
-                                                         but gameState.players array exists. */}
+
                                                         {gameState.players.filter(p => p !== myPlayerId).map(p => (
                                                             <span key={p} className="text-xs bg-black/10 px-2 py-0.5 rounded font-mono">P2</span>
                                                         ))}

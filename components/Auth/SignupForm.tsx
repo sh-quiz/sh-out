@@ -13,7 +13,7 @@ export default function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Password validation
+
     const hasUppercase = /[A-Z]/.test(formData.password);
     const hasLowercase = /[a-z]/.test(formData.password);
     const hasNumber = /[0-9]/.test(formData.password);

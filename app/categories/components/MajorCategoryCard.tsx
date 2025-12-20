@@ -37,13 +37,13 @@ export default function MajorCategoryCard({
                 transition: { duration: 0.4, ease: "easeOut" }
             }}
         >
-            {/* Background Gradient */}
+
             <div
                 className="absolute inset-0 transition-transform duration-[8s] ease-linear group-hover:scale-105"
                 style={{ background: gradient }}
             />
 
-            {/* Light Rays */}
+
             <div
                 className={cn(
                     "absolute inset-0 opacity-20 transition-opacity duration-700 group-hover:opacity-40",
@@ -53,7 +53,7 @@ export default function MajorCategoryCard({
                 )}
             />
 
-            {/* Sapphire Glow (Bottom Border) */}
+
             <motion.div
                 className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#007AFF] opacity-0 shadow-[0_0_30px_#007AFF]"
                 initial={{ scaleX: 0 }}
@@ -61,11 +61,11 @@ export default function MajorCategoryCard({
                 transition={{ duration: 0.6, ease: "circOut" }}
             />
 
-            {/* Content */}
+
             <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8">
                 <motion.h2
                     className="text-[clamp(3rem,8vw,180px)] font-light tracking-[-2px] text-[#F0F2F5] leading-none mix-blend-overlay"
-                    style={{ fontFamily: 'PP Mori, sans-serif' }} // Assuming font is loaded globally or we use a fallback
+                    style={{ fontFamily: 'PP Mori, sans-serif' }}
                 >
                     {title}
                 </motion.h2>
