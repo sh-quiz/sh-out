@@ -42,9 +42,9 @@ export default function RewardCard({ type, value, delay = 0 }: Props) {
             }}
             whileHover={{ scale: 1.05, y: -5 }}
             className="
-                min-w-[120px] sm:min-w-[140px] md:min-w-[160px] 
-                h-[110px] sm:h-[130px] md:h-[140px] 
-                rounded-xl sm:rounded-2xl p-4 sm:p-4 md:p-5 
+                min-w-[120px] sm:min-w-[140px] md:min-w-[160px]
+                h-[110px] sm:h-[130px] md:h-[140px]
+                rounded-xl sm:rounded-2xl p-4 sm:p-4 md:p-5
                 flex flex-col items-center justify-center text-center gap-2 sm:gap-3
                 backdrop-blur-[32px] border border-zinc-800/60
                 transition-all duration-300

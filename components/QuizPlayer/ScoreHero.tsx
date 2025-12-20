@@ -39,7 +39,7 @@ export default function ScoreHero({ score, total, streak }: Props) {
             </motion.h2>
 
             <div className="relative flex flex-col md:flex-row items-center justify-center w-full">
-                {/* Main Score */}
+
                 <div className="flex items-baseline gap-2 sm:gap-3 md:gap-4">
                     <motion.div
                         className="text-[4rem] xs:text-[5rem] sm:text-[6rem] md:text-[8rem] lg:text-[10rem] font-black leading-none tracking-tighter text-[#007AFF]"
@@ -61,7 +61,7 @@ export default function ScoreHero({ score, total, streak }: Props) {
                     </motion.span>
                 </div>
 
-                {/* Flame & Streak - Hidden on mobile, shown on medium+ screens */}
+
                 <motion.div
                     initial={{ opacity: 0, scale: 0.5, x: 20 }}
                     animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -90,7 +90,7 @@ export default function ScoreHero({ score, total, streak }: Props) {
                 </motion.div>
             </div>
 
-            {/* Mobile Streak Indicator */}
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -102,7 +102,7 @@ export default function ScoreHero({ score, total, streak }: Props) {
                 <span className="text-amber-500 font-bold text-sm">+{streak} Day Streak</span>
             </motion.div>
 
-            {/* Outstanding Text */}
+
             <motion.div
                 className="mt-4 sm:mt-6 overflow-hidden"
                 initial={{ opacity: 0 }}

@@ -42,7 +42,7 @@ export default function Leaderboard() {
                         </motion.div>
                     ))}
 
-                    {/* Glow effect for #1 */}
+
                     <div className="absolute top-0 left-0 w-full h-24 bg-[#FF2D55]/5 blur-xl pointer-events-none" />
                 </div>
             </div>

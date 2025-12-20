@@ -36,7 +36,7 @@ export default function Sidebar() {
 
     return (
         <div className="hidden md:flex flex-col w-64 h-screen bg-black text-[#878D96] border-r border-[#161B22] fixed left-0 top-0 z-40">
-            {/* Logo */}
+
             <div className="flex items-center gap-3 mb-8 px-6 pt-8">
                 <div className="w-8 h-8 flex items-center justify-center">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,7 +46,7 @@ export default function Sidebar() {
                 <span className="text-white text-xl font-medium tracking-tight">E-Quiz</span>
             </div>
 
-            {/* Navigation */}
+
             <nav className="flex-1 space-y-1 px-4">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
@@ -66,7 +66,7 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            {/* More Section */}
+
             <div className="mt-auto space-y-1 px-4 pb-8 pt-4 border-t border-[#161B22]">
                 <h3 className="text-xs font-semibold text-[#878D96]/50 uppercase px-4 mb-2 tracking-wider">More</h3>
 

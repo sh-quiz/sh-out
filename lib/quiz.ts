@@ -99,7 +99,7 @@ export const quizService = {
     async finishAttempt(attemptId: number, attemptToken: string): Promise<any> {
         const response = await api.post(
             `/v1/attempts/${attemptId}/finish`,
-            {},
+            ,
             {
                 headers: { 'X-Attempt-Token': attemptToken },
             }

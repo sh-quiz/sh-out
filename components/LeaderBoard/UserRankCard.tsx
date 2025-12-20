@@ -29,12 +29,12 @@ const UserRankCard: React.FC<UserRankCardProps> = ({ rankData, isLoading }) => {
           {rankData.month} {rankData.year}
         </span>
       </div>
-      
+
       <div className="flex items-end gap-2">
         <span className="text-4xl font-bold">#{rankData.rank}</span>
         <span className="mb-1 text-sm opacity-80">Global Rank</span>
       </div>
-      
+
       <div className="mt-4 border-t border-white/20 pt-4">
         <div className="flex justify-between">
           <span className="text-sm opacity-90">Total Score</span>

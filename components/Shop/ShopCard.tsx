@@ -41,7 +41,7 @@ export const ShopCard = ({
                     : "border-white/10 bg-white/5 hover:border-white/20 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)]"
             )}
         >
-            {/* Best Value Ribbon */}
+
             {isBestValue && (
                 <div className="absolute top-0 right-0 z-20">
                     <div className="absolute top-0 right-0 h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] overflow-hidden rounded-tr-3xl sm:rounded-tr-[32px]">
@@ -52,9 +52,9 @@ export const ShopCard = ({
                 </div>
             )}
 
-            {/* Content Container */}
+
             <div className="relative z-10 flex h-full flex-col p-6 sm:p-8">
-                {/* Header Icon */}
+
                 <div className="mb-4 sm:mb-6 flex justify-center">
                     <div className={cn(
                         "flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 shadow-inner transition-transform duration-500 group-hover:scale-110",
@@ -64,7 +64,7 @@ export const ShopCard = ({
                     </div>
                 </div>
 
-                {/* Title & Price */}
+
                 <div className="mb-4 sm:mb-6 text-center">
                     <h3 className={cn(
                         "mb-1 sm:mb-2 text-lg sm:text-xl font-bold transition-colors group-hover:text-white",
@@ -78,7 +78,7 @@ export const ShopCard = ({
                     </div>
                 </div>
 
-                {/* Features / Content */}
+
                 <div className="mb-6 sm:mb-8 flex-grow">
                     {features.length > 0 ? (
                         <ul className="space-y-2.5 sm:space-y-3">
@@ -103,7 +103,7 @@ export const ShopCard = ({
                     )}
                 </div>
 
-                {/* Action Button */}
+
                 <button
                     onClick={onPurchase}
                     className={cn(
@@ -117,7 +117,7 @@ export const ShopCard = ({
                 </button>
             </div>
 
-            {/* Ambient Glows */}
+
             <div className="absolute top-1/2 left-1/2 -z-10 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/10 blur-[80px] transition-opacity duration-500 group-hover:opacity-100 opacity-0" />
         </motion.div>
     );

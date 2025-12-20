@@ -23,7 +23,7 @@ export default function RankReveal({ climb, rank }: Props) {
             )}
 
             <div className="relative">
-                {/* Crackling Border Effect */}
+
                 <motion.div
                     className="absolute -inset-3 sm:-inset-4 rounded-xl opacity-50"
                     style={{
