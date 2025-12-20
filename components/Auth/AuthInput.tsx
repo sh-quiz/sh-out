@@ -48,7 +48,7 @@ export default function AuthInput({ label, type, icon: Icon, placeholder, value,
                 {/* Input */}
                 <input
                     type={inputType}
-                    className="w-full h-16 pl-14 pr-12 bg-[#161B22]/90 backdrop-blur-[32px] border border-zinc-800/60 rounded-[32px] text-white placeholder-transparent focus:outline-none focus:border-blue-500/50 focus:bg-[#161B22] transition-all duration-300"
+                    className="w-full h-15 pl-14 pr-12 bg-[#161B22]/90 backdrop-blur-[32px] border border-zinc-800/60 rounded-[32px] text-white placeholder-transparent focus:outline-none focus:border-blue-500/50 focus:bg-[#161B22] transition-all duration-300"
                     placeholder={placeholder}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
@@ -60,7 +60,7 @@ export default function AuthInput({ label, type, icon: Icon, placeholder, value,
                 <motion.label
                     initial={false}
                     animate={{
-                        y: isFocused || hasValue ? -28 : 0,
+                        y: isFocused || hasValue ? -20 : 0,
                         x: isFocused || hasValue ? -12 : 0,
                         scale: isFocused || hasValue ? 0.85 : 1,
                         color: isFocused ? '#3b82f6' : '#878D96'

@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
     if (token) {
         // If user is logged in and tries to access login or signup, redirect to dashboard
         if (pathname === '/auth/login' || pathname === '/auth/signup') {
-            return NextResponse.redirect(new URL('/main', request.url));
+            return NextResponse.redirect(new URL('/home', request.url));
         }
     } else {
         if (!isPublicRoute) {

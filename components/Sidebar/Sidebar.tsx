@@ -1,22 +1,30 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { authService } from '@/lib/auth';
 import {
     Home,
     Library,
-    BookOpen,
+
     Trophy,
     ShoppingBag,
     User,
     FileText,
     Send,
     MessageSquare,
-    AlertCircle
+    AlertCircle,
+    LogOut
 } from 'lucide-react';
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await authService.logout();
+        router.push('/auth/login');
+    };
 
     const navItems = [
         { name: 'Home', href: '/home', icon: Home },
@@ -80,6 +88,14 @@ export default function Sidebar() {
                 <button className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-white rounded-xl transition-colors text-sm group">
                     <span>Report an issue</span>
                     <AlertCircle className="w-4 h-4 text-[#878D96] group-hover:text-white" />
+                </button>
+
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-[#FF453A] rounded-xl transition-colors text-sm group mt-2"
+                >
+                    <span>Log out</span>
+                    <LogOut className="w-4 h-4 text-[#878D96] group-hover:text-[#FF453A]" />
                 </button>
             </div>
         </div>

@@ -37,14 +37,17 @@ export const authService = {
     },
 
     async logout() {
-        const userId = this.getUser()?.id;
-        if (userId) {
-            await api.post('/auth/logout', { userId });
+        try {
+            const userId = this.getUser()?.id;
+            if (userId) {
+                await api.post('/auth/logout', { userId });
+            }
+        } catch (error) {
+            console.error('Logout API call failed:', error);
+        } finally {
+            this.clearTokens();
+            console.log('Logged out successfully');
         }
-        this.clearTokens();
-        console.log('Logged out successfully');
-
-
     },
 
     saveTokens(data: AuthResponse) {
