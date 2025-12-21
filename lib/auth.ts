@@ -102,50 +102,37 @@ export const authService = {
     },
 
     isAuthenticated(): boolean {
-        return !!localStorage.getItem('access_token');
+        if (typeof window === 'undefined') return false;
+
+        const localToken = localStorage.getItem('access_token');
+        if (localToken) return true;
+
+
+        try {
+            const cookieToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('access_token='))
+                ?.split('=')[1];
+
+            if (cookieToken) {
+                console.log('🔄 [AUTH-SERVICE] Restoring access token from cookie');
+                localStorage.setItem('access_token', cookieToken);
+                return true;
+            }
+        } catch (e) {
+            console.error('Error checking cookies:', e);
+        }
+
+        return false;
     },
 };
 
-/**
- * OAuth Service
- * 
- * Enterprise-grade OAuth authentication utilities for frontend.
- * Handles OAuth flow coordination, error handling, and state management.
- * 
- * Features:
- * - OAuth flow initiation
- * - Callback handling
- * - Error recovery
- * - State validation
- * - Analytics tracking
- * 
- * Security:
- * - CSRF protection (via backend state parameter)
- * - Secure redirects
- * - Token handling via HTTP-only cookies
- * 
- * @module OAuthService
- */
+
 
 export interface OAuthConfig {
-    /**
-     * OAuth provider name
-     */
     provider: 'google' | 'facebook' | 'github';
-
-    /**
-     * Backend URL
-     */
     backendUrl?: string;
-
-    /**
-     * Success redirect path
-     */
     successRedirect?: string;
-
-    /**
-     * Error redirect path
-     */
     errorRedirect?: string;
 }
 
@@ -157,10 +144,6 @@ export interface OAuthResult {
 }
 
 export class OAuthService {
-    /**
-     * Get backend URL from environment
-     * Falls back to localhost for development
-     */
     private static getBackendUrl(): string {
         return (
             process.env.NEXT_PUBLIC_API_URL ||
@@ -169,17 +152,6 @@ export class OAuthService {
         );
     }
 
-    /**
-     * Initiate OAuth flow for a specific provider
-     * 
-     * @param config - OAuth configuration
-     * @returns Promise that resolves when redirect is initiated
-     * 
-     * @example
-     * ```typescript
-     * await OAuthService.initiateOAuth({ provider: 'google' });
-     * ```
-     */
     static async initiateOAuth(config: OAuthConfig): Promise<void> {
         try {
             const backendUrl = config.backendUrl || this.getBackendUrl();
@@ -216,20 +188,6 @@ export class OAuthService {
         }
     }
 
-    /**
-     * Handle OAuth callback from provider
-     * 
-     * @param searchParams - URL search parameters from callback
-     * @returns OAuth result with user data
-     * 
-     * @example
-     * ```typescript
-     * const result = OAuthService.handleCallback(searchParams);
-     * if (result.success) {
-     *   router.push('/dashboard');
-     * }
-     * ```
-     */
     static handleCallback(searchParams: URLSearchParams): OAuthResult {
         const oauthStatus = searchParams.get('oauth');
         const errorMessage = searchParams.get('message');
@@ -267,11 +225,6 @@ export class OAuthService {
         };
     }
 
-    /**
-     * Check if user is authenticated via OAuth
-     * 
-     * @returns boolean indicating OAuth authentication status
-     */
     static async isOAuthAuthenticated(): Promise<boolean> {
         try {
             const response = await fetch('/api/auth/session', {
@@ -286,12 +239,6 @@ export class OAuthService {
         }
     }
 
-    /**
-     * Store OAuth state in sessionStorage for callback validation
-     * 
-     * @param state - OAuth state data
-     * @private
-     */
     private static storeOAuthState(state: any): void {
         try {
             if (typeof window !== 'undefined') {
@@ -302,12 +249,6 @@ export class OAuthService {
         }
     }
 
-    /**
-     * Retrieve OAuth state from sessionStorage
-     * 
-     * @returns Stored OAuth state or null
-     * @private
-     */
     private static getOAuthState(): any {
         try {
             if (typeof window !== 'undefined') {
@@ -320,11 +261,6 @@ export class OAuthService {
         return null;
     }
 
-    /**
-     * Clear OAuth state from sessionStorage
-     * 
-     * @private
-     */
     private static clearOAuthState(): void {
         try {
             if (typeof window !== 'undefined') {
@@ -335,11 +271,6 @@ export class OAuthService {
         }
     }
 
-    /**
-     * Get current user from OAuth session
-     * 
-     * @returns User data or null
-     */
     static async getCurrentUser(): Promise<any> {
         try {
             const response = await fetch('/api/auth/me', {
@@ -359,11 +290,6 @@ export class OAuthService {
         }
     }
 
-    /**
-     * Disconnect OAuth provider
-     * 
-     * @param provider - Provider to disconnect
-     */
     static async disconnectProvider(provider: string): Promise<void> {
         try {
             console.log(`🔓 [OAUTH] Disconnecting ${provider} provider`);
@@ -382,20 +308,6 @@ export class OAuthService {
     }
 }
 
-/**
- * OAuth Hook for React Components
- * 
- * @example
- * ```typescript
- * const { initiateGoogle, isLoading } = useOAuth();
- * 
- * return (
- *   <button onClick={initiateGoogle} disabled={isLoading}>
- *     Sign in with Google
- *   </button>
- * );
- * ```
- */
 export function useOAuth() {
     const [isLoading, setIsLoading] = useState(false);
 
