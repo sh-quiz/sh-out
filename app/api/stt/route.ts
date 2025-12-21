@@ -1,5 +1,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
+
 export async function POST(req: NextRequest) {
     try {
         const { audioContent, config } = await req.json();
@@ -11,6 +12,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "No audio content provided" }, { status: 400 });
         }
 
+        const API_KEY = process.env.GOOGLE_CLOUD_API_KEY;
+
+        if (!API_KEY) {
+            console.error("[API/STT] Google Cloud API key not configured");
+            return NextResponse.json({ error: "STT service not configured" }, { status: 500 });
+        }
 
         const sttConfig = config || {
             encoding: "WEBM_OPUS",
