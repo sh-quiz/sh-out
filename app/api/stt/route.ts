@@ -1,8 +1,5 @@
 
 import { NextRequest, NextResponse } from "next/server";
-
-const API_KEY = "AIzaSyDpc09szDuRW7khLC1brTZQNvuE-ZGQMg8";
-
 export async function POST(req: NextRequest) {
     try {
         const { audioContent, config } = await req.json();

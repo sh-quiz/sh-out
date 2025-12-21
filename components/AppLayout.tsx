@@ -21,9 +21,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         if (!mounted) return;
 
         const isAuthenticated = authService.isAuthenticated();
+        console.log(`🛡️ AppLayout Guard [${pathname}]: auth=${isAuthenticated}, isPublic=${isPublicPage}`);
 
         if (!isAuthenticated && !isPublicPage) {
-            router.push('/auth/login');
+            console.warn('🚫 Not authenticated on protected page, redirecting to login...');
+            router.replace('/auth/login');
         }
     }, [pathname, isPublicPage, router, mounted]);
 
