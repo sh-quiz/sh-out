@@ -34,7 +34,7 @@ export default function QuizPlayer({
 }: Props) {
     const [quiz, setQuiz] = useState<QuizDetail | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Record<number, any>>();
+    const [answers, setAnswers] = useState<Record<number, any>>({});
     const [submittedQuestions, setSubmittedQuestions] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -92,7 +92,7 @@ export default function QuizPlayer({
 
     const loadQuizAndAttempt = async () => {
         try {
-            if (isMultiplayer)
+
 
             const [quizData, attemptData] = await Promise.all([
                 quizService.getById(quizId),
@@ -102,7 +102,7 @@ export default function QuizPlayer({
             setQuiz(quizData);
 
 
-            const initialAnswers: Record<number, any> = ;
+            const initialAnswers: Record<number, any> = {};
             const submitted = new Set<number>();
             let score = 0;
             let correct = 0;

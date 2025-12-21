@@ -32,12 +32,12 @@ export const queryKeys = {
     energy: {
         status: ['energy', 'status'] as const,
         pricing: ['energy', 'pricing'] as const,
-        transactions: (params: TransactionHistoryParams) =>
+        transactions: (params: TransactionHistoryParams = {}) =>
             ['energy', 'transactions', params] as const,
     },
     diamonds: {
         balance: ['diamonds', 'balance'] as const,
-        transactions: (params: TransactionHistoryParams) =>
+        transactions: (params: TransactionHistoryParams = {}) =>
             ['diamonds', 'transactions', params] as const,
     },
 } as const;
@@ -202,7 +202,7 @@ export function useEnergyPricing(
 
 
 export function useEnergyTransactions(
-    params: TransactionHistoryParams = ,
+    params: TransactionHistoryParams = {},
     options?: Omit<
         UseQueryOptions<CurrencyTransaction[]>,
         'queryKey' | 'queryFn'
@@ -309,7 +309,7 @@ export function useSpendDiamonds(
 
 
 export function useDiamondTransactions(
-    params: TransactionHistoryParams = ,
+    params: TransactionHistoryParams = {},
     options?: Omit<
         UseQueryOptions<CurrencyTransaction[]>,
         'queryKey' | 'queryFn'

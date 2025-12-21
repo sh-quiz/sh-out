@@ -13,7 +13,7 @@ export default function GlassCard({ children, className = "", hoverEffect = fals
     return (
         <motion.div
             className={`relative overflow-hidden rounded-2xl border border-white/5 bg-[#161B22]/60 backdrop-blur-xl ${className}`}
-            whileHover={hoverEffect ? { scale: 1.02, backgroundColor: "rgba(22, 27, 34, 0.8)" } : }
+            whileHover={hoverEffect ? { scale: 1.02, backgroundColor: "rgba(22, 27, 34, 0.8)" } : {}}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
         >
 

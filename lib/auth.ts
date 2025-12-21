@@ -65,7 +65,7 @@ export const authService = {
         localStorage.removeItem('user');
 
 
-        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'access_token= {}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     },
 
     getUser() {

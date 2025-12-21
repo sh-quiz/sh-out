@@ -38,8 +38,8 @@ export default function StatNumber({
             <div className="flex items-baseline gap-2">
                 <motion.span
                     className={`text-6xl md:text-8xl font-light tracking-tight ${colors[accentColor]}`}
-                    animate={isBreathing ? { opacity: [1, 0.8, 1] } : }
-                    transition={isBreathing ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : }
+                    animate={isBreathing ? { opacity: [1, 0.8, 1] } : {}}
+                    transition={isBreathing ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : {}}
                 >
                     {value}
                 </motion.span>

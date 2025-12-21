@@ -69,8 +69,8 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
                     ${isLocked ? 'w-10 h-10 bg-zinc-800 border border-zinc-700 text-zinc-400 shadow-lg' : ''}
                 `}
                 whileHover={{ scale: isCurrent ? 1.1 : 1.2 }}
-                animate={isCurrent ? { scale: [1, 1.06, 1] } : }
-                transition={isCurrent ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : }
+                animate={isCurrent ? { scale: [1, 1.06, 1] } : {}}
+                transition={isCurrent ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : {}}
             >
                 {isLocked ? (
                     <Lock className="w-4 h-4" />
