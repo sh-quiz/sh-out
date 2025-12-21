@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/lib/auth';
 
 /**
- * OAuth Callback Handler
+ * OAuth Callback Handler Component
  * 
  * Handles the redirect after successful OAuth authentication.
  * The backend will redirect here with tokens in URL params.
@@ -15,10 +15,8 @@ import { authService } from '@/lib/auth';
  * 2. Backend redirects to this page with tokens in URL
  * 3. This page saves tokens to localStorage
  * 4. Redirects to dashboard/home
- * 
- * @page
  */
-export default function OAuthCallbackPage() {
+function OAuthCallbackHandler() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -33,12 +31,6 @@ export default function OAuthCallbackPage() {
         const refreshToken = searchParams.get('refresh_token');
         const userDataStr = searchParams.get('user');
 
-        console.log('🔍 [OAUTH-CALLBACK] Processing OAuth callback');
-        console.log('🔍 [OAUTH-CALLBACK] Status:', oauthStatus);
-        console.log('🔍 [OAUTH-CALLBACK] Error message:', errorMessage);
-        console.log('🔍 [OAUTH-CALLBACK] Tokens present:', !!accessToken);
-        console.log('🔍 [OAUTH-CALLBACK] URL:', window.location.href);
-
         const processLogin = async () => {
             // Prioritize tokens from URL
             if (accessToken && refreshToken && userDataStr) {
@@ -47,9 +39,6 @@ export default function OAuthCallbackPage() {
                 try {
                     const user = JSON.parse(decodeURIComponent(userDataStr));
                     console.log('✅ [OAUTH-CALLBACK] User parsed:', user);
-
-                    // Save tokens to localStorage and cookies via authService
-                    // This is CRITICAL for authService.isAuthenticated() to return true
                     authService.saveTokens({
                         access_token: accessToken,
                         refresh_token: refreshToken,
@@ -60,8 +49,6 @@ export default function OAuthCallbackPage() {
 
                     setStatus('success');
 
-                    // Force a full page reload to ensure AppLayout recognizes authentication
-                    // Using window.location instead of router.push to avoid race conditions
                     setTimeout(() => {
                         console.log('🧭 [OAUTH-CALLBACK] Redirecting to /home via window.location');
                         console.log('🔐 [OAUTH-CALLBACK] Final auth check before redirect:', authService.isAuthenticated());
@@ -211,5 +198,52 @@ export default function OAuthCallbackPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+/**
+ * OAuth Callback Page
+ * Wraps the callback handler in Suspense for Next.js requirements
+ * 
+ * @page
+ */
+export default function OAuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 md:p-10 text-center transform transition-all duration-300 hover:shadow-md">
+                    <div className="flex justify-center mb-6 sm:mb-8">
+                        <svg
+                            className="animate-spin h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 text-amber-700"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                            />
+                            <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                        </svg>
+                    </div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
+                        Loading...
+                    </h2>
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                        Please wait while we prepare your authentication.
+                    </p>
+                </div>
+            </div>
+        }>
+            <OAuthCallbackHandler />
+        </Suspense>
     );
 }
