@@ -65,13 +65,6 @@ export default function AuthPage() {
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </motion.button>
-                <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-10 h-10 rounded-full bg-transparent  flex items-center justify-center text-static-white/60 hover:text-static-white transition-colors"
-                >
-                    <Settings className="w-5 h-5" />
-                </motion.button>
             </div>
 
             <main className="relative z-10 w-full max-w-md px-6 py-12 flex flex-col items-center">
@@ -91,16 +84,14 @@ export default function AuthPage() {
                             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                             className="absolute inset-0 rounded-full bg-voltage-blue/20 blur-2xl"
                         />
-                        {/* <div className="relative w-full h-full rounded-full bg-carbon-grey border border-voltage-blue/30 flex items-center justify-center overflow-hidden shadow-[0_0_40px_rgba(0,242,255,0.2)]">
-                            <Image
+                       <div >
+                         <Image
                                 src="/assets/logo.png"
                                 alt="logo"
-                                width={120}
-                                height={120}
-                                className="w-20 h-20 md:w-24 md:h-24 object-contain"
-                                priority
+                                width={200}
+                                height={200}
                             />
-                        </div> */}
+                        </div>
                     </div>
 
                     <h1 className="text-3xl md:text-4xl font-michroma font-bold italic text-static-white mb-2 tracking-tight text-center">
@@ -212,7 +203,7 @@ export default function AuthPage() {
                     <SocialButton provider="google" />
                 </div>
 
-                
+
             </main>
         </div>
     );

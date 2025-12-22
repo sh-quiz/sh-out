@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Define public routes that don't require authentication
-    const publicRoutes = ['/', '/auth', '/auth/signup'];
+    const publicRoutes = ['/', '/auth',];
 
     // Check if the current path is a public route
     const isPublicRoute = publicRoutes.includes(pathname);
@@ -34,7 +34,8 @@ export const config = {
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
          * - images/ (public images if any)
+         * - assets/ (public assets)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|images).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|images|assets).*)',
     ],
 };

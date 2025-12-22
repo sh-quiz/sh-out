@@ -19,10 +19,10 @@ export const OnlineMatchSection = () => {
 
             <div className="absolute inset-0 z-0 pointer-events-none">
 
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,59,48,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,59,48,0.03)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,59,48,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,59,48,0.03)_1px,transparent_1px)] bg-size-[100px_100px] mask-[radial-gradient(ellipse_at_center,black_40%,transparent_80%)]" />
 
 
-                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#FF3B30]/50 to-transparent animate-scan" />
+                <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#FF3B30]/50 to-transparent animate-scan" />
             </div>
 
 
@@ -46,7 +46,7 @@ export const OnlineMatchSection = () => {
                         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-9xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic"
                     >
                         Online <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">Match</span>
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-white/50">Match</span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0 }}
@@ -65,10 +65,10 @@ export const OnlineMatchSection = () => {
                             <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="relative flex items-center justify-center -skew-x-[18deg] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)] w-full min-h-[56px] overflow-hidden"
+                                className="relative flex items-center justify-center -skew-x-18 px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 bg-[#FF3B30] hover:bg-[#ff4f44] text-white transition-all duration-300 border-l border-t border-white/20 shadow-[0_0_20px_rgba(255,59,48,0.3)] w-full min-h-14 overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shine" />
-                                <div className="skew-x-[18deg] flex items-center gap-2 sm:gap-3">
+                                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shine" />
+                                <div className="skew-x-18 flex items-center gap-2 sm:gap-3">
                                     <span className="text-base sm:text-lg font-black tracking-wider sm:tracking-widest uppercase">Enter Battle</span>
                                     <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 rotate-180 transition-transform group-hover/btn:translate-x-1" />
                                 </div>
