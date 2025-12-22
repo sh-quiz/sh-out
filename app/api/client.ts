@@ -96,9 +96,13 @@ api.interceptors.response.use(
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
+<<<<<<< HEAD
         // Clear cookie as well to prevent middleware loop
         document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         window.location.href = '/auth/login';
+=======
+        window.location.href = '/auth';
+>>>>>>> origin/fix/auth
       } finally {
         isRefreshing = false;
       }

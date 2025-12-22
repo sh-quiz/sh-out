@@ -6,19 +6,19 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Define public routes that don't require authentication
-    const publicRoutes = ['/', '/auth/login', '/auth/signup'];
+    const publicRoutes = ['/', '/auth',];
 
     // Check if the current path is a public route
     const isPublicRoute = publicRoutes.includes(pathname);
 
     if (token) {
         // If user is logged in and tries to access login or signup, redirect to dashboard
-        if (pathname === '/auth/login' || pathname === '/auth/signup') {
+        if (pathname === '/auth' || pathname === '/auth/signup') {
             return NextResponse.redirect(new URL('/home', request.url));
         }
     } else {
         if (!isPublicRoute) {
-            return NextResponse.redirect(new URL('/auth/login', request.url));
+            return NextResponse.redirect(new URL('/auth', request.url));
         }
     }
 
@@ -27,7 +27,20 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
+<<<<<<< HEAD:middleware.ts
        
         '/((?!api|_next/static|_next/image|favicon.ico|images).*)',
+=======
+        /*
+         * Match all request paths except for the ones starting with:
+         * - api (API routes)
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - images/ (public images if any)
+         * - assets/ (public assets)
+         */
+        '/((?!api|_next/static|_next/image|favicon.ico|images|assets).*)',
+>>>>>>> origin/fix/auth:proxy.ts
     ],
 };

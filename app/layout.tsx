@@ -18,6 +18,24 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+import localFont from 'next/font/local';
+
+const michroma = localFont({
+  src: '../public/font/Michroma/Michroma-Regular.ttf',
+  variable: '--font-michroma',
+});
+
+const orbitron = localFont({
+  src: [
+    {
+      path: '../public/font/Orbitron/static/Orbitron-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    }
+  ],
+  variable: '--font-orbitron',
+});
+
 export const metadata: Metadata = {
   title: "SHARKS | The Ultimate Predator Quiz",
   description: "How long will you survive the ultimate predator quiz?",

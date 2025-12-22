@@ -23,7 +23,7 @@ export default function Sidebar() {
 
     const handleLogout = async () => {
         await authService.logout();
-        router.push('/auth/login');
+        router.push('/auth');
     };
 
     const navItems = [

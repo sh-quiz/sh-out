@@ -70,7 +70,7 @@ frontend/
 The app connects to the backend API with the following endpoints:
 
 - `POST /auth/signup` - User registration
-- `POST /auth/login` - User login
+- `POST /auth` - User login
 - `POST /auth/logout` - User logout
 - `GET /v1/quizzes` - Get all quizzes
 - `GET /v1/quizzes/:id` - Get quiz details
