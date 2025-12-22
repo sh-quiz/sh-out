@@ -17,6 +17,12 @@ export interface UserStats {
     maxEnergy: number;
 }
 
+export interface UpdateProfileData {
+    firstName?: string;
+    lastName?: string;
+    school?: string;
+}
+
 export const userService = {
     async getProfile(): Promise<UserProfile> {
         const response = await api.get('/users/me');
@@ -27,4 +33,20 @@ export const userService = {
         const response = await api.get('/users/me/stats');
         return response.data;
     },
+
+    async updateProfile(data: UpdateProfileData, file?: File | null): Promise<UserProfile> {
+        const formData = new FormData();
+
+        if (data.firstName) formData.append('firstName', data.firstName);
+        if (data.lastName) formData.append('lastName', data.lastName);
+        if (data.school) formData.append('school', data.school);
+        if (file) formData.append('file', file);
+
+        const response = await api.patch('/users/me', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
 };

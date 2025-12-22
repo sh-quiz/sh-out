@@ -16,6 +16,8 @@ import {
 import ProfileHero from "./components/ProfileHero";
 import StatNumber from "./components/StatNumber";
 import GlassCard from "./components/GlassCard";
+import EditProfileModal from "./components/EditProfileModal";
+import { userService, UpdateProfileData } from "@/lib/user";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
 import { useUserProfile } from "@/hooks/useUser";
@@ -31,17 +33,22 @@ const SETTINGS_LINKS = [
 
 export default function AccountPage() {
     const router = useRouter();
-    const { data: userProfile, isLoading: isProfileLoading } = useUserProfile();
+    const { data: userProfile, isLoading: isProfileLoading, refetch: refetchProfile } = useUserProfile();
     const [stats, setStats] = useState<UserStats | null>(null);
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
     useEffect(() => {
-
         statsService.getStats().then(setStats).catch(console.error);
     }, []);
 
     const handleLogout = async () => {
         await authService.logout();
         router.push('/');
+    };
+
+    const handleUpdateProfile = async (data: UpdateProfileData, file: File | null) => {
+        await userService.updateProfile(data, file);
+        await refetchProfile();
     };
 
     if (isProfileLoading || !stats) {
@@ -67,7 +74,7 @@ export default function AccountPage() {
         isPremium: true,
         streak: stats.dayStreak,
         stats: {
-            solved: stats.top3Finishes,
+            solved: stats.top3Finishes, // Assuming mapping, check logic if needed
             rank: stats.xp,
             top500: true
         },
@@ -75,7 +82,7 @@ export default function AccountPage() {
             { label: "Current Streak", value: `${stats.dayStreak} days`, icon: Zap },
             { label: "XP", value: `${stats.xp}`, icon: BookOpen },
             { label: "Gems", value: `${stats.gems}`, icon: Crown, accent: true },
-            // { label: "Total study time", value: "127h 34m", icon: Clock } // Missing in UserStats interface provided earlier?
+            // { label: "Total study time", value: "127h 34m", icon: Clock } 
         ]
     };
 
@@ -202,6 +209,7 @@ export default function AccountPage() {
                         {SETTINGS_LINKS.map((link, index) => (
                             <motion.button
                                 key={link.label}
+                                onClick={() => link.label === "Edit Profile" && setIsEditProfileOpen(true)}
                                 className="w-full h-16 flex items-center justify-between border-b border-white/5 group hover:bg-white/[0.02] transition-colors px-4 -mx-4 rounded-md"
                                 initial={{ opacity: 0, y: 10 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -237,6 +245,16 @@ export default function AccountPage() {
                 </div>
             </section>
 
+            <EditProfileModal
+                isOpen={isEditProfileOpen}
+                onClose={() => setIsEditProfileOpen(false)}
+                onSave={handleUpdateProfile}
+                initialData={{
+                    name: displayData.name,
+                    school: userProfile?.school || null,
+                    profilePicture: userProfile?.profilePicture || null
+                }}
+            />
         </main>
     );
 }
