@@ -7,6 +7,13 @@ export interface UserProfile {
     profilePicture: string | null;
 }
 
+export interface UpdateProfileInput {
+    firstName?: string;
+    lastName?: string;
+    school?: string;
+    file?: File;
+}
+
 export interface UserStats {
     xp: number;
     gems: number;
@@ -25,6 +32,27 @@ export const userService = {
 
     async getStats(): Promise<UserStats> {
         const response = await api.get('/users/me/stats');
+        return response.data;
+    },
+
+    async updateProfile(data: UpdateProfileInput): Promise<UserProfile> {
+        const formData = new FormData();
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && key !== 'file') {
+                formData.append(key, value as string);
+            }
+        });
+
+        if (data.file) {
+            formData.append('file', data.file);
+        }
+
+        const response = await api.patch('/users/me', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data;
     },
 };

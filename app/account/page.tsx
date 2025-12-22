@@ -16,199 +16,105 @@ import {
 import ProfileHero from "./components/ProfileHero";
 import StatNumber from "./components/StatNumber";
 import GlassCard from "./components/GlassCard";
+import EditProfileModal from "./components/EditProfileModal";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
 import { useUserProfile } from "@/hooks/useUser";
 import { useEffect, useState } from "react";
 import { statsService, UserStats } from "@/lib/stats";
 
-const SETTINGS_LINKS = [
-    { label: "Edit Profile", icon: null },
-    { label: "Notification Preferences", icon: Bell },
-    { label: "Appearance", value: "Dark", icon: Moon },
-    { label: "Privacy & Data", icon: Shield },
-];
-
 export default function AccountPage() {
     const router = useRouter();
-    const { data: userProfile, isLoading: isProfileLoading } = useUserProfile();
+    const { data: displayData, refetch } = useUserProfile();
     const [stats, setStats] = useState<UserStats | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    const settingsLinks = [
+        {
+            label: "Edit Profile",
+            icon: null,
+            action: () => setIsEditModalOpen(true)
+        },
+        { label: "Notification Preferences", icon: Bell },
+        { label: "Appearance", value: "Dark", icon: Moon },
+        { label: "Privacy & Data", icon: Shield },
+    ];
 
     useEffect(() => {
-
         statsService.getStats().then(setStats).catch(console.error);
     }, []);
 
     const handleLogout = async () => {
         await authService.logout();
-        router.push('/');
+        router.push('/login');
     };
 
-    if (isProfileLoading || !stats) {
-        return (
-            <div className="min-h-screen bg-[#000000] flex items-center justify-center text-white">
-                Loading...
-            </div>
-        );
+    if (!displayData) {
+        return <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+        </div>;
     }
 
-    const formatTime = (seconds: number) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        return `${h}h ${m}m`;
-    };
-
-
-    const displayData = {
-        name: userProfile?.name || "User",
-        username: userProfile?.email || "user",
-        school: userProfile?.school || "No School",
-        avatarUrl: userProfile?.profilePicture || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop",
-        isPremium: true,
-        streak: stats.dayStreak,
-        stats: {
-            solved: stats.top3Finishes,
-            rank: stats.xp,
-            top500: true
-        },
-        records: [
-            { label: "Current Streak", value: `${stats.dayStreak} days`, icon: Zap },
-            { label: "XP", value: `${stats.xp}`, icon: BookOpen },
-            { label: "Gems", value: `${stats.gems}`, icon: Crown, accent: true },
-            // { label: "Total study time", value: "127h 34m", icon: Clock } // Missing in UserStats interface provided earlier?
-        ]
-    };
-
     return (
-        <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] pb-32 overflow-x-hidden selection:bg-[#007AFF]/30">
+        <main className="min-h-screen bg-[#0D1117] text-white pb-20">
+            <ProfileHero
+                name={displayData.name}
+                username={displayData.email.split('@')[0]} // Fallback for username
+                school={displayData.school}
+                avatarUrl={displayData.avatarUrl}
+                level={Math.floor(stats?.xp ? stats.xp / 100 : 1)}
+            />
 
-
-            <section className="pt-24 pb-12 px-6">
-                <ProfileHero
-                    name={displayData.name}
-                    username={displayData.username}
-                    school={displayData.school}
-                    avatarUrl={displayData.avatarUrl}
-                    isPremium={displayData.isPremium}
-                    streak={displayData.streak}
-                />
-            </section>
-
-
-            <section className="px-6 mb-16">
-                <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 text-center md:text-left">
-                    <div className="flex justify-center md:justify-start">
-                        <StatNumber
-                            label="Total XP"
-                            value={stats.xp.toLocaleString()}
-                            delay={0.2}
-                        />
-                    </div>
-                    <div className="flex justify-center md:justify-start">
-                        <StatNumber
-                            label="Current Streak"
-                            value={stats.dayStreak}
-                            subValue="days"
-                            accentColor="amber"
-                            delay={0.4}
-                            isBreathing
-                        />
-                    </div>
-                    <div className="flex justify-center md:justify-start">
-                        <StatNumber
-                            label="Gems"
-                            value={`${stats.diamonds}`}
-                            accentColor="sapphire"
-                            delay={0.6}
-                        />
-                    </div>
+            <section className="px-6 -mt-8 relative z-10">
+                <div className="max-w-2xl mx-auto grid grid-cols-2 gap-4">
+                    <StatNumber
+                        label="Day Streak"
+                        value={stats?.dayStreak || 0}
+                        icon={Zap}
+                        delay={0.1}
+                    />
+                    <StatNumber
+                        label="Top 3 Finishes"
+                        value={stats?.top3Finishes || 0}
+                        icon={Crown}
+                        delay={0.2}
+                    />
                 </div>
             </section>
 
-
-            <section className="px-6 mb-20">
-                <div className="max-w-md mx-auto">
-                    <GlassCard className="p-8" hoverEffect>
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-full bg-[#007AFF]/10">
-                                    <Crown className="w-6 h-6 text-[#007AFF]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-medium">Premium Plan</h3>
-                                    <p className="text-sm text-[#878D96]">Lifetime Access</p>
-                                </div>
+            <section className="px-6 mt-6">
+                <div className="max-w-2xl mx-auto space-y-4">
+                    <GlassCard className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                <Timer className="w-5 h-5 text-blue-400" />
                             </div>
-
-                            <div className="px-3 py-1 rounded-full border border-[#007AFF]/30 bg-[#007AFF]/10 text-xs font-medium text-[#007AFF]">
-                                ACTIVE
+                            <div>
+                                <div className="text-sm text-[#878D96]">Study Time</div>
+                                <div className="font-semibold">{Math.floor((stats?.xp || 0) / 10)}h</div>
                             </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className="h-1 w-full bg-[#161B22] rounded-full overflow-hidden">
-                                <div className="h-full bg-[#007AFF] w-full" />
-                            </div>
-                            <p className="text-xs text-[#878D96] text-center">
-                                Next billing date: Never (Lifetime)
-                            </p>
                         </div>
                     </GlassCard>
                 </div>
             </section>
 
-
-            <section className="px-6 mb-24">
-                <div className="max-w-2xl mx-auto space-y-8">
-                    <motion.h2
-                        className="text-sm font-medium uppercase tracking-widest text-[#878D96] mb-8 border-b border-white/5 pb-4"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                    >
-                        Personal Records
-                    </motion.h2>
-
-                    <div className="space-y-6">
-                        {displayData.records.map((record, index) => (
-                            <motion.div
-                                key={record.label}
-                                className="flex items-center justify-between group"
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-1 h-8 rounded-full transition-colors duration-300 ${record.accent ? "bg-[#007AFF]" : "bg-[#161B22] group-hover:bg-[#007AFF]"}`} />
-                                    <div>
-                                        <p className="text-sm text-[#878D96] mb-1">{record.label}</p>
-                                        <p className="text-xl font-light">{record.value}</p>
-                                    </div>
-                                </div>
-                                {record.accent && (
-                                    <Zap className="w-5 h-5 text-[#007AFF]" />
-                                )}
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-
-            <section className="px-6 pb-20">
+            <section className="px-6 pb-20 mt-8">
                 <div className="max-w-2xl mx-auto">
                     <div className="space-y-1">
-                        {SETTINGS_LINKS.map((link, index) => (
+                        {settingsLinks.map((link, index) => (
                             <motion.button
                                 key={link.label}
+                                onClick={() => link.action?.()}
                                 className="w-full h-16 flex items-center justify-between border-b border-white/5 group hover:bg-white/[0.02] transition-colors px-4 -mx-4 rounded-md"
                                 initial={{ opacity: 0, y: 10 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.05 }}
                             >
-                                <span className="text-[#F0F2F5] font-light">{link.label}</span>
+                                <div className="flex items-center gap-4">
+                                    {link.icon && <link.icon className="w-4 h-4 text-[#878D96] group-hover:text-white transition-colors" />}
+                                    <span className="text-[#F0F2F5] font-light">{link.label}</span>
+                                </div>
                                 <div className="flex items-center gap-3 text-[#878D96]">
                                     {link.value && <span className="text-sm">{link.value}</span>}
                                     <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300" />
@@ -227,7 +133,6 @@ export default function AccountPage() {
                             <LogOut className="w-4 h-4 text-[#878D96] group-hover:text-[#FF453A] transition-colors" />
                         </motion.button>
 
-
                         <div className="pt-12 flex justify-center">
                             <button className="text-xs text-[#161B22] hover:text-[#FF453A] transition-colors duration-500">
                                 Delete Account
@@ -237,6 +142,14 @@ export default function AccountPage() {
                 </div>
             </section>
 
-        </main>
+            <EditProfileModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                currentName={displayData.name}
+                currentSchool={displayData.school}
+                currentAvatarUrl={displayData.avatarUrl}
+                onUpdateSuccess={refetch}
+            />
+        </main >
     );
 }
