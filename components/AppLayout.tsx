@@ -3,9 +3,10 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { authService } from '@/lib/auth';
-import Sidebar from '@/components/Sidebar/Sidebar';
-import BottomNav from '@/components/BottomNav';
-import DashboardSidebar from '@/components/DashboardSidebar';
+import Sidebar from './Sidebar/Sidebar';
+import BottomNav from './BottomNav';
+import CustomCursor from './ui/CustomCursor';
+import DashboardSidebar from './DashboardSidebar';
 import MobileStatsHeader from '@/components/MobileStatsHeader';
 import CyberLoader from '@/components/ui/CyberLoader';
 
@@ -65,28 +66,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         );
     }
 
+    const isIsolatedPage = /^\/quizzes\/\d+$/.test(pathname || '');
+
+    if (isIsolatedPage) {
+        return (
+            <div className="min-h-screen bg-[#0B0E14] text-white">
+                <CustomCursor />
+                {children}
+            </div>
+        );
+    }
+
     return (
-        <div className="flex min-h-screen bg-black transition-colors duration-500 overflow-x-hidden">
-            {/* Background elements */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute inset-0 cyber-grid opacity-[0.05]" />
-                <div className="scan-line opacity-20" />
-                <div className="absolute inset-0 bg-linear-to-b from-[#0B0E14] via-transparent to-[#0B0E14] opacity-50" />
-            </div>
-
+        <div className="flex min-h-screen bg-[#0B0E14] text-white">
+            <CustomCursor />
             <Sidebar />
-
-            <div className="flex-1 flex flex-col md:pl-64 xl:pr-80 min-h-screen relative z-10 transition-all duration-300 ease-in-out">
-                <MobileStatsHeader />
-
-                <BottomNav />
-
-                <main className="flex-1 w-full max-w-5xl mx-auto pt-16 md:pt-8 pb-32 md:pb-12 px-4 md:px-8">
+            <main className="flex-1 lg:ml-64 main-content-area">
+                <div className="max-w-5xl mx-auto px-4 md:px-8 py-8">
                     {children}
-                </main>
-            </div>
-
+                </div>
+            </main>
             <DashboardSidebar />
+            <BottomNav />
         </div>
     );
 }

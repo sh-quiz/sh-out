@@ -6,11 +6,13 @@ import { useEnergy, useDiamonds } from '@/hooks/useEconomy';
 import { useStats } from '@/hooks/useStats';
 import { fetchGlobalLeaderboard, type LeaderboardEntry } from '@/lib/leaderboard';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function DashboardSidebar() {
     const { data: energyData } = useEnergy();
     const { data: diamondsData } = useDiamonds();
     const { data: statsData } = useStats();
+    const pathname = usePathname();
 
     const energy = energyData?.energy ?? 0;
     const maxEnergy = energyData?.maxEnergy ?? 30;
@@ -19,6 +21,8 @@ export default function DashboardSidebar() {
 
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     const [bannerIndex, setBannerIndex] = useState(0);
+
+    const isQuizzesPage = pathname.startsWith('/quizzes');
 
     const banners = [
         {
@@ -59,7 +63,21 @@ export default function DashboardSidebar() {
     }, []);
 
     return (
-        <aside className="hidden xl:flex flex-col w-80 h-screen fixed right-0 top-0 border-l border-white/5 bg-black/50 backdrop-blur-xl z-30 overflow-y-auto scrollbar-hide">
+        <aside className="hidden xl:flex flex-col w-80 border-l border-white/5 bg-black/50 backdrop-blur-xl z-30">
+            {isQuizzesPage && (
+                <div className="p-6 border-b border-white/5 bg-blitz-yellow/5 group hover:bg-blitz-yellow/10 transition-colors cursor-pointer">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-none border-2 border-blitz-yellow flex items-center justify-center font-black text-xl italic text-blitz-yellow shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+                            01
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-bold text-white/40 tracking-[0.2em]">CURRENT_PROTOCOL</span>
+                            <span className="text-sm font-bold text-white uppercase tracking-wider">Neural Fundamentals</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Stats Header */}
             <div className="p-6 border-b border-white/5">
                 <div className="flex items-center justify-between gap-4 mb-8">
@@ -92,7 +110,7 @@ export default function DashboardSidebar() {
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${(energy / maxEnergy) * 100}%` }}
-                            className={`h-full bg-voltage-blue ${energy < 5 ? 'bg-danger-red' : 'bg-voltage-blue'}`}
+                            className={`h-full ${energy < 10 ? 'bg-danger-red' : 'bg-voltage-blue'}`}
                         />
                     </div>
                 </div>

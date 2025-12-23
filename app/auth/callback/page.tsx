@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/lib/auth';
+import CyberLoader from '@/components/ui/CyberLoader';
 
 /**
  * OAuth Callback Handler Component
@@ -93,37 +94,9 @@ function OAuthCallbackHandler() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 md:p-10 text-center transform transition-all duration-300 hover:shadow-md">
                 {status === 'loading' && (
-                    <>
-                        {/* Loading State */}
-                        <div className="flex justify-center mb-6 sm:mb-8">
-                            <svg
-                                className="animate-spin h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 text-amber-700"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                />
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                />
-                            </svg>
-                        </div>
-                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
-                            Completing Sign In...
-                        </h2>
-                        <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                            Please wait while we set up your account.
-                        </p>
-                    </>
+                    <div className="flex flex-col items-center justify-center py-8">
+                        <CyberLoader text="FINALIZING NEURAL LINK..." />
+                    </div>
                 )}
 
                 {status === 'success' && (
@@ -212,34 +185,9 @@ export default function OAuthCallbackPage() {
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 md:p-10 text-center transform transition-all duration-300 hover:shadow-md">
-                    <div className="flex justify-center mb-6 sm:mb-8">
-                        <svg
-                            className="animate-spin h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 text-amber-700"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                            />
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                        </svg>
+                    <div className="flex flex-col items-center justify-center py-8">
+                        <CyberLoader text="SYNCHRONIZING..." />
                     </div>
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
-                        Loading...
-                    </h2>
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                        Please wait while we prepare your authentication.
-                    </p>
                 </div>
             </div>
         }>

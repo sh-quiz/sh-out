@@ -7,9 +7,9 @@ import { motion } from "framer-motion";
 export const OnlineMatchSection = () => {
     return (
         <section className="relative flex-1 group overflow-hidden border border-white/5 bg-carbon-grey/40 min-h-[50vh] md:min-h-0 cyber-border">
-
             <div className="absolute inset-0 z-0 scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out">
-                <div className="w-full h-full bg-black cyber-grid opacity-20" />
+                <div className="w-full h-full bg-cover bg-center opacity-40 mix-blend-overlay" style={{ backgroundImage: 'url("/brain/63bbd1f4-5752-4464-8755-2789be25175c/cyberpunk_single_player_bg_1766525805914.png")' }} />
+                <div className="absolute inset-0 bg-linear-to-t from-[#0B0E14] via-transparent to-transparent opacity-60" />
             </div>
 
 
@@ -37,8 +37,8 @@ export const OnlineMatchSection = () => {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic font-orbitron"
                     >
-                        Online <br />
-                        <span className="text-transparent bg-clip-text bg-linear-to-r from-voltage-blue via-voltage-blue/50 to-voltage-blue/10">Match</span>
+                        Single <br />
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-voltage-blue via-voltage-blue/50 to-voltage-blue/10">Player</span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0 }}
@@ -69,6 +69,6 @@ export const OnlineMatchSection = () => {
                     </div>
                 </div>
             </div>
-        </section>
+        </section >
     );
 };

@@ -14,7 +14,8 @@ import {
     FileText,
     Send,
     MessageSquare,
-    AlertCircle,
+    Zap,
+    Settings,
     LogOut
 } from 'lucide-react';
 
@@ -29,10 +30,11 @@ export default function Sidebar() {
 
     const navItems = [
         { name: 'Home', href: '/home', icon: Home },
-        { name: 'Categories', href: '/categories', icon: Library },
         { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
+        { name: 'Quizzes', href: '/quizzes', icon: Zap },
         { name: 'Shop', href: '/shop', icon: ShoppingBag },
         { name: 'Account', href: '/account', icon: User },
+        { name: 'Settings', href: '/settings', icon: Settings },
     ];
 
     return (

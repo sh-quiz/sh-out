@@ -20,9 +20,9 @@ export default function StatNumber({
     isBreathing = false
 }: StatNumberProps) {
     const colors = {
-        sapphire: "text-[#007AFF]",
-        amber: "text-[#FFB340]",
-        white: "text-[#F0F2F5]"
+        sapphire: "text-voltage-blue drop-shadow-[0_0_8px_#00F2FF]",
+        amber: "text-blitz-yellow drop-shadow-[0_0_8px_#FFD700]",
+        white: "text-static-white"
     };
 
     return (

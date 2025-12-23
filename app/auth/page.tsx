@@ -12,6 +12,7 @@ import HoneycombBackground from '@/components/ui/HoneycombBackground';
 import BlitzButton from '@/components/ui/BlitzButton';
 import SocialButton from '@/components/Auth/SocialButton';
 import AuthSwitcher from '@/components/Auth/AuthSwitcher';
+import CyberLoader from '@/components/ui/CyberLoader';
 
 export default function AuthPage() {
     const [mounted, setMounted] = useState(false);
@@ -49,7 +50,11 @@ export default function AuthPage() {
         setMounted(true);
     }, []);
 
-    if (!mounted) return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+    if (!mounted) return (
+        <div className="min-h-screen bg-black flex items-center justify-center">
+            <CyberLoader text="ESTABLISHING LINK..." />
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-deep-void text-static-white font-inter selection:bg-voltage-blue/30 relative overflow-hidden flex flex-col items-center justify-center">
@@ -84,8 +89,8 @@ export default function AuthPage() {
                             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                             className="absolute inset-0 rounded-full bg-voltage-blue/20 blur-2xl"
                         />
-                       <div >
-                         <Image
+                        <div >
+                            <Image
                                 src="/assets/logo.png"
                                 alt="logo"
                                 width={200}
