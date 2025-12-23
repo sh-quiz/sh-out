@@ -15,9 +15,10 @@ export interface Quiz {
 
 interface JourneyPathProps {
     quizzes: Quiz[];
+    onStartQuiz?: (id: number) => void;
 }
 
-export default function JourneyPath({ quizzes }: JourneyPathProps) {
+export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -105,24 +106,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
         <div ref={containerRef} className="relative w-full min-h-screen pb-40">
 
             <div className="fixed inset-0 z-0 pointer-events-none">
-
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-
-
-                <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full opacity-20" />
-                {Array.from({ length: 20 }).map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute bg-white rounded-full opacity-20 animate-pulse"
-                        style={{
-                            width: Math.random() * 2 + 1 + 'px',
-                            height: Math.random() * 2 + 1 + 'px',
-                            top: Math.random() * 100 + '%',
-                            left: Math.random() * 100 + '%',
-                            animationDuration: Math.random() * 3 + 2 + 's'
-                        }}
-                    />
-                ))}
             </div>
 
 
@@ -161,6 +145,7 @@ export default function JourneyPath({ quizzes }: JourneyPathProps) {
                             level={level.level}
                             status={level.status}
                             position={level.position}
+                            onStart={() => onStartQuiz?.(level.id)}
                         />
                     </div>
                 ))}

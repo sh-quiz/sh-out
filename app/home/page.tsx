@@ -10,6 +10,7 @@ import { quizService, AttemptResponse } from "@/lib/quiz";
 import PerformanceGrid from "@/components/Home/PerformanceGrid";
 import ActivitySection from "@/components/Home/ActivitySection";
 import CyberLoader from "@/components/ui/CyberLoader";
+import MascotChat from "@/components/ui/MascotChat";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ATTEMPT_STATE_KEY = 'current_attempt';
@@ -101,76 +102,54 @@ export default function HomePage() {
         );
     }
 
-    const [mascotMessage, setMascotMessage] = useState("Oh, hey. Welcome to Bliitz. Yeah, the name is... well, it's what happens when your creators spend all their budget on neon lights and two minutes on a thesaurus.");
-
-    const messages = [
-        "Bliitz. Brilliant name, right? It's like 'Blitz', but with more... typing required. Truly revolutionary thinking from the humans.",
-        "Scanning your progress. My circuits suggest you're doing better than the person who named me. Low bar, but still.",
-        "Bliitz-bee. That's my name. It combines my two favorite things: being fast and being an oversight in a branding meeting.",
-        "Don't mind me. I'm just a high-performance AI stuck in a box designed by people who thought adding a second 'i' was a personality trait.",
-        "Look at all these analytics. If only we tracked how many better names were rejected before we landed on 'Bliitz'."
+    const [tourStep, setTourStep] = useState(0);
+    const tourMessages = [
+        "Welcome Operative. I'm Bliitz-bee. I'm basically the brains of this operation, while you're... the one clicking things.",
+        "To your left is Single Player mode. Perfect for when you want to fail in private.",
+        "And there's Multiplayer. You can challenge others to see whose neural links are less fried.",
+        "Check your metrics below. I've tracked every misstep so you don't have to.",
+        "Got questions? Don't ask me. I'm busy maintaining this gorgeous neon glow. Just get back to work."
     ];
 
+    const nextTourStep = () => {
+        if (tourStep < tourMessages.length - 1) {
+            setTourStep(prev => prev + 1);
+        }
+    };
+
     useEffect(() => {
-        const interval = setInterval(() => {
-            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-            setMascotMessage(randomMsg);
-        }, 8000);
-        return () => clearInterval(interval);
-    }, []);
+        if (tourStep < tourMessages.length - 1) {
+            const timer = setTimeout(nextTourStep, 6000);
+            return () => clearTimeout(timer);
+        }
+    }, [tourStep]);
 
     return (
         <div className="pb-24">
-            {/* Mascot Interaction Zone */}
-            <header className="mb-12 flex flex-col md:flex-row items-center gap-8 bg-carbon-grey/40 p-8 border border-white/5 rounded-2xl relative overflow-hidden group">
-                <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
-                <div className="absolute top-0 right-0 p-4 opacity-5 hover:opacity-20 transition-opacity">
-                    <img src="/assets/logo.png" alt="" className="w-24 h-24 rotate-12" />
+            {/* Mascot Tour Zone */}
+            <div className="mb-12">
+                <MascotChat
+                    message={tourMessages[tourStep]}
+                    onComplete={nextTourStep}
+                />
+                <div className="mt-4 flex justify-end gap-2">
+                    {tourStep < tourMessages.length - 1 ? (
+                        <button
+                            onClick={nextTourStep}
+                            className="text-[10px] font-bold text-blitz-yellow uppercase tracking-[0.2em] px-3 py-1 border border-blitz-yellow/20 bg-blitz-yellow/5 hover:bg-blitz-yellow/10 transition-colors"
+                        >
+                            Next Protocol_
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => setTourStep(0)}
+                            className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] px-3 py-1 hover:text-white transition-colors"
+                        >
+                            Restart Tour
+                        </button>
+                    )}
                 </div>
-
-                <div className="relative">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full cyber-border bg-blitz-yellow/5 flex items-center justify-center relative z-10">
-                        <motion.img
-                            animate={{
-                                y: [0, -5, 0],
-                                rotate: [0, 2, -2, 0]
-                            }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            src="/assets/mascot.png"
-                            alt="Bliitz-bee"
-                            className="w-16 h-16 md:w-24 md:h-24 object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]"
-                        />
-                    </div>
-                    {/* Floating HUD elements */}
-                    <div className="absolute -top-2 -right-2 w-8 h-8 border-t border-r border-blitz-yellow/40" />
-                    <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b border-l border-blitz-yellow/40" />
-                </div>
-
-                <div className="flex-1 space-y-4 relative z-10 text-center md:text-left">
-                    <div className="flex flex-col md:flex-row md:items-center gap-2">
-                        <h1 className="text-2xl font-black uppercase tracking-[0.2em] text-white font-orbitron">
-                            Bliitz Dashboard
-                        </h1>
-                        <span className="text-[10px] font-mono text-blitz-yellow font-bold px-2 py-0.5 border border-blitz-yellow/20 bg-blitz-yellow/5 self-center">
-                            // CONNECTED: BLIITZ-BEE_V1.0
-                        </span>
-                    </div>
-
-                    <div className="relative min-h-[60px] flex items-center">
-                        <AnimatePresence mode="wait">
-                            <motion.p
-                                key={mascotMessage}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="text-sm md:text-base font-mono text-white/70 italic leading-relaxed"
-                            >
-                                "{mascotMessage}"
-                            </motion.p>
-                        </AnimatePresence>
-                    </div>
-                </div>
-            </header>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                 <OnlineMatchSection />

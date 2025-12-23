@@ -9,9 +9,10 @@ interface LevelNodeProps {
     level: number;
     status: 'completed' | 'current' | 'locked' | 'unlocked';
     position: { x: number; y: number };
+    onStart?: () => void;
 }
 
-export default function LevelNode({ title, level, status, position }: LevelNodeProps) {
+export default function LevelNode({ title, level, status, position, onStart }: LevelNodeProps) {
     const isCurrent = status === 'current';
     const isCompleted = status === 'completed';
     const isLocked = status === 'locked';
@@ -24,7 +25,12 @@ export default function LevelNode({ title, level, status, position }: LevelNodeP
             style={{ left: `${position.x}%`, top: `${position.y}px` }}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
-            onClick={() => setShowTooltip(!showTooltip)}
+            onClick={() => {
+                setShowTooltip(!showTooltip);
+                if (!isLocked) {
+                    onStart?.();
+                }
+            }}
         >
 
             <AnimatePresence>

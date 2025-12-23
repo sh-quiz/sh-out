@@ -8,8 +8,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Share2, ArrowRight } from 'lucide-react';
 import Lenis from 'lenis';
 
-
-import ParticleBackground from '@/components/ui/ParticleBackground';
 import ScoreHero from './ScoreHero';
 import StatCard from './StatCard';
 import RewardCard from './RewardCard';
@@ -127,8 +125,6 @@ export default function QuizResult({ attemptId }: Props) {
 
     return (
         <div ref={containerRef} className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 relative overflow-x-hidden">
-            <ParticleBackground />
-
             <main className="relative z-10 max-w-sm sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 pb-24 sm:pb-28 lg:pb-32 flex flex-col items-center w-full" role="main">
 
 

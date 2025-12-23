@@ -31,8 +31,10 @@ export const ArcadeModeSection = ({ gameState, createGame, joinGame, myPlayerId 
 
     return (
         <section className="relative flex-1 group overflow-hidden min-h-[50vh] md:min-h-0 border border-white/5 bg-carbon-grey/40 cyber-border">
-
-            <div className="absolute inset-0 z-0 cyber-grid opacity-10" />
+            <div className="absolute inset-0 z-0 scale-105 group-hover:scale-100 transition-transform duration-[1.5s] ease-out">
+                <div className="w-full h-full bg-cover bg-center opacity-40 mix-blend-overlay" style={{ backgroundImage: 'url("/brain/63bbd1f4-5752-4464-8755-2789be25175c/cyberpunk_multiplayer_bg_1766525834788.png")' }} />
+                <div className="absolute inset-0 bg-linear-to-t from-[#0B0E14] via-transparent to-transparent opacity-60" />
+            </div>
 
 
             <div className="relative z-10 h-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 py-12">
@@ -56,8 +58,8 @@ export const ArcadeModeSection = ({ gameState, createGame, joinGame, myPlayerId 
                                 transition={{ duration: 0.6, delay: 0.1 }}
                                 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-[-0.04em] text-white uppercase leading-[0.9] italic font-orbitron"
                             >
-                                Arcade <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blitz-yellow via-blitz-yellow/40 to-blitz-yellow/10">Mode</span>
+                                Multi <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blitz-yellow via-blitz-yellow/40 to-blitz-yellow/10">Player</span>
                             </motion.h2>
                         </div>
 

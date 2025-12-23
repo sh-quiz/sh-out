@@ -15,7 +15,6 @@ export default function BottomNav() {
 
     const navItems = [
         { name: 'Home', href: '/home', icon: Home },
-        { name: 'Categories', href: '/categories', icon: Library },
         { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
         { name: 'Shop', href: '/shop', icon: ShoppingBag },
         { name: 'Account', href: '/account', icon: User },
@@ -31,8 +30,8 @@ export default function BottomNav() {
                             key={item.name}
                             href={item.href}
                             className={`flex flex-col items-center gap-1 min-w-[64px] py-1 rounded-lg transition-all duration-200 ${isActive
-                                    ? 'text-[#58a6ff]'
-                                    : 'text-[#8b949e] hover:text-[#c9d1d9]'
+                                ? 'text-[#58a6ff]'
+                                : 'text-[#8b949e] hover:text-[#c9d1d9]'
                                 }`}
                         >
                             <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive ? 'bg-[#1f6feb]/15' : 'bg-transparent'

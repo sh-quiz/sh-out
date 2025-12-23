@@ -23,6 +23,8 @@ import { authService } from "@/lib/auth";
 import { useUserProfile } from "@/hooks/useUser";
 import { useEffect, useState } from "react";
 import { statsService, UserStats } from "@/lib/stats";
+import CyberLoader from "@/components/ui/CyberLoader";
+import { api } from "@/app/api/client";
 
 const SETTINGS_LINKS = [
     { label: "Edit Profile", icon: null },
@@ -53,8 +55,8 @@ export default function AccountPage() {
 
     if (isProfileLoading || !stats) {
         return (
-            <div className="min-h-screen bg-[#000000] flex items-center justify-center text-white">
-                Loading...
+            <div className="h-screen w-screen bg-black flex items-center justify-center fixed inset-0 z-50">
+                <CyberLoader text="ACCESSING NEURAL PROFILE..." />
             </div>
         );
     }
@@ -87,7 +89,12 @@ export default function AccountPage() {
     };
 
     return (
-        <main className="min-h-screen w-full bg-[#000000] text-[#F0F2F5] pb-32 overflow-x-hidden selection:bg-[#007AFF]/30">
+        <main className="min-h-screen w-full bg-deep-void text-static-white pb-32 overflow-x-hidden selection:bg-voltage-blue/30 relative">
+            {/* Cyber background effects */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                <div className="absolute inset-0 cyber-grid opacity-5" />
+                <div className="scan-line" />
+            </div>
 
 
             <section className="pt-24 pb-12 px-6">
@@ -102,7 +109,7 @@ export default function AccountPage() {
             </section>
 
 
-            <section className="px-6 mb-16">
+            <section className="px-6 mb-16 relative z-10">
                 <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 text-center md:text-left">
                     <div className="flex justify-center md:justify-start">
                         <StatNumber
@@ -133,30 +140,30 @@ export default function AccountPage() {
             </section>
 
 
-            <section className="px-6 mb-20">
+            <section className="px-6 mb-20 relative z-10">
                 <div className="max-w-md mx-auto">
-                    <GlassCard className="p-8" hoverEffect>
+                    <GlassCard className="p-8 border-l-4 border-l-voltage-blue" hoverEffect>
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-full bg-[#007AFF]/10">
-                                    <Crown className="w-6 h-6 text-[#007AFF]" />
+                                <div className="p-2 rounded-full bg-voltage-blue/10">
+                                    <Crown className="w-6 h-6 text-voltage-blue" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-medium">Premium Plan</h3>
-                                    <p className="text-sm text-[#878D96]">Lifetime Access</p>
+                                    <h3 className="text-lg font-michroma font-bold text-static-white">Premium Plan</h3>
+                                    <p className="text-xs font-mono text-static-white/40 uppercase tracking-widest">Lifetime Access</p>
                                 </div>
                             </div>
 
-                            <div className="px-3 py-1 rounded-full border border-[#007AFF]/30 bg-[#007AFF]/10 text-xs font-medium text-[#007AFF]">
-                                ACTIVE
+                            <div className="px-3 py-1 rounded-full border border-voltage-blue/30 bg-voltage-blue/10 text-[10px] font-black tracking-tighter text-voltage-blue">
+                                ACTIVE_PROTOCOL
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <div className="h-1 w-full bg-[#161B22] rounded-full overflow-hidden">
-                                <div className="h-full bg-[#007AFF] w-full" />
+                            <div className="h-1 w-full bg-carbon-grey rounded-full overflow-hidden">
+                                <div className="h-full bg-voltage-blue w-full" />
                             </div>
-                            <p className="text-xs text-[#878D96] text-center">
+                            <p className="text-[10px] font-mono text-static-white/30 text-center uppercase tracking-widest">
                                 Next billing date: Never (Lifetime)
                             </p>
                         </div>
@@ -187,14 +194,14 @@ export default function AccountPage() {
                                 transition={{ delay: index * 0.1 }}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-1 h-8 rounded-full transition-colors duration-300 ${record.accent ? "bg-[#007AFF]" : "bg-[#161B22] group-hover:bg-[#007AFF]"}`} />
+                                    <div className={`w-1 h-8 rounded-full transition-colors duration-300 ${record.accent ? "bg-blitz-yellow" : "bg-carbon-grey group-hover:bg-voltage-blue"}`} />
                                     <div>
-                                        <p className="text-sm text-[#878D96] mb-1">{record.label}</p>
-                                        <p className="text-xl font-light">{record.value}</p>
+                                        <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-static-white/40 mb-1">{record.label}</p>
+                                        <p className="text-xl font-michroma font-bold text-static-white">{record.value}</p>
                                     </div>
                                 </div>
                                 {record.accent && (
-                                    <Zap className="w-5 h-5 text-[#007AFF]" />
+                                    <Zap className="w-5 h-5 text-blitz-yellow" />
                                 )}
                             </motion.div>
                         ))}

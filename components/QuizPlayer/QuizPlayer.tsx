@@ -2,12 +2,13 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { quizService, QuizDetail, SubmitAnswerData } from '@/lib/quiz';
+import { useRouter } from 'next/navigation';
+import MascotChat from '@/components/ui/MascotChat';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Volume2, VolumeX, Mic, MicOff, Settings, AlertTriangle, CheckCircle2, XCircle, Info, Clock, Trophy, Zap, Flame, Gem, Users } from 'lucide-react';
+import { Volume2, VolumeX, Mic, MicOff, Settings, AlertTriangle, CheckCircle2, XCircle, Info, Clock, Trophy, Zap, Flame, Gem, Users, ChevronRight, ChevronLeft } from 'lucide-react';
 import CyberLoader from '@/components/ui/CyberLoader';
 import { useTTS } from '@/hooks/useTTS';
 import { useSTT } from '@/hooks/useSTT';
-import { useRouter } from 'next/navigation'; // Keep useRouter as it's used later
 
 interface Props {
     quizId: number;
@@ -46,6 +47,7 @@ export default function QuizPlayer({
     const [myScore, setMyScore] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
     const [showResults, setShowResults] = useState(false);
+    const [mascotFeedback, setMascotFeedback] = useState<string | null>(null);
     const { speak, cancel } = useTTS();
     const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -229,29 +231,18 @@ export default function QuizPlayer({
         if (!quiz || submittingRef.current) return;
         const question = quiz.questions[currentQuestionIndex];
 
-        if (submittedQuestions.has(question.id)) {
-            if (currentQuestionIndex < quiz.questions.length - 1) {
-                setCurrentQuestionIndex((prev) => prev + 1);
-            } else {
-                await finishQuiz();
-            }
-            return;
-        }
-
         const answer = answerOverride !== undefined ? answerOverride : answers[question.id];
         if (!answer) {
-            alert('Please select an answer');
+            setMascotFeedback("You have to click something, Operative. I can't read your mind... yet.");
             return;
         }
 
         const choiceId = typeof answer === 'object' ? answer.choiceId : (answer as number);
-        if (choiceId === undefined || choiceId === null) {
-            alert('Invalid answer. Please try again.');
-            return;
-        }
 
         setSubmitting(true);
         submittingRef.current = true;
+        setMascotFeedback(null);
+
         try {
             const submitData: SubmitAnswerData = {
                 questionId: question.id,
@@ -263,27 +254,19 @@ export default function QuizPlayer({
 
             if (res.isCorrect) {
                 setCorrectCount(prev => prev + 1);
+                setMascotFeedback(res.feedback || "Standard neural output. Adequate.");
+            } else {
+                setMascotFeedback(res.feedback || "Fascinating. Is your frontal lobe traditionally for decoration?");
             }
 
             setMyScore(res.currentScore);
             if (onScoreUpdate) {
-
-                const newCorrectCount = res.isCorrect ? correctCount + 1 : correctCount;
-                onScoreUpdate(res.currentScore, newCorrectCount);
+                onScoreUpdate(res.currentScore, res.isCorrect ? correctCount + 1 : correctCount);
             }
 
             setSubmittedQuestions(prev => new Set(prev).add(question.id));
-
-            if (currentQuestionIndex < quiz.questions.length - 1) {
-                setCurrentQuestionIndex((prev) => prev + 1);
-            } else {
-                await finishQuiz();
-            }
         } catch (err: any) {
-
             console.error("Submission failed", err);
-
-            alert(err.response?.data?.message || 'Failed to submit answer');
         } finally {
             setSubmitting(false);
             submittingRef.current = false;
@@ -292,6 +275,7 @@ export default function QuizPlayer({
 
     const handleNextQuestion = () => {
         if (!quiz) return;
+        setMascotFeedback(null); // Clear feedback on next
         if (currentQuestionIndex < quiz.questions.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
         } else {
@@ -364,9 +348,11 @@ export default function QuizPlayer({
     const currentAnswer = answers[currentQuestion.id];
 
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col font-mono relative overflow-hidden">
+        <div className="h-screen w-screen bg-black text-white flex flex-col font-mono relative overflow-hidden fixed inset-0 z-[100]">
             {/* Cyber background effects */}
-            <div className="absolute inset-0 pointer-events-none z-0">
+            <div className="absolute inset-0 pointer-events-none z-0 scale-110">
+                <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: 'url("/brain/63bbd1f4-5752-4464-8755-2789be25175c/cyberpunk_quiz_player_bg_2_1766525882064.png")' }} />
+                <div className="absolute inset-0 bg-[#0B0E14] opacity-40" />
                 <div className="absolute inset-0 cyber-grid opacity-10" />
                 <div className="scan-line" />
             </div>
@@ -424,7 +410,7 @@ export default function QuizPlayer({
 
             {/* Main Content or Results */}
             {!showResults ? (
-                <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 max-w-4xl mx-auto w-full relative z-10">
+                <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 max-w-4xl mx-auto w-full relative z-10 overflow-hidden">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentQuestionIndex}
@@ -432,7 +418,7 @@ export default function QuizPlayer({
                             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
                             exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
                             transition={{ duration: 0.3 }}
-                            className="w-full flex flex-col"
+                            className="w-full h-full flex flex-col justify-center"
                         >
                             <div className="mb-12">
                                 <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] mb-4 block">Question_Node_{currentQuestionIndex + 1}</span>
@@ -441,7 +427,7 @@ export default function QuizPlayer({
                                 </h2>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                                 {currentQuestion.choices?.map((choice, index: number) => {
                                     const isSelected = currentAnswer === choice.id;
                                     const isChoiceSubmitted = submittedQuestions.has(currentQuestion.id);
@@ -500,22 +486,16 @@ export default function QuizPlayer({
                                 })}
                             </div>
 
-                            {/* Manual Submission Button */}
+                            {/* Mascot Feedback */}
                             <AnimatePresence>
-                                {!submittedQuestions.has(currentQuestion.id) && currentAnswer && (
+                                {mascotFeedback && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="mt-8 flex justify-center w-full"
+                                        exit={{ opacity: 0, y: -20 }}
+                                        className="mt-8"
                                     >
-                                        <button
-                                            disabled={submitting}
-                                            onClick={() => submitCurrentAnswer()}
-                                            className="px-12 py-4 bg-blitz-yellow text-black font-black uppercase tracking-[0.3em] text-sm hover:bg-blitz-yellow/90 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] cyber-border disabled:opacity-50"
-                                        >
-                                            {submitting ? 'UPLOADING...' : 'CONFIRM SELECTION'}
-                                        </button>
+                                        <MascotChat message={mascotFeedback} />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -528,7 +508,7 @@ export default function QuizPlayer({
                                 >
                                     <button
                                         onClick={handleNextQuestion}
-                                        className="px-12 py-4 bg-white/5 border border-white/20 text-white font-black uppercase tracking-[0.3em] text-sm hover:bg-white/10 transition-all flex items-center gap-3"
+                                        className="px-12 py-4 bg-blitz-yellow text-black font-black uppercase tracking-[0.3em] text-sm hover:bg-blitz-yellow/90 transition-all flex items-center gap-3 shadow-[0_0_20px_#FFD700]"
                                     >
                                         Proceed to Next Sector
                                         <ChevronRight className="w-5 h-5" />

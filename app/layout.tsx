@@ -39,6 +39,9 @@ const orbitron = localFont({
 export const metadata: Metadata = {
   title: "SHARKS | The Ultimate Predator Quiz",
   description: "How long will you survive the ultimate predator quiz?",
+  icons: {
+    icon: "/assets/mascot.png",
+  },
 };
 
 export default function RootLayout({
