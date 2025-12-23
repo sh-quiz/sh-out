@@ -49,7 +49,7 @@ export default function AuthPage() {
         setMounted(true);
     }, []);
 
-    if (!mounted) return null;
+    if (!mounted) return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
 
     return (
         <div className="min-h-screen bg-deep-void text-static-white font-inter selection:bg-voltage-blue/30 relative overflow-hidden flex flex-col items-center justify-center">

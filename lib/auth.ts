@@ -58,6 +58,12 @@ export const authService = {
 
     saveTokens(data: AuthResponse) {
         console.log('💾 [AUTH-SERVICE] Starting to save tokens to localStorage');
+        
+        if (!data.access_token || data.access_token === 'undefined' || data.access_token === 'null') {
+            console.error('❌ [AUTH-SERVICE] Attempted to save invalid access token:', data.access_token);
+            return;
+        }
+
         console.log('💾 [AUTH-SERVICE] Received data:', {
             hasAccess: !!data.access_token,
             hasRefresh: !!data.refresh_token,
@@ -73,8 +79,14 @@ export const authService = {
         });
 
         localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        if (data.refresh_token && data.refresh_token !== 'undefined' && data.refresh_token !== 'null') {
+            localStorage.setItem('refresh_token', data.refresh_token);
+        }
+        
+        if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+        }
 
         console.log('🔍 [AUTH-SERVICE] LocalStorage AFTER save:', {
             access: localStorage.getItem('access_token')?.substring(0, 50) + '...',
@@ -92,8 +104,9 @@ export const authService = {
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
 
-
-        document.cookie = 'access_token= {}; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        // Clear cookie with all possible paths and attributes to ensure it's gone
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     },
 
     getUser() {
@@ -104,9 +117,12 @@ export const authService = {
     isAuthenticated(): boolean {
         if (typeof window === 'undefined') return false;
 
-        const localToken = localStorage.getItem('access_token');
-        if (localToken) return true;
-
+        try {
+            const localToken = localStorage.getItem('access_token');
+            if (localToken && localToken !== 'undefined' && localToken !== 'null') return true;
+        } catch (e) {
+            console.error('Error accessing localStorage:', e);
+        }
 
         try {
             const cookieToken = document.cookie
@@ -114,7 +130,7 @@ export const authService = {
                 .find(row => row.startsWith('access_token='))
                 ?.split('=')[1];
 
-            if (cookieToken) {
+            if (cookieToken && cookieToken !== 'undefined' && cookieToken !== 'null') {
                 console.log('🔄 [AUTH-SERVICE] Restoring access token from cookie');
                 localStorage.setItem('access_token', cookieToken);
                 return true;

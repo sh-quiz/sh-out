@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { quizService, QuizDetail, SubmitAnswerData } from '@/lib/quiz';
-import { useRouter } from 'next/navigation';
-import { Volume2, VolumeX, Flame, ChevronRight, Mic, MicOff, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, ChevronLeft, Volume2, VolumeX, Mic, MicOff, Settings, AlertTriangle, CheckCircle2, XCircle, Info, Clock, Trophy, Zap, Flame, Gem, Users } from 'lucide-react';
+import CyberLoader from '@/components/ui/CyberLoader';
 import { useTTS } from '@/hooks/useTTS';
 import { useSTT } from '@/hooks/useSTT';
+import { useRouter } from 'next/navigation'; // Keep useRouter as it's used later
 
 interface Props {
     quizId: number;
@@ -34,7 +36,7 @@ export default function QuizPlayer({
 }: Props) {
     const [quiz, setQuiz] = useState<QuizDetail | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Record<number, any>>({});
+    const [answers, setAnswers] = useState<Record<number, number | { text: string; choiceId: number }>>({});
     const [submittedQuestions, setSubmittedQuestions] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -46,6 +48,8 @@ export default function QuizPlayer({
     const [showResults, setShowResults] = useState(false);
     const { speak, cancel } = useTTS();
     const [hasInteracted, setHasInteracted] = useState(false);
+
+    const toggleMute = () => setIsMuted(prev => !prev);
 
 
     const handleVoiceCommand = useCallback((text: string) => {
@@ -102,19 +106,19 @@ export default function QuizPlayer({
             setQuiz(quizData);
 
 
-            const initialAnswers: Record<number, any> = {};
+            const initialAnswers: Record<number, number | { text: string; choiceId: number }> = {};
             const submitted = new Set<number>();
             let score = 0;
             let correct = 0;
 
-            attemptData.answers.forEach((ans: any) => {
+            attemptData.answers.forEach((ans) => {
                 submitted.add(ans.questionId);
                 if (ans.isCorrect) {
                     score += ans.pointsAwarded || 10;
                     correct++;
                 }
 
-                const question = quizData.questions.find((q: any) => q.id === ans.questionId);
+                const question = quizData.questions.find((q) => q.id === ans.questionId);
                 if (question?.type === 'fill_in') {
                     initialAnswers[ans.questionId] = {
                         text: ans.yourAnswer.choiceText,
@@ -130,7 +134,7 @@ export default function QuizPlayer({
             setMyScore(score);
             setCorrectCount(correct);
 
-            const firstUnansweredIndex = quizData.questions.findIndex((q: any) => !submitted.has(q.id));
+            const firstUnansweredIndex = quizData.questions.findIndex((q) => !submitted.has(q.id));
             if (firstUnansweredIndex !== -1) {
                 setCurrentQuestionIndex(firstUnansweredIndex);
             } else if (submitted.size === quizData.questions.length && submitted.size > 0) {
@@ -206,7 +210,7 @@ export default function QuizPlayer({
 
         if (question.type === 'single_choice' || question.type === 'true_false') {
             textToRead += ". Options are: ";
-            question.choices?.forEach((choice: any, index: number) => {
+            question.choices?.forEach((choice, index: number) => {
                 textToRead += `Option ${String.fromCharCode(65 + index)}. ${choice.text}. `;
             });
         }
@@ -214,18 +218,14 @@ export default function QuizPlayer({
         speak(textToRead);
     };
 
-    const handleAnswer = (questionId: number, value: any) => {
+    const handleAnswer = (questionId: number, value: number | { text: string; choiceId: number }) => {
         if (submittedQuestions.has(questionId)) return;
         setAnswers((prev) => ({ ...prev, [questionId]: value }));
-
-
-        setTimeout(() => {
-            submitCurrentAnswer(value);
-        }, 300);
+        cancel();
     };
 
 
-    const submitCurrentAnswer = async (answerOverride?: any) => {
+    const submitCurrentAnswer = async (answerOverride?: number | { text: string; choiceId: number }) => {
         if (!quiz || submittingRef.current) return;
         const question = quiz.questions[currentQuestionIndex];
 
@@ -244,7 +244,7 @@ export default function QuizPlayer({
             return;
         }
 
-        const choiceId = typeof answer === 'object' ? answer.choiceId : answer;
+        const choiceId = typeof answer === 'object' ? answer.choiceId : (answer as number);
         if (choiceId === undefined || choiceId === null) {
             alert('Invalid answer. Please try again.');
             return;
@@ -290,11 +290,17 @@ export default function QuizPlayer({
         }
     };
 
-    const handleSkip = () => {
+    const handleNextQuestion = () => {
         if (!quiz) return;
         if (currentQuestionIndex < quiz.questions.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
+        } else {
+            finishQuiz();
         }
+    };
+
+    const handleSkip = () => {
+        handleNextQuestion();
     };
 
     const finishQuiz = async () => {
@@ -327,375 +333,332 @@ export default function QuizPlayer({
         }
     };
 
-    if (loading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading quiz...</div>;
-    if (!quiz) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Quiz not found</div>;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center p-8">
+                <CyberLoader text="PULLING MISSION DATA..." />
+            </div>
+        );
+    }
+
+    if (!quiz) {
+        return (
+            <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-16 h-16 border border-danger-red/20 flex items-center justify-center mb-6">
+                    <span className="text-danger-red font-black">!</span>
+                </div>
+                <h2 className="text-white font-orbitron uppercase tracking-widest mb-2">Quiz Not Found</h2>
+                <p className="text-white/40 text-xs font-mono max-w-xs">// ERROR_SOURCE: NULL_REFERENCE_EXCEPTION</p>
+                <button
+                    onClick={() => router.push('/home')}
+                    className="mt-8 px-6 py-2 border border-white/20 text-white text-[10px] font-bold uppercase hover:bg-white/5 transition-colors"
+                >
+                    Return to Home
+                </button>
+            </div>
+        );
+    }
 
     const currentQuestion = quiz.questions[currentQuestionIndex];
     const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
-    const isSubmitted = submittedQuestions.has(currentQuestion.id);
     const currentAnswer = answers[currentQuestion.id];
 
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col font-sans relative">
-
-
-
-
-
-            <div className="px-2 py-1 flex items-center justify-between max-w-5xl mx-auto w-full pt-20">
-                <div className="flex flex-col w-full max-w-md">
-                    <span className="text-gray-400 md:text-sm text-xs font-medium mb-2 whitespace-nowrap">
-                        Question {currentQuestionIndex + 1} of {quiz.questions.length}
-                    </span>
-                    <div className="h-1.5 bg-gray-800 rounded-full w-full overflow-hidden">
-                        <div
-                            className="h-full bg-blue-900 rounded-full transition-all duration-500 ease-out"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                </div>
-
-
-                <div className="flex items-center gap-4 ml-6">
-
-                    {isMultiplayer && (
-                        <div className="relative group">
-                            <div className="absolute inset-0 bg-red-600/10 blur-xl rounded-full opacity-50 transition-opacity duration-500" />
-                            <div className="relative bg-[#0F1115] border border-red-500/20 px-3 py-1.5 rounded-2xl flex items-center gap-2 min-w-[140px] shadow-lg shadow-black/40 backdrop-blur-md">
-
-
-                                <div className="md:w-7 md:h-7 sm:w-6 sm:h-6 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.1)]">
-                                    <Users className="text-red-500 w-3.5 h-3.5" />
-                                </div>
-
-                                <div className="flex flex-col w-full">
-                                    <div className="flex justify-between items-center mb-0.5">
-                                        <span className="text-[9px] text-red-400/80 font-bold uppercase tracking-[0.15em] leading-none">Opponent</span>
-                                        {isOpponentFinished && (
-                                            <span className="text-[8px] bg-red-500/20 text-red-400 border border-red-500/30 px-1 py-px rounded-md font-bold leading-none animate-pulse">
-                                                DONE
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-lg font-mono font-black text-white leading-none tracking-tight shadow-black drop-shadow-md">{opponentScore}</span>
-
-
-                                        <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden relative">
-                                            <div
-                                                className="h-full bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)] transition-all duration-700 ease-out rounded-full"
-                                                style={{ width: `${Math.min((opponentScore || 0) / 10, 100)}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
-                    <div className="relative w-12 h-12 flex items-center justify-center">
-                        <svg className="w-full h-full transform -rotate-90">
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="20"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                                fill="transparent"
-                                className="text-gray-800"
-                            />
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="20"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                                fill="transparent"
-                                strokeDasharray={125.6}
-                                strokeDashoffset={125.6 * (1 - timeLeft / 60)}
-                                className="text-blue-900 transition-all duration-1000 ease-linear"
-                            />
-                        </svg>
-                        <span className="absolute text-sm font-bold">{timeLeft}</span>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-black text-white flex flex-col font-mono relative overflow-hidden">
+            {/* Cyber background effects */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                <div className="absolute inset-0 cyber-grid opacity-10" />
+                <div className="scan-line" />
             </div>
 
-
-            <div className="flex-1 flex flex-col items-center justify-start pt-2 px-4 pb-20 max-w-4xl mx-auto w-full">
-
-                <div className="bg-[#0A0F16] border border-gray-900 rounded-3xl p-6 w-full mb-4 relative min-h-[200px] flex items-center justify-center text-center shadow-2xl">
-
-
-                    <div className="absolute top-4 right-4 flex gap-2">
-                        {isSTTSupported && (
+            {/* Header */}
+            <div className="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-white/10 bg-black/50 backdrop-blur-md">
+                <div className="flex items-center gap-6">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-bold text-white/40 tracking-[0.2em]">Atmosphere</span>
+                        <div className="flex items-center gap-2 mt-1">
                             <button
-                                onClick={() => isListening ? stopListening() : startListening()}
-                                className={`p-2 rounded-full transition-colors ${isListening
-                                    ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white'
-                                    : 'bg-blue-900 hover:bg-blue-950 text-white'}`}
-                                title={isListening ? "Stop Listening" : "Enable Voice Control"}
+                                onClick={toggleMute}
+                                className="p-2 bg-white/5 hover:bg-white/10 cyber-border transition-colors group"
                             >
-                                {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+                                {isMuted ? <VolumeX size={14} className="group-hover:text-white" /> : <Volume2 size={14} className="group-hover:text-white" />}
                             </button>
-                        )}
-                        <button
-                            onClick={() => {
-                                setIsMuted(!isMuted);
-                            }}
-                            className="p-2 bg-blue-900 rounded-full hover:bg-blue-950 transition-colors"
-                        >
-                            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                        </button>
-                    </div>
-
-                    <h2 className="text-3xl md:text-5xl font-thin leading-tight text-gray-200 max-w-3xl">
-                        {currentQuestion.text}
-                    </h2>
-                </div>
-
-
-                <div className="w-full space-y-2">
-                    {(currentQuestion.type === 'single_choice' || currentQuestion.type === 'true_false') && (
-                        currentQuestion.choices?.map((choice: any, index: number) => {
-                            const isSelected = currentAnswer === choice.id;
-                            const letter = String.fromCharCode(65 + index);
-
-                            return (
+                            {isSTTSupported && (
                                 <button
-                                    key={choice.id}
-                                    onClick={() => handleAnswer(currentQuestion.id, choice.id)}
-                                    disabled={isSubmitted}
-                                    className={`w-full p-3 rounded-2xl flex items-center transition-all duration-200 group ${isSelected
-                                        ? 'bg-blue-900 text-white shadow-lg shadow-blue-900/20 border-transparent'
-                                        : 'bg-[#0A0F16] border border-gray-800 text-gray-300 hover:bg-gray-900 hover:border-gray-700'
-                                        }`}
+                                    onClick={isListening ? stopListening : startListening}
+                                    className={`p-2 cyber-border transition-all ${isListening ? 'bg-white text-black animate-pulse shadow-[0_0_15px_white]' : 'bg-white/5 hover:bg-white/10'}`}
                                 >
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-4 transition-colors ${isSelected
-                                        ? 'bg-white/20 text-white'
-                                        : 'bg-gray-800 text-gray-400 group-hover:bg-gray-700'
-                                        }`}>
-                                        {letter}
-                                    </div>
-                                    <span className="text-lg font-medium">{choice.text}</span>
+                                    {isListening ? <Mic size={14} /> : <MicOff size={14} />}
                                 </button>
-                            );
-                        })
-                    )}
-
-                    {currentQuestion.type === 'fill_in' && (
-                        <div className="w-full">
-                            <input
-                                type="text"
-                                className="w-full bg-[#0A0F16] border border-gray-800 text-white p-6 rounded-2xl text-xl focus:outline-none focus:border-blue-900 transition-colors placeholder-gray-600"
-                                value={answers[currentQuestion.id]?.text || ''}
-                                onChange={(e) => {
-                                    const text = e.target.value;
-                                    const match = currentQuestion.choices?.find(
-                                        (c: any) => c.text.toLowerCase().trim() === text.toLowerCase().trim()
-                                    );
-                                    handleAnswer(currentQuestion.id, { text, choiceId: match?.id });
-                                }}
-                                placeholder="Type your answer here..."
-                                disabled={isSubmitted}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-
-
-            <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md border-t border-gray-900 p-3 z-10">
-                <div className="max-w-5xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-white font-bold text-lg">
-                        <Flame className="text-orange-500 fill-orange-500" />
-                        <span>{myScore} <span className="text-gray-500 text-sm ml-2">({correctCount} / {quiz.questions.length})</span></span>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={handleSkip}
-                            className="px-6 py-3 text-gray-400 hover:text-white  transition-colors bg-gray-900/50 hover:bg-gray-900 rounded-3xl"
-                        >
-                            Skip
-                        </button>
-                        <button
-                            onClick={() => submitCurrentAnswer()}
-                            disabled={submitting}
-                            className="px-8 py-2.5 bg-blue-900 hover:bg-blue-950 text-white font-bold rounded-3xl transition-all shadow-lg shadow-blue-900/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {submitting ? 'Processing...' : (
-                                <>
-                                    {isSubmitted ? 'Next ' : 'Submit'}
-                                    <ChevronRight size={20} />
-                                </>
                             )}
-                        </button>
+                        </div>
+                    </div>
+
+                    <div className="hidden sm:flex flex-col">
+                        <span className="text-[10px] uppercase font-bold text-white/40 tracking-[0.2em]">Progression</span>
+                        <div className="flex items-center gap-2 mt-2">
+                            <div className="w-32 h-1.5 bg-white/10 cyber-border overflow-hidden">
+                                <motion.div
+                                    className="h-full bg-white shadow-[0_0_10px_white]"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${progress}%` }}
+                                />
+                            </div>
+                            <span className="text-[10px] font-mono text-white/60">{currentQuestionIndex + 1}/{quiz.questions.length}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-8">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] uppercase font-bold text-white/40 tracking-[0.2em]">Efficiency</span>
+                        <span className="text-xl font-black mt-1 tracking-tighter shadow-white drop-shadow-sm">{myScore}</span>
+                    </div>
+
+                    <div className={`flex flex-col items-center justify-center w-14 h-14 cyber-border ${timeLeft <= 10 ? 'bg-white text-black animate-pulse' : 'bg-white/5'}`}>
+                        <span className="text-xs font-black">{timeLeft}</span>
+                        <span className="text-[8px] uppercase font-bold">Sec</span>
                     </div>
                 </div>
             </div>
 
-
-
-            {
-                showResults && (
-                    <div className="fixed inset-0 z-[100] bg-[#020508]/95 backdrop-blur-xl flex items-center justify-center p-4">
-                        <div className="bg-[#0A0F16] border border-white/5 rounded-[3rem] p-8 max-w-sm w-full text-center relative overflow-hidden shadow-2xl shadow-black/50">
-
-
-                            <div className="relative z-10 mb-8">
-                                <h2 className="text-xl font-bold text-white tracking-wider mb-1">
-                                    MATCH COMPLETE
+            {/* Main Content or Results */}
+            {!showResults ? (
+                <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 max-w-4xl mx-auto w-full relative z-10">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentQuestionIndex}
+                            initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
+                            transition={{ duration: 0.3 }}
+                            className="w-full flex flex-col"
+                        >
+                            <div className="mb-12">
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] mb-4 block">Question_Node_{currentQuestionIndex + 1}</span>
+                                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight uppercase italic font-orbitron">
+                                    {currentQuestion.text}
                                 </h2>
-                                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">
-                                    BATTLE REPORT
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                                {currentQuestion.choices?.map((choice, index: number) => {
+                                    const isSelected = currentAnswer === choice.id;
+                                    const isChoiceSubmitted = submittedQuestions.has(currentQuestion.id);
+                                    const isCorrect = choice.isCorrect;
+
+                                    return (
+                                        <motion.button
+                                            key={choice.id}
+                                            disabled={isChoiceSubmitted || submitting}
+                                            onClick={() => handleAnswer(currentQuestion.id, choice.id)}
+                                            whileHover={{ scale: isChoiceSubmitted ? 1 : 1.02, x: isChoiceSubmitted ? 0 : 4 }}
+                                            whileTap={{ scale: isChoiceSubmitted ? 1 : 0.98 }}
+                                            className={`
+                                                relative p-6 text-left transition-all duration-300 group
+                                                ${isSelected
+                                                    ? 'bg-blitz-yellow/10 border-blitz-yellow'
+                                                    : 'bg-carbon-grey/40 border-white/5 hover:border-white/20 hover:bg-carbon-grey/60'
+                                                }
+                                                border-l-4
+                                                ${isChoiceSubmitted && isSelected && !isCorrect ? 'border-danger-red bg-danger-red/10 animate-shake' : ''}
+                                                ${isChoiceSubmitted && isCorrect ? 'border-voltage-blue bg-voltage-blue/10' : ''}
+                                            `}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`
+                                                    w-8 h-8 rounded-none border flex items-center justify-center font-black text-xs transition-colors
+                                                    ${isSelected ? 'bg-blitz-yellow text-black border-blitz-yellow' : 'bg-black text-white/40 border-white/10 group-hover:border-white/30'}
+                                                    ${isChoiceSubmitted && isSelected && !isCorrect ? 'bg-danger-red border-danger-red text-white' : ''}
+                                                    ${isChoiceSubmitted && isCorrect ? 'bg-voltage-blue border-voltage-blue text-black' : ''}
+                                                `}>
+                                                    {String.fromCharCode(65 + index)}
+                                                </div>
+                                                <span className={`font-bold tracking-tight ${isSelected ? 'text-white' : 'text-white/60 group-hover:text-white'}`}>
+                                                    {choice.text}
+                                                </span>
+                                            </div>
+
+                                            {/* Status Indicators */}
+                                            {isChoiceSubmitted && (
+                                                <div className="absolute top-4 right-4 animate-in fade-in zoom-in">
+                                                    {isCorrect ? (
+                                                        <div className="flex items-center gap-2 text-[10px] font-bold text-voltage-blue uppercase tracking-widest">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-voltage-blue animate-pulse" />
+                                                            Correct
+                                                        </div>
+                                                    ) : isSelected ? (
+                                                        <div className="flex items-center gap-2 text-[10px] font-bold text-danger-red uppercase tracking-widest">
+                                                            <div className="w-1.5 h-1.5 bg-danger-red animate-pulse" />
+                                                            Failed
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            )}
+                                        </motion.button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Manual Submission Button */}
+                            <AnimatePresence>
+                                {!submittedQuestions.has(currentQuestion.id) && currentAnswer && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="mt-8 flex justify-center w-full"
+                                    >
+                                        <button
+                                            disabled={submitting}
+                                            onClick={() => submitCurrentAnswer()}
+                                            className="px-12 py-4 bg-blitz-yellow text-black font-black uppercase tracking-[0.3em] text-sm hover:bg-blitz-yellow/90 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] cyber-border disabled:opacity-50"
+                                        >
+                                            {submitting ? 'UPLOADING...' : 'CONFIRM SELECTION'}
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            {!submitting && submittedQuestions.has(currentQuestion.id) && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-8 flex justify-center w-full"
+                                >
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        className="px-12 py-4 bg-white/5 border border-white/20 text-white font-black uppercase tracking-[0.3em] text-sm hover:bg-white/10 transition-all flex items-center gap-3"
+                                    >
+                                        Proceed to Next Sector
+                                        <ChevronRight className="w-5 h-5" />
+                                    </button>
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+            ) : (
+                <div className="fixed inset-0 z-[150] bg-black flex items-center justify-center p-4">
+                    <div className="absolute inset-0 cyber-grid opacity-10 pointer-events-none" />
+
+                    <div className="relative w-full max-w-2xl bg-black border border-white/20 p-8 shadow-[0_0_50px_rgba(255,255,255,0.05)] cyber-border overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 font-mono text-xs uppercase">Terminal_Summary_V4.0</div>
+
+                        <motion.h2
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="text-4xl font-black text-center mb-12 uppercase italic tracking-tighter"
+                        >
+                            Mission <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20 animate-glow">Complete</span>
+                        </motion.h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div className="border border-white/10 bg-white/5 p-6 flex flex-col items-center">
+                                <div className="relative mb-4 group">
+                                    <div className="w-20 h-20 bg-white/10 cyber-border flex items-center justify-center p-1">
+                                        <div className="w-full h-full bg-white/5 overflow-hidden">
+                                            <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=You`} alt="You" className="grayscale contrast-125" />
+                                        </div>
+                                    </div>
+                                    <div className="absolute -bottom-2 -left-2 bg-white text-black text-[10px] font-black px-2 py-0.5 uppercase tracking-tighter">You</div>
+                                </div>
+                                <span className="text-4xl font-black mb-2 animate-glitch">{myScore}</span>
+                                <div className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                                    {correctCount}/{quiz.questions.length} Questions Resolved
                                 </div>
                             </div>
 
-
-                            <div className="relative z-10 flex flex-col items-center mb-8">
-                                {!isOpponentFinished ? (
-                                    <>
-                                        <div className="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-3 animate-pulse">
-                                            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            <div className={`border border-white/10 bg-white/5 p-6 flex flex-col items-center ${!isOpponentFinished ? 'animate-pulse opacity-50' : ''}`}>
+                                <div className="relative mb-4 group">
+                                    <div className="w-20 h-20 bg-white/10 border border-white/10 flex items-center justify-center p-1">
+                                        <div className="w-full h-full bg-black overflow-hidden flex items-center justify-center">
+                                            {isMultiplayer ? (
+                                                <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=Opponent`} alt="Opponent" className="grayscale opacity-50" />
+                                            ) : <Users className="text-white/20" size={32} />}
                                         </div>
-                                        <div className="text-2xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-blue-300 to-blue-600 drop-shadow-lg text-center leading-tight">
-                                            WAITING FOR<br />OPPONENT
+                                    </div>
+                                    <div className="absolute -bottom-2 -right-2 bg-white/20 text-white text-[10px] font-black px-2 py-0.5 uppercase tracking-tighter">
+                                        {isMultiplayer ? 'Opponent' : 'Global Avg'}
+                                    </div>
+                                </div>
+                                {isOpponentFinished || !isMultiplayer ? (
+                                    <>
+                                        <span className="text-4xl font-black mb-2 text-white/40">{opponentScore || Math.floor(myScore * 0.8)}</span>
+                                        <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest text-center">
+                                            Operational Data Logged
                                         </div>
                                     </>
                                 ) : (
-                                    <>
-                                        <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-3">
-
-                                            {myScore === opponentScore ? (
-                                                <Users className="text-yellow-500 w-6 h-6" />
-                                            ) : myScore > opponentScore ? (
-                                                <Flame className="text-yellow-500 w-6 h-6" />
-                                            ) : (
-                                                <VolumeX className="text-gray-500 w-6 h-6" />
-                                            )}
-                                        </div>
-
-                                        {myScore === opponentScore ? (
-                                            <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-lg">
-                                                DRAW
-                                            </div>
-                                        ) : myScore > opponentScore ? (
-                                            <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-green-300 to-green-600 drop-shadow-lg">
-                                                VICTORY
-                                            </div>
-                                        ) : (
-                                            <div className="text-4xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-red-300 to-red-600 drop-shadow-lg">
-                                                DEFEAT
-                                            </div>
-                                        )}
-                                    </>
+                                    <div className="text-xs font-mono text-white/40 uppercase animate-pulse">Data Synchronizing...</div>
                                 )}
                             </div>
-
-
-                            <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
-
-                                <div className="bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner">
-                                    <div className="relative mb-3">
-                                        <div className="w-16 h-16 rounded-full bg-gradient-to-b from-blue-200 to-blue-100 p-0.5 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                                            <div className="w-full h-full rounded-full bg-gray-300 overflow-hidden">
-                                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=You`} alt="You" />
-                                            </div>
-                                        </div>
-                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-[#131922]">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        </div>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">YOU</span>
-                                    <span className="text-3xl font-black text-white mb-2">{myScore}</span>
-                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                        <span className="text-[10px] text-gray-400 font-medium">{correctCount}/{quiz.questions.length} Correct</span>
-                                    </div>
-                                </div>
-
-
-                                <div className={`bg-[#131922] rounded-[2rem] p-4 flex flex-col items-center shadow-inner ${!isOpponentFinished ? 'animate-pulse opacity-80' : ''}`}>
-                                    <div className="relative mb-3">
-                                        <div className="w-16 h-16 rounded-full bg-gradient-to-b from-pink-200 to-pink-100 p-0.5 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
-                                            <div className="w-full h-full rounded-full bg-gray-300 overflow-hidden">
-                                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=Opponent`} alt="Opponent" />
-                                            </div>
-                                        </div>
-
-                                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#131922] ${isOpponentFinished ? 'bg-red-500' : 'bg-gray-600'}`}>
-                                            {isOpponentFinished ? (
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                            ) : (
-                                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">OPPONENT</span>
-                                    {isOpponentFinished ? (
-                                        <>
-                                            <span className="text-3xl font-black text-white mb-2">{opponentScore}</span>
-                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                                                <span className="text-[10px] text-gray-400 font-medium">{opponentCorrectCount !== undefined ? opponentCorrectCount : (Math.floor((opponentScore / 100) * quiz.questions.length) || 0)}/{quiz.questions.length} Correct</span>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="text-xl font-bold text-gray-500 mb-2 italic">Playing...</span>
-                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-[#1A212C] rounded-full opacity-50">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-gray-500"></div>
-                                                <span className="text-[10px] text-gray-400 font-medium">--/-- Correct</span>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-
-
-                            <div className="relative z-10 w-full space-y-4">
-                                <button
-                                    onClick={() => onLeave ? onLeave() : router.push('/categories')}
-                                    className="w-full py-4 bg-blue-600 text-white text-xs font-bold uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-900/40 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 whitespace-nowrap"
-                                >
-                                    Return  to Lobby
-                                    <ChevronRight size={14} />
-                                </button>
-
-                                <button
-                                    onClick={() => alert("Rematch requested!")}
-                                    className="flex items-center justify-center gap-2 text-gray-500 text-xs font-medium hover:text-white transition-colors"
-                                >
-                                    <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" /></svg>
-                                    </div>
-                                    Request Rematch
-                                </button>
-                            </div>
                         </div>
-                    </div>
-                )
-            }
 
-
-            {!hasInteracted && !loading && quiz && !showResults && (
-                <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-                    <div className="bg-[#0A0F16] border border-blue-500/30 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl shadow-blue-900/40 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-blue-500/5 group-hover:bg-blue-500/10 transition-colors"></div>
-                        <h2 className="text-2xl font-bold text-white mb-2 relative z-10">Start Quiz</h2>
-                        <p className="text-gray-400 mb-8 relative z-10">Click below to enable audio and start the challenge.</p>
                         <button
-                            onClick={() => setHasInteracted(true)}
-                            className="relative z-10 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-900/30 flex items-center justify-center gap-2"
+                            onClick={() => onLeave ? onLeave() : router.push('/home')}
+                            className="w-full py-4 bg-white text-black text-xs font-black uppercase tracking-[0.3em] hover:bg-white/90 transition-all shadow-[0_0_20px_white]"
                         >
-                            <span className="uppercase tracking-widest">Start Now</span>
-                            <ChevronRight size={18} />
+                            Exit_Simulation
                         </button>
                     </div>
                 </div>
             )}
-        </div >
+
+            {/* Bottom Controls */}
+            {!showResults && (
+                <div className="relative z-10 w-full p-6 border-t border-white/10 bg-black/50 backdrop-blur-md">
+                    <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                        <div className="hidden sm:flex items-center gap-4 text-white/40">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-white opacity-20" />
+                                <span className="text-[10px] uppercase font-bold tracking-widest">Neural Link Active</span>
+                            </div>
+                            <div className="w-px h-4 bg-white/10" />
+                            <span className="text-[10px] font-mono">Attempt_ID: {attemptId}</span>
+                        </div>
+
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <button
+                                onClick={handleSkip}
+                                disabled={submitting || submittedQuestions.has(currentQuestion.id)}
+                                className="px-8 py-3 bg-transparent border border-white/10 text-white/60 hover:text-white hover:border-white/30 transition-all text-xs font-bold uppercase tracking-widest disabled:opacity-30"
+                            >
+                                Skip
+                            </button>
+                            <button
+                                onClick={() => submitCurrentAnswer()}
+                                disabled={submitting || submittedQuestions.has(currentQuestion.id) || !currentAnswer}
+                                className="flex-1 sm:flex-none px-12 py-3 bg-white text-black hover:bg-white/90 transition-all text-xs font-black uppercase tracking-[0.2em] disabled:opacity-30 disabled:grayscale shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_white]"
+                            >
+                                {submitting ? 'Authenticating...' : 'Submit_Data'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Establishment Link Overlay */}
+            {!hasInteracted && !loading && quiz && !showResults && (
+                <div className="fixed inset-0 z-[200] bg-black flex items-center justify-center p-4">
+                    <div className="absolute inset-0 cyber-grid opacity-20" />
+                    <div className="scan-line" />
+
+                    <div className="relative bg-black border border-white/20 p-8 max-w-sm w-full text-center cyber-border overflow-hidden">
+                        <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 blur-3xl rounded-full" />
+                        <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-[0.2em] font-orbitron">Initialize Simulation</h2>
+                        <p className="text-white/40 text-[10px] font-mono mb-8 uppercase tracking-widest leading-relaxed">
+                            Neural link required. Click to establish connection and enable audio processing.
+                        </p>
+                        <button
+                            onClick={() => setHasInteracted(true)}
+                            className="w-full py-4 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-white/90 transition-all shadow-[0_0_15px_white]"
+                        >
+                            Establish Link
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }

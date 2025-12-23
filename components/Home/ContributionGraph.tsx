@@ -54,15 +54,12 @@ export default function ContributionGraph() {
         return 4;
     };
 
-    const getColor = (level: number) => {
-        switch (level) {
-            case 0: return 'bg-[#1e1e1e]';
-            case 1: return 'bg-emerald-900';
-            case 2: return 'bg-emerald-700';
-            case 3: return 'bg-emerald-500';
-            case 4: return 'bg-emerald-400';
-            default: return 'bg-[#1e1e1e]';
-        }
+    const getColor = (count: number) => {
+        if (count === 0) return 'bg-white/5';
+        if (count < 5) return 'bg-voltage-blue/20';
+        if (count < 10) return 'bg-voltage-blue/40';
+        if (count < 20) return 'bg-voltage-blue/70';
+        return 'bg-voltage-blue';
     };
 
 
@@ -113,10 +110,10 @@ export default function ContributionGraph() {
                     <span>Less</span>
                     <div className="flex gap-[2px]">
                         <div className="w-[10px] h-[10px] rounded-sm bg-[#1e1e1e]" />
-                        <div className="w-[10px] h-[10px] rounded-sm bg-emerald-900" />
-                        <div className="w-[10px] h-[10px] rounded-sm bg-emerald-700" />
-                        <div className="w-[10px] h-[10px] rounded-sm bg-emerald-500" />
-                        <div className="w-[10px] h-[10px] rounded-sm bg-emerald-400" />
+                        <div className="w-[10px] h-[10px] rounded-sm bg-white/10" />
+                        <div className="w-[10px] h-[10px] rounded-sm bg-white/30" />
+                        <div className="w-[10px] h-[10px] rounded-sm bg-white/60" />
+                        <div className="w-[10px] h-[10px] rounded-sm bg-white" />
                     </div>
                     <span>More</span>
                 </div>

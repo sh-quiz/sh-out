@@ -12,7 +12,7 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
-  if (token) {
+  if (token && token !== 'undefined' && token !== 'null') {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -72,19 +72,18 @@ api.interceptors.response.use(
           });
 
           console.log('Token refresh successful. Updating storage.');
-          localStorage.setItem('access_token', data.access_token);
-          if (data.refresh_token) {
+          
+          if (data.refresh_token && data.refresh_token !== 'undefined' && data.refresh_token !== 'null') {
             localStorage.setItem('refresh_token', data.refresh_token);
           }
 
-
-          api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
-
-
-          originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
-
-          processQueue(null, data.access_token);
-          return api(originalRequest);
+          if (data.access_token && data.access_token !== 'undefined' && data.access_token !== 'null') {
+            localStorage.setItem('access_token', data.access_token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
+            originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+            processQueue(null, data.access_token);
+            return api(originalRequest);
+          }
         } else {
           console.log('No refresh token found in storage.');
           throw new Error('No refresh token available');

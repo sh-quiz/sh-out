@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { authService } from '@/lib/auth';
 import {
     Home,
@@ -38,12 +39,17 @@ export default function Sidebar() {
         <div className="hidden md:flex flex-col w-64 h-screen bg-black text-[#878D96] border-r border-[#161B22] fixed left-0 top-0 z-40">
 
             <div className="flex items-center gap-3 mb-8 px-6 pt-8">
-                <div className="w-8 h-8 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#FFB340" />
-                    </svg>
+                <div className="w-10 h-10 flex items-center justify-center cyber-border bg-blitz-yellow/5 group hover:bg-blitz-yellow/10 transition-colors">
+                    <img
+                        src="/assets/mascot.png"
+                        alt="Bliitz-bee"
+                        className="w-8 h-8 object-contain drop-shadow-[0_0_8px_rgba(255,215,0,0.4)] group-hover:scale-110 transition-transform"
+                    />
                 </div>
-                <span className="text-white text-xl font-medium tracking-tight">E-Quiz</span>
+                <div className="flex flex-col">
+                    <span className="text-white text-xl font-black tracking-[0.2em] font-orbitron uppercase leading-none">Bliitz</span>
+                    <span className="text-[8px] font-mono text-blitz-yellow uppercase tracking-[0.3em] font-bold mt-1">Beta 1.0</span>
+                </div>
             </div>
 
 
@@ -54,13 +60,23 @@ export default function Sidebar() {
                         <Link
                             key={item.name}
                             href={item.href}
-                            className={`flex items-center gap-4 px-4 h-[56px] rounded-xl transition-all duration-300 ${isActive
-                                ? 'bg-[#007AFF]/10 text-white'
-                                : 'hover:bg-[#161B22] hover:text-white'
+                            className={`flex items-center gap-4 px-4 h-[56px] rounded-none transition-all duration-300 relative group overflow-hidden ${isActive
+                                ? 'text-white border-l-2 border-blitz-yellow bg-blitz-yellow/5'
+                                : 'hover:bg-white/5 hover:text-white'
                                 }`}
                         >
-                            <item.icon className={`w-5 h-5 ${isActive ? 'text-[#007AFF]' : 'text-[#878D96]'}`} />
-                            <span className="font-medium text-sm">{item.name}</span>
+                            {isActive && (
+                                <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
+                            )}
+                            <item.icon className={`w-5 h-5 transition-all duration-300 ${isActive ? 'text-blitz-yellow scale-110 drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]' : 'text-[#878D96]'}`} />
+                            <span className={`font-bold text-xs uppercase tracking-widest transition-all duration-300 ${isActive ? 'translate-x-1' : ''}`}>{item.name}</span>
+
+                            {isActive && (
+                                <motion.div
+                                    layoutId="active-indicator"
+                                    className="absolute right-0 top-0 bottom-0 w-[2px] bg-blitz-yellow shadow-[0_0_10px_#FFD700]"
+                                />
+                            )}
                         </Link>
                     );
                 })}
@@ -68,29 +84,24 @@ export default function Sidebar() {
 
 
             <div className="mt-auto space-y-1 px-4 pb-8 pt-4 border-t border-[#161B22]">
-                <h3 className="text-xs font-semibold text-[#878D96]/50 uppercase px-4 mb-2 tracking-wider">More</h3>
+                <h3 className="text-[10px] font-bold text-[#878D96]/50 uppercase px-4 mb-2 tracking-[0.2em]">External</h3>
 
-                <button className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-white rounded-xl transition-colors text-sm group">
-                    <span>Use on telegram</span>
-                    <Send className="w-4 h-4 text-[#007AFF]" />
+                <button className="w-full flex items-center justify-between px-4 h-[44px] hover:bg-white/5 hover:text-white transition-colors text-[10px] uppercase font-bold tracking-widest group">
+                    <span>Telegram</span>
+                    <Send className="w-3.5 h-3.5 text-white/40 group-hover:text-white" />
                 </button>
 
-                <button className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-white rounded-xl transition-colors text-sm group">
-                    <span>Leave feedback</span>
-                    <MessageSquare className="w-4 h-4 text-[#878D96] group-hover:text-white" />
-                </button>
-
-                <button className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-white rounded-xl transition-colors text-sm group">
-                    <span>Report an issue</span>
-                    <AlertCircle className="w-4 h-4 text-[#878D96] group-hover:text-white" />
+                <button className="w-full flex items-center justify-between px-4 h-[44px] hover:bg-white/5 hover:text-white transition-colors text-[10px] uppercase font-bold tracking-widest group">
+                    <span>Feedback</span>
+                    <MessageSquare className="w-3.5 h-3.5 text-white/40 group-hover:text-white" />
                 </button>
 
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-between px-4 h-[48px] hover:bg-[#161B22] hover:text-[#FF453A] rounded-xl transition-colors text-sm group mt-2"
+                    className="w-full flex items-center justify-between px-4 h-[44px] hover:bg-white/5 hover:text-white transition-colors text-[10px] uppercase font-bold tracking-widest group mt-2"
                 >
                     <span>Log out</span>
-                    <LogOut className="w-4 h-4 text-[#878D96] group-hover:text-[#FF453A]" />
+                    <LogOut className="w-3.5 h-3.5 text-white/40 group-hover:text-white" />
                 </button>
             </div>
         </div>

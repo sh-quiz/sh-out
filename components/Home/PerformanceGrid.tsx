@@ -1,7 +1,9 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, ChevronLeft, Volume2, VolumeX, Mic, MicOff, Settings, AlertTriangle, CheckCircle2, XCircle, Info, Clock, Trophy, Zap, Flame, Gem, Users } from 'lucide-react';
+import CyberLoader from '@/components/ui/CyberLoader';
 import { api } from '../../app/api/client';
 import ContributionGraph from './ContributionGraph';
 
@@ -36,7 +38,6 @@ export default function PerformanceGrid() {
         {
             label: 'Global Rank',
             value: isLoading || !statsData ? '...' : `#${statsData.globalRank.toLocaleString()}`,
-            color: '#007AFF'
         },
         {
             label: 'Total Study Time',
@@ -53,15 +54,11 @@ export default function PerformanceGrid() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
-                        className="flex flex-col p-6 bg-[#171717] rounded-md border border-white/5"
+                        className="flex flex-col p-4 bg-carbon-grey/40 border border-white/5 relative group overflow-hidden"
                     >
-                        <span className="text-[13px] font-medium text-[#878D96] mb-2">
-                            {stat.label}
-                        </span>
-                        <span
-                            className="text-[32px] font-bold text-white leading-none tracking-tight"
-                            style={{ color: stat.color }}
-                        >
+                        <div className="absolute inset-0 bg-blitz-yellow/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1 relative z-10">{stat.label}</span>
+                        <span className="text-2xl font-mono font-black text-blitz-yellow relative z-10 drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">
                             {stat.value}
                         </span>
                     </motion.div>
