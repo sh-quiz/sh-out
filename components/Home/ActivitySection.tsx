@@ -136,9 +136,9 @@ export default function ActivitySection() {
                                 <div
                                     key={i}
                                     className={`w-3 h-3 rounded-sm ${level === 0 ? 'bg-[#2C2C2E]' :
-                                        level === 1 ? 'bg-[#004080]' :
-                                            level === 2 ? 'bg-[#007AFF]' :
-                                                'bg-[#5AC8FA]'
+                                        level === 1 ? 'bg-white/10' :
+                                            level === 2 ? 'bg-white/40' :
+                                                'bg-white'
                                         }`}
                                     title={`Day ${i + 1}`}
                                 />
@@ -160,7 +160,7 @@ export default function ActivitySection() {
                                     initial={{ width: 0 }}
                                     whileInView={{ width: `${month.progress}%` }}
                                     transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
-                                    className="h-full bg-[#5AC8FA] rounded-full"
+                                    className="h-full bg-white rounded-full shadow-[0_0_10px_white]"
                                 />
                             </div>
                         </div>
