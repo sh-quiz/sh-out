@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Zap, Flame, Gem, Target } from 'lucide-react';
+import { Zap, Flame, Gem, Target, Diamond } from 'lucide-react';
 import { useEnergy, useDiamonds } from '@/hooks/useEconomy';
 import { useStats } from '@/hooks/useStats';
 import { usePathname } from 'next/navigation';
@@ -38,8 +38,8 @@ export default function MobileStatsHeader() {
                 </div>
             )}
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 text-static-white">
-                <Gem className="w-3.5 h-3.5" fill="currentColor" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 text-white">
+                <Gem className="w-3.5 h-3.5 text-voltage-blue" />
                 <span className="text-xs font-mono font-bold">{diamonds}</span>
             </div>
         </header>

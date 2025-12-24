@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import JourneyPath, { Quiz } from '@/components/Journey/JourneyPath';
 import { ReactLenis } from 'lenis/react';
-import { Play } from 'lucide-react';
+import { Play, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/app/api/client';
 import CyberLoader from '@/components/ui/CyberLoader';
@@ -49,20 +49,19 @@ export default function QuizzesPage() {
 
     return (
         <ReactLenis root>
-            <div className="bg-transparent min-h-screen text-white overflow-hidden relative">
-                <div className="absolute inset-0 z-0">
-                    <div className="w-full h-full bg-cover bg-center opacity-30" style={{ backgroundImage: 'url("/brain/63bbd1f4-5752-4464-8755-2789be25175c/cyberpunk_quizzes_v3_bg_1766527439989.png")' }} />
-                    <div className="absolute inset-0 bg-[#0B0E14] opacity-40" />
-                    <div className="absolute inset-0 cyber-grid opacity-10" />
+            <div className="relative min-h-screen text-white overflow-x-hidden">
+                <div className="relative z-10 max-w-6xl mx-auto px-6 py-12">
+                    {loading ? (
+                        <div className="flex h-[calc(100vh-250px)] items-center justify-center">
+                            <CyberLoader text="ACCESSING ARCHIVES..." />
+                        </div>
+                    ) : (
+                        <JourneyPath
+                            quizzes={quizzes}
+                            onStartQuiz={handleStartQuiz}
+                        />
+                    )}
                 </div>
-
-                {loading ? (
-                    <div className="flex h-screen items-center justify-center relative z-10">
-                        <CyberLoader text="ACCESSING ARCHIVES..." />
-                    </div>
-                ) : (
-                    <JourneyPath quizzes={quizzes} onStartQuiz={handleStartQuiz} />
-                )}
             </div>
         </ReactLenis>
     );

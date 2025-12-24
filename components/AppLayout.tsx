@@ -66,28 +66,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         );
     }
 
-    const isIsolatedPage = /^\/quizzes\/\d+$/.test(pathname || '');
-
-    if (isIsolatedPage) {
-        return (
-            <div className="min-h-screen bg-[#0B0E14] text-white">
-                <CustomCursor />
-                {children}
-            </div>
-        );
-    }
-
     return (
-        <div className="flex min-h-screen bg-[#0B0E14] text-white">
-            <CustomCursor />
-            <Sidebar />
-            <main className="flex-1 lg:ml-64 main-content-area">
-                <div className="max-w-5xl mx-auto px-4 md:px-8 py-8">
-                    {children}
-                </div>
-            </main>
-            <DashboardSidebar />
-            <BottomNav />
+        <div className="flex min-h-screen bg-[#0B0E14] text-white relative overflow-x-hidden">
+            <div className="relative z-10 flex min-h-screen w-full">
+                <CustomCursor />
+                <Sidebar />
+                <main className="flex-1 lg:ml-64 main-content-area relative overflow-hidden">
+                    <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 py-8">
+                        <MobileStatsHeader />
+                        {children}
+                    </div>
+                </main>
+                <DashboardSidebar />
+                <BottomNav />
+            </div>
         </div>
     );
 }
