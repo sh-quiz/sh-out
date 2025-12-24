@@ -90,7 +90,7 @@ export default function QuizResult({ attemptId }: Props) {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+            <div className="min-h-screen bg-transparent text-white flex items-center justify-center">
                 <div className="animate-pulse text-blue-500 font-mono tracking-widest">LOADING DATA...</div>
             </div>
         );
@@ -98,7 +98,7 @@ export default function QuizResult({ attemptId }: Props) {
 
     if (!result) {
         return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+            <div className="min-h-screen bg-transparent text-white flex items-center justify-center">
                 <div className="text-red-500 font-mono">RESULT NOT FOUND</div>
             </div>
         );
@@ -124,7 +124,7 @@ export default function QuizResult({ attemptId }: Props) {
     const globalRank = userRank?.rank ?? 0;
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 relative overflow-x-hidden">
+        <div ref={containerRef} className="min-h-screen bg-transparent text-white font-sans selection:bg-blue-500/30 relative overflow-x-hidden">
             <main className="relative z-10 max-w-sm sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 pb-24 sm:pb-28 lg:pb-32 flex flex-col items-center w-full" role="main">
 
 
@@ -209,7 +209,7 @@ export default function QuizResult({ attemptId }: Props) {
                 initial={{ y: 100 }}
                 animate={{ y: 0 }}
                 transition={{ delay: 2, type: "spring", stiffness: 100, damping: 20 }}
-                className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-t border-zinc-800/50 p-3 sm:p-4 md:p-5 lg:p-6 pb-safe"
+                className="fixed bottom-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-t border-white/10 p-3 sm:p-4 md:p-5 lg:p-6 pb-safe"
                 role="navigation"
                 aria-label="Quiz result actions"
             >

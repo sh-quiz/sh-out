@@ -39,10 +39,11 @@ export default function QuizPlayer({
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, number | { text: string; choiceId: number }>>({});
     const [submittedQuestions, setSubmittedQuestions] = useState<Set<number>>(new Set());
+    const [correctQuestions, setCorrectQuestions] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const submittingRef = useRef(false);
-    const [isMuted, setIsMuted] = useState(false);
+    const [isMuted, setIsMuted] = useState(true);
     const [timeLeft, setTimeLeft] = useState(60);
     const [myScore, setMyScore] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
@@ -254,6 +255,7 @@ export default function QuizPlayer({
 
             if (res.isCorrect) {
                 setCorrectCount(prev => prev + 1);
+                setCorrectQuestions(prev => new Set(prev).add(question.id));
                 setMascotFeedback(res.feedback || "Standard neural output. Adequate.");
             } else {
                 setMascotFeedback(res.feedback || "Fascinating. Is your frontal lobe traditionally for decoration?");
@@ -348,15 +350,7 @@ export default function QuizPlayer({
     const currentAnswer = answers[currentQuestion.id];
 
     return (
-        <div className="h-screen w-screen bg-black text-white flex flex-col font-mono relative overflow-hidden fixed inset-0 z-[100]">
-            {/* Cyber background effects */}
-            <div className="absolute inset-0 pointer-events-none z-0 scale-110">
-                <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: 'url("/brain/63bbd1f4-5752-4464-8755-2789be25175c/cyberpunk_quiz_player_bg_2_1766525882064.png")' }} />
-                <div className="absolute inset-0 bg-[#0B0E14] opacity-40" />
-                <div className="absolute inset-0 cyber-grid opacity-10" />
-                <div className="scan-line" />
-            </div>
-
+        <div className="h-screen w-screen bg-transparent text-white flex flex-col font-mono relative overflow-hidden fixed inset-0 z-[100]">
             {/* Header */}
             <div className="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-white/10 bg-black/50 backdrop-blur-md">
                 <div className="flex items-center gap-6">
@@ -431,7 +425,7 @@ export default function QuizPlayer({
                                 {currentQuestion.choices?.map((choice, index: number) => {
                                     const isSelected = currentAnswer === choice.id;
                                     const isChoiceSubmitted = submittedQuestions.has(currentQuestion.id);
-                                    const isCorrect = choice.isCorrect;
+                                    const isActuallyCorrect = correctQuestions.has(currentQuestion.id);
 
                                     return (
                                         <motion.button
@@ -447,16 +441,14 @@ export default function QuizPlayer({
                                                     : 'bg-carbon-grey/40 border-white/5 hover:border-white/20 hover:bg-carbon-grey/60'
                                                 }
                                                 border-l-4
-                                                ${isChoiceSubmitted && isSelected && !isCorrect ? 'border-danger-red bg-danger-red/10 animate-shake' : ''}
-                                                ${isChoiceSubmitted && isCorrect ? 'border-voltage-blue bg-voltage-blue/10' : ''}
+                                                ${isChoiceSubmitted && isSelected ? (isActuallyCorrect ? 'border-voltage-blue bg-voltage-blue/10' : 'border-danger-red bg-danger-red/10 animate-shake') : ''}
                                             `}
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className={`
                                                     w-8 h-8 rounded-none border flex items-center justify-center font-black text-xs transition-colors
                                                     ${isSelected ? 'bg-blitz-yellow text-black border-blitz-yellow' : 'bg-black text-white/40 border-white/10 group-hover:border-white/30'}
-                                                    ${isChoiceSubmitted && isSelected && !isCorrect ? 'bg-danger-red border-danger-red text-white' : ''}
-                                                    ${isChoiceSubmitted && isCorrect ? 'bg-voltage-blue border-voltage-blue text-black' : ''}
+                                                    ${isChoiceSubmitted && isSelected ? (isActuallyCorrect ? 'bg-voltage-blue border-voltage-blue text-black' : 'bg-danger-red border-danger-red text-white') : ''}
                                                 `}>
                                                     {String.fromCharCode(65 + index)}
                                                 </div>
@@ -466,19 +458,19 @@ export default function QuizPlayer({
                                             </div>
 
                                             {/* Status Indicators */}
-                                            {isChoiceSubmitted && (
+                                            {isChoiceSubmitted && isSelected && (
                                                 <div className="absolute top-4 right-4 animate-in fade-in zoom-in">
-                                                    {isCorrect ? (
+                                                    {isActuallyCorrect ? (
                                                         <div className="flex items-center gap-2 text-[10px] font-bold text-voltage-blue uppercase tracking-widest">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-voltage-blue animate-pulse" />
                                                             Correct
                                                         </div>
-                                                    ) : isSelected ? (
+                                                    ) : (
                                                         <div className="flex items-center gap-2 text-[10px] font-bold text-danger-red uppercase tracking-widest">
                                                             <div className="w-1.5 h-1.5 bg-danger-red animate-pulse" />
                                                             Failed
                                                         </div>
-                                                    ) : null}
+                                                    )}
                                                 </div>
                                             )}
                                         </motion.button>
