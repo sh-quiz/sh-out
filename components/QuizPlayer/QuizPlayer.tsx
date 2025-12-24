@@ -23,6 +23,83 @@ interface Props {
     onLeave?: () => void;
 }
 
+const QuizBackground = () => (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Deep background color */}
+        <div className="absolute inset-0 bg-[#06080C]" />
+
+        {/* Animated Grid */}
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{
+                opacity: 0.1,
+                y: [0, -40, 0]
+            }}
+            transition={{
+                y: { duration: 20, repeat: Infinity, ease: "linear" },
+                opacity: { duration: 2 }
+            }}
+            className="absolute inset-0 bg-[url('/grid.svg')] bg-[length:80px_80px]"
+            style={{
+                maskImage: 'radial-gradient(circle at 50% 50%, white, transparent 70%)',
+            }}
+        />
+
+        {/* Technical Drifting Orbs */}
+        {[...Array(5)].map((_, i) => (
+            <motion.div
+                key={i}
+                className="absolute w-96 h-96 bg-voltage-blue/5 blur-[120px] rounded-full"
+                animate={{
+                    x: [
+                        `${Math.random() * 100 - 20}%`,
+                        `${Math.random() * 100 - 20}%`,
+                        `${Math.random() * 100 - 20}%`
+                    ],
+                    y: [
+                        `${Math.random() * 100 - 20}%`,
+                        `${Math.random() * 100 - 20}%`,
+                        `${Math.random() * 100 - 20}%`
+                    ],
+                    scale: [1, 1.2, 1],
+                    opacity: [0.1, 0.2, 0.1]
+                }}
+                transition={{
+                    duration: 20 + i * 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            />
+        ))}
+
+        {/* Tech Lines */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.05]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="transparent" />
+                    <stop offset="50%" stopColor="#00f2ff" />
+                    <stop offset="100%" stopColor="transparent" />
+                </linearGradient>
+            </defs>
+            <motion.line
+                x1="0" y1="20%" x2="100%" y2="20%"
+                stroke="url(#line-grad)" strokeWidth="1"
+                animate={{ x1: ['-100%', '100%'], x2: ['0%', '200%'] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.line
+                x1="0" y1="80%" x2="100%" y2="80%"
+                stroke="url(#line-grad)" strokeWidth="1"
+                animate={{ x1: ['100%', '-100%'], x2: ['200%', '0%'] }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            />
+        </svg>
+
+        {/* Noise overlay */}
+        <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+    </div>
+);
+
 export default function QuizPlayer({
     quizId,
     attemptId,
@@ -321,26 +398,32 @@ export default function QuizPlayer({
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center p-8">
-                <CyberLoader text="PULLING MISSION DATA..." />
+            <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center p-8 text-white relative">
+                <QuizBackground />
+                <div className="relative z-10">
+                    <CyberLoader text="PULLING MISSION DATA..." />
+                </div>
             </div>
         );
     }
 
     if (!quiz) {
         return (
-            <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-16 h-16 border border-danger-red/20 flex items-center justify-center mb-6">
-                    <span className="text-danger-red font-black">!</span>
+            <div className="min-h-screen bg-[#0B0E14] flex flex-col items-center justify-center p-8 text-center text-white relative">
+                <QuizBackground />
+                <div className="relative z-10">
+                    <div className="w-16 h-16 border border-danger-red/20 flex items-center justify-center mb-6 mx-auto">
+                        <span className="text-danger-red font-black">!</span>
+                    </div>
+                    <h2 className="text-white font-orbitron uppercase tracking-widest mb-2">Quiz Not Found</h2>
+                    <p className="text-white/40 text-xs font-mono max-w-xs mx-auto">// ERROR_SOURCE: NULL_REFERENCE_EXCEPTION</p>
+                    <button
+                        onClick={() => router.push('/home')}
+                        className="mt-8 px-6 py-2 border border-white/20 text-white text-[10px] font-bold uppercase hover:bg-white/5 transition-colors"
+                    >
+                        Return to Home
+                    </button>
                 </div>
-                <h2 className="text-white font-orbitron uppercase tracking-widest mb-2">Quiz Not Found</h2>
-                <p className="text-white/40 text-xs font-mono max-w-xs">// ERROR_SOURCE: NULL_REFERENCE_EXCEPTION</p>
-                <button
-                    onClick={() => router.push('/home')}
-                    className="mt-8 px-6 py-2 border border-white/20 text-white text-[10px] font-bold uppercase hover:bg-white/5 transition-colors"
-                >
-                    Return to Home
-                </button>
             </div>
         );
     }
@@ -350,7 +433,8 @@ export default function QuizPlayer({
     const currentAnswer = answers[currentQuestion.id];
 
     return (
-        <div className="h-screen w-screen bg-transparent text-white flex flex-col font-mono relative overflow-hidden fixed inset-0 z-[100]">
+        <div className="h-screen w-screen bg-[#06080C] text-white flex flex-col font-mono relative overflow-hidden fixed inset-0 z-[100]">
+            <QuizBackground />
             {/* Header */}
             <div className="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-white/10 bg-black/50 backdrop-blur-md">
                 <div className="flex items-center gap-6">

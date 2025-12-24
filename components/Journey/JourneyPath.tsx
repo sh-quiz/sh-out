@@ -282,60 +282,12 @@ export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) 
                 ))}
             </svg>
 
-            {/* Branding Overlay (Fixed) */}
-            <div className="fixed top-24 left-6 z-20 pointer-events-none">
-                <div className="bg-black/80 backdrop-blur-xl border border-[#ffd700]/20 p-5 rounded-2xl shadow-[0_0_50px_rgba(255,215,0,0.1)]">
-                    <div className="flex items-center gap-3 mb-1">
-                        <span className="text-3xl">⚡</span>
-                        <h2 className="text-2xl font-black text-white tracking-tighter uppercase italic">BLITZ<span className="text-[#ffd700]">Q</span>_MAP</h2>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#ffd700] animate-pulse" />
-                        <p className="text-[10px] text-white/40 font-mono italic uppercase tracking-widest">ENCRYPTED_LINK_ACTIVE</p>
-                    </div>
-                </div>
-            </div>
 
-            {/* Sidebar Stats (Fixed) */}
-            <div className="fixed top-24 right-6 z-20 flex flex-col gap-3 pointer-events-none">
-                <div className="bg-black/60 backdrop-blur-lg border border-white/5 p-4 rounded-xl flex items-center gap-4">
-                    <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center text-xl">🔥</div>
-                    <div>
-                        <div className="text-[10px] text-white/40 font-bold uppercase tracking-tighter">Current_Streak</div>
-                        <div className="text-xl font-black text-yellow-500">15_DAYS</div>
-                    </div>
-                </div>
-                <div className="bg-black/60 backdrop-blur-lg border border-white/5 p-4 rounded-xl flex items-center gap-4">
-                    <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center text-xl">💎</div>
-                    <div>
-                        <div className="text-[10px] text-white/40 font-bold uppercase tracking-tighter">Gems_Balance</div>
-                        <div className="text-xl font-black text-blue-400">4200</div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Bottom Legend (Fixed) */}
-            <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-                <div className="flex gap-6 bg-black/80 backdrop-blur-xl px-10 py-4 rounded-full border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-                    <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-[#ffd700] shadow-[0_0_15px_#ffd700]" />
-                        <span className="text-[10px] text-white/70 uppercase font-black tracking-widest">ACTIVE_NODE</span>
-                    </div>
-                    <div className="w-[1px] h-4 bg-white/10 self-center" />
-                    <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-[#00ffcc] shadow-[0_0_15px_#00ffcc]" />
-                        <span className="text-[10px] text-white/70 uppercase font-black tracking-widest">COMPLETED</span>
-                    </div>
-                </div>
-            </div>
 
-            {/* Scroll Hint */}
-            <div className="fixed bottom-8 right-8 z-20 animate-bounce pointer-events-none">
-                <div className="text-white/20 text-[10px] font-mono flex flex-col items-center">
-                    <span>▼</span>
-                    <span>SCROLL_TO_EXPLORE</span>
-                </div>
-            </div>
+
+
+
         </div>
     );
 }
