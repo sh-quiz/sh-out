@@ -1,17 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-
-export interface Quiz {
-    id: number;
-    title: string;
-    description: string;
-    isCompleted?: boolean;
-}
+import { Course } from '@/app/types/course';
 
 interface JourneyPathProps {
-    quizzes: Quiz[];
-    onStartQuiz?: (id: number) => void;
+    course: Course | null;
+    onStartLesson?: (id: number) => void;
 }
 
 const createHexPath = (cx: number, cy: number, size: number) => {
@@ -32,7 +26,7 @@ const HexNode = ({ node, isHovered, onHover, onStart, selected }: {
     onStart?: (id: number) => void,
     selected: boolean
 }) => {
-    const { type, level, x, y, quiz } = node;
+    const { type, level, x, y, lesson } = node;
     const scale = isHovered ? 1.1 : 1;
     const isBoss = type === 'boss';
     const size = isBoss ? 100 : 80;
@@ -54,7 +48,7 @@ const HexNode = ({ node, isHovered, onHover, onStart, selected }: {
             style={{ cursor: type !== 'locked' ? 'pointer' : 'default', transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
             onMouseEnter={() => onHover(node)}
             onMouseLeave={() => onHover(null)}
-            onClick={() => type !== 'locked' && onStart?.(quiz.id)}
+            onClick={() => type !== 'locked' && onStart?.(lesson.id)}
         >
             {/* Glow effect */}
             {hasGlow && (
@@ -157,7 +151,7 @@ const HexNode = ({ node, isHovered, onHover, onStart, selected }: {
                 <g transform={`translate(0, ${isBoss ? 100 : 80})`}>
                     <rect x="-80" y="-20" width="160" height="40" rx="20" fill="rgba(0,0,0,0.8)" />
                     <text textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" className="uppercase tracking-widest">
-                        {quiz.title}
+                        {lesson.title}
                     </text>
                 </g>
             )}
@@ -165,7 +159,7 @@ const HexNode = ({ node, isHovered, onHover, onStart, selected }: {
     );
 };
 
-export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) {
+export default function JourneyPath({ course, onStartLesson }: JourneyPathProps) {
     const [hoveredNode, setHoveredNode] = useState<any>(null);
     const [scrollY, setScrollY] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -179,10 +173,13 @@ export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) 
     }, []);
 
     const levels = useMemo(() => {
+        if (!course) return [];
+        const allLessons = course.units.flatMap(u => u.lessons);
+
         let currentFound = false;
-        return quizzes.map((quiz, index) => {
+        return allLessons.map((lesson, index) => {
             let type: 'completed' | 'active' | 'locked' | 'boss' = 'locked';
-            if (quiz.isCompleted) {
+            if (lesson.isCompleted) {
                 type = 'completed';
             } else if (!currentFound) {
                 type = 'active';
@@ -190,8 +187,8 @@ export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) 
             }
 
             // Custom "boss" check (e.g., every 5th or last)
-            if (index === quizzes.length - 1 && index > 3) {
-                type = quiz.isCompleted ? 'completed' : (type === 'active' ? 'boss' : 'locked');
+            if (index === allLessons.length - 1 && index > 3) {
+                type = lesson.isCompleted ? 'completed' : (type === 'active' ? 'boss' : 'locked');
             }
 
             // Duolingo-style winding path calculation
@@ -203,9 +200,9 @@ export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) 
             const x = xOffset + Math.sin(index * frequency) * amplitude;
             const y = 150 + index * spacing;
 
-            return { type, level: index + 1, x, y, quiz };
+            return { type, level: index + 1, x, y, lesson };
         });
-    }, [quizzes]);
+    }, [course]);
 
     const drawPath = (from: any, to: any, isCompleted: boolean) => {
         const midY = (from.y + to.y) / 2;
@@ -276,18 +273,11 @@ export default function JourneyPath({ quizzes, onStartQuiz }: JourneyPathProps) 
                         node={level}
                         isHovered={hoveredNode?.level === level.level}
                         onHover={setHoveredNode}
-                        onStart={onStartQuiz}
+                        onStart={onStartLesson}
                         selected={false}
                     />
                 ))}
             </svg>
-
-
-
-
-
-
-
         </div>
     );
 }

@@ -1,50 +1,40 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import JourneyPath, { Quiz } from '@/components/Journey/JourneyPath';
+import JourneyPath from '@/components/Journey/JourneyPath';
 import { ReactLenis } from 'lenis/react';
 import { Play, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/app/api/client';
 import CyberLoader from '@/components/ui/CyberLoader';
+import { Course } from '@/app/types/course';
 
 export default function QuizzesPage() {
-    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+    const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-        const fetchQuizzes = async () => {
+        const fetchCourse = async () => {
             try {
-                const { data } = await api.get('/v1/quizzes');
-                setQuizzes(data);
+                // Hardcoded to active course, defaulted to 1
+                const { data } = await api.get('/v1/courses/1');
+                // Data is now enriched by the backend
+                setCourse(data);
+
             } catch (error) {
-                console.error('Error fetching quizzes:', error);
+                console.error('Error fetching course:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchQuizzes();
+        fetchCourse();
     }, []);
 
 
-    const handleStartQuiz = async (quizId: number) => {
-        setLoading(true);
-        try {
-            const { data } = await api.post(`/v1/quizzes/${quizId}/start`);
-            if (data.attemptId && data.attemptToken) {
-                router.push(`/quizzes/${quizId}?attemptId=${data.attemptId}&token=${data.attemptToken}`);
-            } else {
-                console.error('Invalid response format:', data);
-                alert('Received invalid response from server.');
-                setLoading(false);
-            }
-        } catch (error: any) {
-            console.error('Error starting quiz:', error);
-            alert(`Failed to start quiz: ${error.response?.data?.message || 'Unknown error'}`);
-            setLoading(false);
-        }
+    const handleStartLesson = async (lessonId: number) => {
+        router.push(`/courses/lessons/${lessonId}`);
     };
 
     return (
@@ -57,8 +47,8 @@ export default function QuizzesPage() {
                         </div>
                     ) : (
                         <JourneyPath
-                            quizzes={quizzes}
-                            onStartQuiz={handleStartQuiz}
+                            course={course}
+                            onStartLesson={handleStartLesson}
                         />
                     )}
                 </div>
