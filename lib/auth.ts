@@ -58,7 +58,7 @@ export const authService = {
 
     saveTokens(data: AuthResponse) {
         console.log('💾 [AUTH-SERVICE] Starting to save tokens to localStorage');
-        
+
         if (!data.access_token || data.access_token === 'undefined' || data.access_token === 'null') {
             console.error('❌ [AUTH-SERVICE] Attempted to save invalid access token:', data.access_token);
             return;
@@ -72,29 +72,24 @@ export const authService = {
             refreshTokenLength: data.refresh_token?.length
         });
 
-        console.log('🔍 [AUTH-SERVICE] LocalStorage BEFORE save:', {
-            access: localStorage.getItem('access_token'),
-            refresh: localStorage.getItem('refresh_token'),
-            user: localStorage.getItem('user')
-        });
-
+        // 1. Store in localStorage (for client-side API requests)
         localStorage.setItem('access_token', data.access_token);
-        
+
         if (data.refresh_token && data.refresh_token !== 'undefined' && data.refresh_token !== 'null') {
             localStorage.setItem('refresh_token', data.refresh_token);
         }
-        
+
         if (data.user) {
             localStorage.setItem('user', JSON.stringify(data.user));
         }
 
-        console.log('🔍 [AUTH-SERVICE] LocalStorage AFTER save:', {
-            access: localStorage.getItem('access_token')?.substring(0, 50) + '...',
-            refresh: localStorage.getItem('refresh_token')?.substring(0, 50) + '...',
-            user: localStorage.getItem('user')
-        });
+        // 2. Mirror to Cookie (for Middleware)
+        // Note: Using Lax/Strict is good, but if your backend runs on a different domain, you might need 'None'.
+        // Assuming same-site or localhost for now.
+        const isSecure = window.location.protocol === 'https:';
+        const secureFlag = isSecure ? '; Secure' : '';
+        document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
 
-        document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Strict`;
         console.log('✅ [AUTH-SERVICE] Tokens saved successfully to localStorage and cookies');
         console.log('✅ [AUTH-SERVICE] isAuthenticated() now returns:', this.isAuthenticated());
     },
@@ -104,9 +99,8 @@ export const authService = {
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
 
-        // Clear cookie with all possible paths and attributes to ensure it's gone
-        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
-        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        // Clear cookie
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
     },
 
     getUser() {

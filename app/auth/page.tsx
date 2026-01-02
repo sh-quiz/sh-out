@@ -14,9 +14,14 @@ import SocialButton from '@/components/Auth/SocialButton';
 import AuthSwitcher from '@/components/Auth/AuthSwitcher';
 import CyberLoader from '@/components/ui/CyberLoader';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function AuthPage() {
+    const searchParams = useSearchParams();
+    const initialView = searchParams.get('view') === 'login' ? 'login' : 'signup';
+
     const [mounted, setMounted] = useState(false);
-    const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
+    const [activeTab, setActiveTab] = useState<'login' | 'signup'>(initialView);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({

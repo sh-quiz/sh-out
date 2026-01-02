@@ -172,12 +172,12 @@ export default function HomePage() {
                 </div>
 
                 <div>
-                    <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 mb-8 flex items-center gap-3">
+                    {/* <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/40 mb-8 flex items-center gap-3">
                         <div className="w-6 h-[1px] bg-voltage-blue" />
                         <span className="text-white hover:text-voltage-blue transition-colors cursor-default">Neural Activity Heatmap</span>
                         <div className="flex-1 h-[1px] bg-white/5" />
-                    </h3>
-                    <ActivitySection />
+                    </h3> */}
+                    {/* <ActivitySection /> */}
                 </div>
             </div>
         </div>

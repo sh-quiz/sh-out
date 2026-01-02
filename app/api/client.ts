@@ -72,13 +72,16 @@ api.interceptors.response.use(
           });
 
           console.log('Token refresh successful. Updating storage.');
-          
+
           if (data.refresh_token && data.refresh_token !== 'undefined' && data.refresh_token !== 'null') {
             localStorage.setItem('refresh_token', data.refresh_token);
           }
 
           if (data.access_token && data.access_token !== 'undefined' && data.access_token !== 'null') {
             localStorage.setItem('access_token', data.access_token);
+            // Sync cookie as well since WebSockets might rely on it
+            document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Strict`;
+
             api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
             originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
             processQueue(null, data.access_token);

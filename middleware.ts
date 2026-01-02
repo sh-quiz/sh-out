@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
     let token = request.cookies.get('access_token')?.value;
-    
+
     // Handle invalid token strings
     if (token === 'undefined' || token === 'null') {
         token = undefined;
@@ -22,7 +22,10 @@ export function middleware(request: NextRequest) {
         }
     } else {
         if (!isPublicRoute) {
-            return NextResponse.redirect(new URL('/auth', request.url));
+            // Redirect to shared auth page, forcing the 'login' view
+            const loginUrl = new URL('/auth', request.url);
+            loginUrl.searchParams.set('view', 'login');
+            return NextResponse.redirect(loginUrl);
         }
     }
 
